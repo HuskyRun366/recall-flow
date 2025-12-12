@@ -757,35 +757,6 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
   margin-bottom: 2rem;
-
-  .stat-card {
-    background: var(--color-background);
-    border: 1px solid var(--color-border);
-    border-radius: 16px;
-    padding: 1.5rem;
-    animation: fadeIn 0.4s ease-out both;
-
-    &:nth-child(1) { animation-delay: 0.3s; }
-    &:nth-child(2) { animation-delay: 0.4s; }
-
-    .stat-value {
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: var(--color-primary);
-      margin-bottom: 0.25rem;
-
-      &.stat-wrong {
-        color: #f44336;
-      }
-    }
-
-    .stat-label {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-  }
 }
 
 .completion-actions {
@@ -899,10 +870,6 @@
 
   .completion-stats {
     grid-template-columns: 1fr;
-
-    .stat-card .stat-value {
-      font-size: 2rem;
-    }
   }
 
   .mode-toggle span {

@@ -16,6 +16,7 @@ import { MatchingQuestionComponent } from '../components/matching-question/match
 import { FlashcardComponent } from '../components/flashcard/flashcard.component';
 import { SwipeGestureDirective } from '../../../shared/directives/swipe-gesture.directive';
 import { PullToRefreshDirective } from '../../../shared/directives/pull-to-refresh.directive';
+import { StatCardComponent } from '../../../shared/components';
 import { forkJoin, of } from 'rxjs';
 import { switchMap, map, catchError } from 'rxjs/operators';
 
@@ -29,6 +30,7 @@ interface QuestionWithProgress {
   standalone: true,
   imports: [
     CommonModule,
+    StatCardComponent,
     MultipleChoiceComponent,
     OrderingQuestionComponent,
     MatchingQuestionComponent,

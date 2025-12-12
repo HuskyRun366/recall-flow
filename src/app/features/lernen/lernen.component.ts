@@ -8,6 +8,7 @@ import { FlashcardProgressService } from '../../core/services/flashcard-progress
 import { DeckParticipantService } from '../../core/services/deck-participant.service';
 import { AuthService } from '../../core/services/auth.service';
 import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader/skeleton-loader.component';
+import { StatCardComponent, StatCardConfig } from '../../shared/components';
 import { FlashcardDeck, DeckProgressSummary, UserDeckReference } from '../../models';
 import { combineLatest, forkJoin, of } from 'rxjs';
 import { switchMap, catchError, map, timeout } from 'rxjs/operators';
@@ -22,7 +23,7 @@ interface DeckWithProgress {
 @Component({
   selector: 'app-lernen',
   standalone: true,
-  imports: [CommonModule, RouterModule, SkeletonLoaderComponent],
+  imports: [CommonModule, RouterModule, SkeletonLoaderComponent, StatCardComponent],
   templateUrl: './lernen.component.html',
   styleUrls: ['./lernen.component.scss']
 })

@@ -1,0 +1,23 @@
+<div class="progress-section">
+  @for (item of items(); track item.level) {
+    <div class="progress-row">
+      <div class="progress-label">
+        <span class="level-indicator level-{{ item.level }}"></span>
+        <span [id]="'level-' + item.level + '-label'">{{ item.label }}</span>
+      </div>
+      <div class="progress-bar-wrapper">
+        <div class="progress-bar" role="progressbar"
+             [attr.aria-valuenow]="item.percentage"
+             [attr.aria-valuemin]="0"
+             [attr.aria-valuemax]="100"
+             [attr.aria-labelledby]="'level-' + item.level + '-label'">
+          <div class="progress-fill level-{{ item.level }}"
+               [style.width.%]="item.percentage"></div>
+        </div>
+        @if (showCount()) {
+          <span class="progress-value">{{ item.count }}</span>
+        }
+      </div>
+    </div>
+  }
+</div>

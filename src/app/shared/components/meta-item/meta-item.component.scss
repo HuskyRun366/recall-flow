@@ -1,0 +1,78 @@
+@import '../../../../styles/variables';
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+
+  .meta-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--color-text-secondary);
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  // Inline layout (default for non-stacked)
+  .meta-text {
+    font-size: 0.9rem;
+    color: var(--color-text-primary);
+    font-weight: 500;
+  }
+
+  // Stacked layout
+  &.stacked {
+    .meta-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .meta-label {
+        font-size: 0.8rem;
+        color: var(--color-text-secondary);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .meta-value {
+        font-size: 0.95rem;
+        color: var(--color-text-primary);
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .meta-item {
+    gap: 8px;
+
+    .meta-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .meta-text {
+      font-size: 0.85rem;
+    }
+
+    &.stacked {
+      .meta-copy {
+        .meta-label {
+          font-size: 0.75rem;
+        }
+
+        .meta-value {
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+<div class="meta-item" [class.stacked]="isStacked()">
+  <div class="meta-icon">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" [innerHTML]="icon()"></svg>
+  </div>
+  @if (isStacked()) {
+    <div class="meta-copy">
+      <span class="meta-label">{{ label() }}</span>
+      <span class="meta-value">{{ value() }}</span>
+    </div>
+  } @else {
+    <span class="meta-text">{{ label() }} {{ value() }}</span>
+  }
+</div>

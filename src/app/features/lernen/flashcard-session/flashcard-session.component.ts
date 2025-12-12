@@ -7,6 +7,7 @@ import { FlashcardService } from '../../../core/services/flashcard.service';
 import { FlashcardProgressService } from '../../../core/services/flashcard-progress.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { FlashcardComponent } from '../../quiz-taking/components/flashcard/flashcard.component';
+import { StatCardComponent } from '../../../shared/components';
 import { FlashcardDeck, Flashcard, Question, CardProgress } from '../../../models';
 import { combineLatest, forkJoin, of, from } from 'rxjs';
 import { switchMap, catchError, map } from 'rxjs/operators';
@@ -20,7 +21,7 @@ interface FlashcardWithProgress {
 @Component({
   selector: 'app-flashcard-session',
   standalone: true,
-  imports: [CommonModule, RouterModule, FlashcardComponent],
+  imports: [CommonModule, RouterModule, StatCardComponent, FlashcardComponent],
   templateUrl: './flashcard-session.component.html',
   styleUrls: ['./flashcard-session.component.scss']
 })

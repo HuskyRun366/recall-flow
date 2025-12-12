@@ -32,55 +32,36 @@
       </div>
 
       <div class="completion-stats">
-        <div class="stat-card success">
-          <div class="stat-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <div class="stat-value">{{ correctAnswers() }}</div>
-            <div class="stat-label">Known</div>
-          </div>
-        </div>
+        <app-stat-card [config]="{
+          icon: 'svg',
+          iconContent: '<polyline points=\'20 6 9 17 4 12\'/>',
+          value: correctAnswers(),
+          label: 'Known',
+          variant: 'success'
+        }" />
 
-        <div class="stat-card error">
-          <div class="stat-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <div class="stat-value">{{ incorrectAnswers() }}</div>
-            <div class="stat-label">Unknown</div>
-          </div>
-        </div>
+        <app-stat-card [config]="{
+          icon: 'svg',
+          iconContent: '<line x1=\'18\' y1=\'6\' x2=\'6\' y2=\'18\'/><line x1=\'6\' y1=\'6\' x2=\'18\' y2=\'18\'/>',
+          value: incorrectAnswers(),
+          label: 'Unknown',
+          variant: 'error'
+        }" />
 
-        <div class="stat-card total">
-          <div class="stat-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="2" y="7" width="20" height="14" rx="2"/>
-              <path d="M2 11h20"/>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <div class="stat-value">{{ totalCards() }}</div>
-            <div class="stat-label">Total Cards</div>
-          </div>
-        </div>
+        <app-stat-card [config]="{
+          icon: 'svg',
+          iconContent: '<rect x=\'2\' y=\'7\' width=\'20\' height=\'14\' rx=\'2\'/><path d=\'M2 11h20\'/>',
+          value: totalCards(),
+          label: 'Total Cards',
+          variant: 'total'
+        }" />
 
-        <div class="stat-card rate">
-          <div class="stat-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2v20M2 12h20"/>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <div class="stat-value">{{ getSuccessRate() }}%</div>
-            <div class="stat-label">Success Rate</div>
-          </div>
-        </div>
+        <app-stat-card [config]="{
+          icon: 'svg',
+          iconContent: '<path d=\'M12 2v20M2 12h20\'/>',
+          value: getSuccessRate() + '%',
+          label: 'Success Rate'
+        }" />
       </div>
 
       <div class="completion-actions">

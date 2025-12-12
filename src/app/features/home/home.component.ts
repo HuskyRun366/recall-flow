@@ -9,6 +9,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { OfflinePreloadService } from '../../core/services/offline-preload.service';
 import { PwaDetectionService } from '../../core/services/pwa-detection.service';
 import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader/skeleton-loader.component';
+import { StatCardComponent, StatCardConfig } from '../../shared/components';
 import { Quiz, ProgressSummary, UserQuizReference } from '../../models';
 import { combineLatest, forkJoin, of, Observable, timeout, from } from 'rxjs';
 import { switchMap, catchError, map } from 'rxjs/operators';
@@ -24,7 +25,7 @@ interface QuizWithProgress {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, SkeletonLoaderComponent],
+  imports: [CommonModule, RouterModule, SkeletonLoaderComponent, StatCardComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })

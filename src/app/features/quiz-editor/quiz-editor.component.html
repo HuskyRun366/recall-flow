@@ -17,12 +17,6 @@
       </a>
       <button
         class="btn btn-secondary"
-        (click)="openImportDialog()"
-        [disabled]="isLoading() || isSaving()">
-        📥 Import
-      </button>
-      <button
-        class="btn btn-secondary"
         (click)="toggleEditorMode()"
         [disabled]="isLoading() || isSaving()">
         {{ editorMode() === 'toon' ? 'Grafischer Editor' : 'TOON Editor' }}
@@ -99,11 +93,4 @@
     <span class="dot"></span>
     Unsaved changes
   </div>
-
-  <!-- Import Dialog -->
-  <app-import-dialog
-    *ngIf="showImportDialog()"
-    (importComplete)="handleImportComplete($event)"
-    (close)="closeImportDialog()">
-  </app-import-dialog>
 </div>

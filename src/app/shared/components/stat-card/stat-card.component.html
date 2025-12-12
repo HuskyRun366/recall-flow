@@ -1,0 +1,18 @@
+<div class="stat-card"
+     [class.stat-card-success]="variant() === 'success'"
+     [class.stat-card-error]="variant() === 'error'"
+     [class.stat-card-warning]="variant() === 'warning'"
+     [class.stat-card-total]="variant() === 'total'"
+     [attr.aria-label]="ariaLabel()">
+  <div class="stat-icon" [class.emoji-icon]="icon() === 'emoji'">
+    @if (icon() === 'svg') {
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" [innerHTML]="safeIconContent()"></svg>
+    } @else {
+      <span class="emoji">{{ iconContent() }}</span>
+    }
+  </div>
+  <div class="stat-content">
+    <div class="stat-value">{{ value() }}</div>
+    <div class="stat-label">{{ label() }}</div>
+  </div>
+</div>

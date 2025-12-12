@@ -29,12 +29,18 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*.wasm",
+                "input": "node_modules/sql.js/dist/",
+                "output": "assets/sql.js/"
               }
             ],
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "externalDependencies": ["fs", "path", "crypto"]
           },
           "configurations": {
             "production": {

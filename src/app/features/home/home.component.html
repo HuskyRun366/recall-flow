@@ -46,43 +46,26 @@
 
     <!-- Statistics Summary -->
     <div class="stats-summary">
-      <div class="stat-card">
-        <div class="stat-icon">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 11H3v9h6v-9Z M21 11h-6v9h6v-9Z M15 5H9v14h6V5Z"/>
-          </svg>
-        </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ totalQuizzes() }}</div>
-          <div class="stat-label">Quizzes</div>
-        </div>
-      </div>
+      <app-stat-card [config]="{
+        icon: 'svg',
+        iconContent: '<path d=\'M9 11H3v9h6v-9Z M21 11h-6v9h6v-9Z M15 5H9v14h6V5Z\'/>',
+        value: totalQuizzes(),
+        label: 'Quizzes'
+      }" />
 
-      <div class="stat-card">
-        <div class="stat-icon">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M12 6v6l4 2"/>
-          </svg>
-        </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ totalQuestions() }}</div>
-          <div class="stat-label">Fragen</div>
-        </div>
-      </div>
+      <app-stat-card [config]="{
+        icon: 'svg',
+        iconContent: '<circle cx=\'12\' cy=\'12\' r=\'10\'/><path d=\'M12 6v6l4 2\'/>',
+        value: totalQuestions(),
+        label: 'Fragen'
+      }" />
 
-      <div class="stat-card">
-        <div class="stat-icon">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-            <polyline points="22 4 12 14.01 9 11.01"/>
-          </svg>
-        </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ overallProgress() }}%</div>
-          <div class="stat-label">Fortschritt</div>
-        </div>
-      </div>
+      <app-stat-card [config]="{
+        icon: 'svg',
+        iconContent: '<path d=\'M22 11.08V12a10 10 0 1 1-5.93-9.14\'/><polyline points=\'22 4 12 14.01 9 11.01\'/>',
+        value: overallProgress() + '%',
+        label: 'Fortschritt'
+      }" />
     </div>
 
     @if (filteredQuizzes().length === 0) {

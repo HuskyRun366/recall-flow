@@ -114,6 +114,11 @@
     place-items: center;
     color: #fff;
     font-size: 1.2rem;
+    flex-shrink: 0;
+
+    svg {
+      color: #fff;
+    }
   }
 
   .stat-value {

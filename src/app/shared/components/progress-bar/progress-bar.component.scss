@@ -1,0 +1,120 @@
+@import '../../../../styles/variables';
+
+.progress-section {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  width: 100%;
+}
+
+.progress-row {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+
+  .progress-label {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    font-size: 0.9rem;
+    color: var(--color-text-primary);
+    font-weight: 500;
+
+    .level-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+
+      &.level-0 {
+        background: var(--level-0-color, #EF5350);
+      }
+
+      &.level-1 {
+        background: var(--level-1-color, #FFCA28);
+      }
+
+      &.level-2 {
+        background: var(--level-2-color, #66BB6A);
+      }
+
+      &.level-3 {
+        background: var(--level-3-color, #2E7D32);
+      }
+    }
+  }
+
+  .progress-bar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+
+    .progress-bar {
+      flex: 1;
+      height: 8px;
+      background: var(--color-surface-variant);
+      border-radius: $radius-sm;
+      overflow: hidden;
+      position: relative;
+
+      .progress-fill {
+        height: 100%;
+        border-radius: $radius-sm;
+        transition: width $transition-normal;
+
+        &.level-0 {
+          background: var(--level-0-color, #EF5350);
+        }
+
+        &.level-1 {
+          background: var(--level-1-color, #FFCA28);
+        }
+
+        &.level-2 {
+          background: var(--level-2-color, #66BB6A);
+        }
+
+        &.level-3 {
+          background: var(--level-3-color, #2E7D32);
+        }
+      }
+    }
+
+    .progress-value {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      font-weight: 600;
+      min-width: 30px;
+      text-align: right;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .progress-row {
+    gap: 6px;
+
+    .progress-label {
+      font-size: 0.85rem;
+
+      .level-indicator {
+        width: 10px;
+        height: 10px;
+      }
+    }
+
+    .progress-bar-wrapper {
+      gap: $spacing-sm;
+
+      .progress-bar {
+        height: 6px;
+      }
+
+      .progress-value {
+        font-size: 0.8rem;
+        min-width: 25px;
+      }
+    }
+  }
+}

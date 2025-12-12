@@ -1,0 +1,48 @@
+@import '../../../../styles/variables';
+
+.level-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: $radius-md;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  transition: all $transition-normal;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  }
+
+  // Level-specific colors (fallbacks in case CSS variables not loaded)
+  &.level-0 {
+    background: var(--level-0-color, #EF5350);
+  }
+
+  &.level-1 {
+    background: var(--level-1-color, #FFCA28);
+    color: rgba(0, 0, 0, 0.87); // Dark text for yellow background
+  }
+
+  &.level-2 {
+    background: var(--level-2-color, #66BB6A);
+  }
+
+  &.level-3 {
+    background: var(--level-3-color, #2E7D32);
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .level-badge {
+    font-size: 0.8rem;
+    padding: 3px 10px;
+  }
+}

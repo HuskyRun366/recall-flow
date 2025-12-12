@@ -178,49 +178,6 @@
   margin-bottom: $spacing-xl;
 }
 
-.stat-card {
-  background: var(--color-surface);
-  border-radius: $radius-lg;
-  padding: $spacing-lg;
-  display: flex;
-  align-items: center;
-  gap: $spacing-lg;
-  box-shadow: $shadow-md;
-  transition: all $transition-normal;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: $shadow-lg;
-  }
-
-  .stat-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    flex-shrink: 0;
-  }
-
-  .stat-content {
-    .stat-value {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: var(--color-text-primary);
-      margin-bottom: $spacing-xs;
-      line-height: 1.1;
-    }
-
-    .stat-label {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-    }
-  }
-}
-
 .search-bar {
   display: flex;
   align-items: center;
@@ -676,11 +633,6 @@
   .stats-summary {
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: $spacing-sm;
-
-    // Last stat card spans full width (z.B. Zuletzt aktualisiert)
-    .stat-card:last-child {
-      grid-column: 1 / -1;
-    }
   }
 
   .quiz-card {

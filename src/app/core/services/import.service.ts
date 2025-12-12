@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Question, MultipleChoiceOption } from '../../models';
+import JSZip from 'jszip';
+import initSqlJs, { Database } from 'sql.js';
 
 export interface ImportedQuestion {
   questionText: string;
@@ -10,7 +12,7 @@ export interface ImportedQuestion {
 
 export interface ImportResult {
   questions: ImportedQuestion[];
-  format: 'csv' | 'anki-txt' | 'quizlet-csv' | 'unknown';
+  format: 'csv' | 'anki-txt' | 'anki-apkg' | 'quizlet-csv' | 'unknown';
   errors: string[];
 }
 
@@ -23,6 +25,11 @@ export class ImportService {
    * Main import method - detects format and parses
    */
   async importFromFile(file: File): Promise<ImportResult> {
+    // Check if it's an .apkg file (binary)
+    if (file.name.toLowerCase().endsWith('.apkg')) {
+      return this.parseAnkiApkg(file);
+    }
+
     const content = await this.readFileContent(file);
     const format = this.detectFormat(content, file.name);
 
@@ -36,7 +43,7 @@ export class ImportService {
         return {
           questions: [],
           format: 'unknown',
-          errors: ['Unbekanntes Dateiformat. Unterstützt: CSV, Anki TXT']
+          errors: ['Unbekanntes Dateiformat. Unterstützt: CSV, Anki TXT, Anki APKG']
         };
     }
   }
@@ -285,5 +292,124 @@ export class ImportService {
       return `"${value.replace(/"/g, '""')}"`;
     }
     return value;
+  }
+
+  /**
+   * Parse Anki APKG format (ZIP file containing SQLite database)
+   */
+  private async parseAnkiApkg(file: File): Promise<ImportResult> {
+    const questions: ImportedQuestion[] = [];
+    const errors: string[] = [];
+
+    try {
+      // Read file as ArrayBuffer
+      const arrayBuffer = await this.readFileAsArrayBuffer(file);
+
+      // Extract ZIP
+      const zip = await JSZip.loadAsync(arrayBuffer);
+
+      // Find collection.anki2 or collection.anki21 file
+      const collectionFile = zip.file('collection.anki2') || zip.file('collection.anki21');
+
+      if (!collectionFile) {
+        return {
+          questions: [],
+          format: 'anki-apkg',
+          errors: ['Keine Anki-Datenbank in der .apkg Datei gefunden']
+        };
+      }
+
+      // Read SQLite database
+      const dbData = await collectionFile.async('uint8array');
+
+      // Initialize sql.js
+      const SQL = await initSqlJs({
+        locateFile: (file: string) => `assets/sql.js/${file}`
+      });
+
+      const db = new SQL.Database(dbData);
+
+      // Query notes (cards data)
+      // Anki structure: notes table has 'flds' column with fields separated by \x1f
+      const result = db.exec(`
+        SELECT flds, mid FROM notes
+      `);
+
+      if (result.length === 0 || !result[0].values) {
+        db.close();
+        return {
+          questions: [],
+          format: 'anki-apkg',
+          errors: ['Keine Notizen in der Anki-Datenbank gefunden']
+        };
+      }
+
+      // Parse each note
+      result[0].values.forEach((row: any[], index: number) => {
+        try {
+          const fields = (row[0] as string).split('\x1f'); // Fields are separated by \x1f
+
+          if (fields.length < 2) {
+            errors.push(`Notiz ${index + 1}: Weniger als 2 Felder gefunden`);
+            return;
+          }
+
+          // Clean HTML tags from fields
+          const questionText = this.stripHtml(fields[0]).trim();
+          const correctAnswer = this.stripHtml(fields[1]).trim();
+
+          if (!questionText || !correctAnswer) {
+            errors.push(`Notiz ${index + 1}: Leere Frage oder Antwort`);
+            return;
+          }
+
+          questions.push({
+            questionText,
+            correctAnswer,
+            type: 'flashcard'
+          });
+        } catch (err) {
+          errors.push(`Notiz ${index + 1}: Parsing-Fehler`);
+        }
+      });
+
+      db.close();
+
+      return {
+        questions,
+        format: 'anki-apkg',
+        errors
+      };
+
+    } catch (error) {
+      console.error('APKG parsing error:', error);
+      return {
+        questions: [],
+        format: 'anki-apkg',
+        errors: [`Fehler beim Parsen der .apkg Datei: ${error}`]
+      };
+    }
+  }
+
+  /**
+   * Read file as ArrayBuffer
+   */
+  private readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target?.result as ArrayBuffer);
+      reader.onerror = (e) => reject(e);
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  /**
+   * Strip HTML tags from text
+   */
+  private stripHtml(html: string): string {
+    // Create a temporary div to parse HTML
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
   }
 }

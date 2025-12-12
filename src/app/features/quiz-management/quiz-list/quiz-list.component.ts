@@ -9,6 +9,7 @@ import { ProgressService } from '../../../core/services/progress.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { SkeletonLoaderComponent } from '../../../shared/components/skeleton-loader/skeleton-loader.component';
+import { StatCardComponent, StatCardConfig } from '../../../shared/components';
 import { Quiz, UserQuizReference } from '../../../models';
 import { combineLatest, forkJoin, of, timeout } from 'rxjs';
 import { switchMap, map, catchError } from 'rxjs/operators';
@@ -19,7 +20,7 @@ type TabType = 'owned' | 'co-authored' | 'public';
 @Component({
   selector: 'app-quiz-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, PullToRefreshDirective, SkeletonLoaderComponent],
+  imports: [CommonModule, RouterModule, PullToRefreshDirective, SkeletonLoaderComponent, StatCardComponent],
   templateUrl: './quiz-list.component.html',
   styleUrls: ['./quiz-list.component.scss']
 })

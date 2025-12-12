@@ -26,14 +26,20 @@
       <p class="subtitle">{{ quiz()!.title }}</p>
 
       <div class="completion-stats">
-        <div class="stat-card">
-          <div class="stat-value">{{ allQuestionsWithProgress().length }}</div>
-          <div class="stat-label">Fragen insgesamt</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value stat-wrong">{{ wrongQuestionCount() }}</div>
-          <div class="stat-label">Fehler</div>
-        </div>
+        <app-stat-card [config]="{
+          icon: 'svg',
+          iconContent: '<path d=\'M9 11H3v9h6v-9Z M21 11h-6v9h6v-9Z M15 5H9v14h6V5Z\'/>',
+          value: allQuestionsWithProgress().length,
+          label: 'Fragen insgesamt'
+        }" />
+
+        <app-stat-card [config]="{
+          icon: 'svg',
+          iconContent: '<line x1=\'18\' y1=\'6\' x2=\'6\' y2=\'18\'/><line x1=\'6\' y1=\'6\' x2=\'18\' y2=\'18\'/>',
+          value: wrongQuestionCount(),
+          label: 'Fehler',
+          variant: 'error'
+        }" />
       </div>
 
       <div class="completion-actions">

@@ -1,0 +1,114 @@
+@import '../../../../styles/variables';
+
+.stat-card {
+  background: var(--color-surface);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+  box-shadow: $shadow-md;
+  transition: all $transition-normal;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-lg;
+  }
+
+  .stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg {
+      color: white;
+    }
+
+    &.emoji-icon {
+      background: var(--color-surface-variant);
+
+      .emoji {
+        font-size: 2rem;
+      }
+    }
+  }
+
+  .stat-content {
+    flex: 1;
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      line-height: 1;
+      margin-bottom: $spacing-xs;
+    }
+
+    .stat-label {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+  }
+
+  // Variant styles
+  &.stat-card-success {
+    .stat-icon {
+      background: linear-gradient(135deg, #66BB6A, #43A047);
+    }
+  }
+
+  &.stat-card-error {
+    .stat-icon {
+      background: linear-gradient(135deg, #EF5350, #E53935);
+    }
+  }
+
+  &.stat-card-warning {
+    .stat-icon {
+      background: linear-gradient(135deg, #FFCA28, #FFB300);
+    }
+  }
+
+  &.stat-card-total {
+    .stat-icon {
+      background: linear-gradient(135deg, #42A5F5, #1E88E5);
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .stat-card {
+    padding: $spacing-md;
+    gap: $spacing-md;
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      &.emoji-icon .emoji {
+        font-size: 1.5rem;
+      }
+    }
+
+    .stat-content {
+      .stat-value {
+        font-size: 1.5rem;
+      }
+
+      .stat-label {
+        font-size: 0.85rem;
+      }
+    }
+  }
+}

@@ -7,13 +7,14 @@ import { ParticipantService } from '../../../core/services/participant.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { Quiz, Question } from '../../../models';
+import { StatCardComponent } from '../../../shared/components';
 
 type EnrollState = 'idle' | 'loading' | 'removing';
 
 @Component({
   selector: 'app-quiz-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, StatCardComponent],
   templateUrl: './quiz-detail.component.html',
   styleUrls: ['./quiz-detail.component.scss']
 })
