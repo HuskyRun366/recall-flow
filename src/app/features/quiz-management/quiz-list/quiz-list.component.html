@@ -1,0 +1,343 @@
+<div class="quiz-list-page" appPullToRefresh (refresh)="onRefresh()">
+  <div class="page-header">
+    <div class="title-block">
+      <p class="eyebrow">Übersicht</p>
+      <h1>Meine Quizzes</h1>
+      <p class="subtitle">Lerne mit Spaced Repetition</p>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn btn-secondary" type="button" (click)="createNewQuiz()">
+        Neues Quiz erstellen
+      </button>
+    </div>
+  </div>
+
+  <div class="toolbar-row">
+    <div class="tab-group" role="tablist" aria-label="Quiz-Kategorien">
+      <button
+        class="tab-btn"
+        role="tab"
+        [class.active]="activeTab() === 'owned'"
+        [attr.aria-selected]="activeTab() === 'owned'"
+        (click)="setActiveTab('owned')">
+        Eigene
+        <span class="count">{{ ownedQuizzes().length }}</span>
+      </button>
+      <button
+        class="tab-btn"
+        role="tab"
+        [class.active]="activeTab() === 'co-authored'"
+        [attr.aria-selected]="activeTab() === 'co-authored'"
+        (click)="setActiveTab('co-authored')">
+        Mit-Autor
+        <span class="count">{{ coAuthoredQuizzes().length }}</span>
+      </button>
+      <button
+        class="tab-btn"
+        role="tab"
+        [class.active]="activeTab() === 'public'"
+        [attr.aria-selected]="activeTab() === 'public'"
+        (click)="setActiveTab('public')">
+        Öffentlich
+        <span class="count">{{ publicQuizzes().length }}</span>
+      </button>
+    </div>
+
+    <div class="toolbar-pill">
+      <span class="pill">{{ activeTab() === 'owned' ? 'Eigene Quizzes' : activeTab() === 'co-authored' ? 'Mit-Autor' : 'Öffentliche Quizzes' }}</span>
+    </div>
+
+    <!-- Join by Code (CSS-only modal toggle) -->
+    <div class="join-wrapper">
+      <input type="checkbox" id="join-toggle" class="join-toggle" />
+      <label for="join-toggle" class="btn btn-secondary join-btn">Mit Code beitreten</label>
+
+      <div class="join-modal">
+        <div class="join-card">
+          <h3>Quiz per Code beitreten</h3>
+          <p>Gib den Quiz-Code ein, um beizutreten.</p>
+          <input type="text"
+                 placeholder="ABCD-1234"
+                 class="join-input"
+                 aria-label="Quiz-Beitritts-Code"
+                 [value]="joinCode()"
+                 (input)="joinCode.set($any($event.target).value)" />
+          <div class="join-error" *ngIf="joinError()">{{ joinError() }}</div>
+          <div class="join-actions">
+            <label for="join-toggle" class="btn btn-secondary">Abbrechen</label>
+            <button class="btn btn-primary" type="button"
+                    [disabled]="joinBusy()"
+                    (click)="joinByCode()">
+              {{ joinBusy() ? 'Beitreten...' : 'Beitreten' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-summary">
+    <div class="stat-card">
+      <div class="stat-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 11H3v9h6v-9Z M21 11h-6v9h6v-9Z M15 5H9v14h6V5Z" />
+        </svg>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ displayedQuizCount() }}</div>
+        <div class="stat-label">Quizzes</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 6v6l4 2" />
+        </svg>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ displayedQuestionCount() }}</div>
+        <div class="stat-label">Fragen</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+          <polyline points="22 4 12 14.01 9 11.01" />
+        </svg>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ latestUpdatedDate() ? formatDate(latestUpdatedDate()!) : '—' }}</div>
+        <div class="stat-label">Zuletzt aktualisiert</div>
+      </div>
+    </div>
+  </div>
+
+  @if (!isLoading() && !error()) {
+    <div class="search-bar">
+      <div class="search-field">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <input
+          type="search"
+          #quizSearch
+          [value]="currentSearchTerm()"
+          (input)="onSearch(quizSearch.value)"
+          [placeholder]="activeTab() === 'owned' ? 'Eigene Quizzes durchsuchen' : activeTab() === 'co-authored' ? 'Mit-Autor Quizzes durchsuchen' : 'Öffentliche Quizzes durchsuchen'"
+          aria-label="Quizzes durchsuchen" />
+        <button
+          type="button"
+          class="clear-btn"
+          *ngIf="currentSearchTerm()"
+          (click)="clearSearch()">
+          Zurücksetzen
+        </button>
+      </div>
+      <div class="result-count">
+        {{ displayedQuizzes().length }} Ergebnis{{ displayedQuizzes().length === 1 ? '' : 'se' }}
+      </div>
+    </div>
+  }
+
+  @if (isLoading()) {
+    <div class="skeleton-grid">
+      @for (item of [1,2,3,4,5,6]; track item) {
+        <app-skeleton-loader type="card" />
+      }
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+      <h2>Fehler beim Laden</h2>
+      <p>{{ error() }}</p>
+    </div>
+  } @else {
+    <div class="quiz-grid">
+      @if (displayedQuizzes().length === 0) {
+        <div class="empty-state">
+          <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M9 11H3v9h6v-9Z M21 11h-6v9h6v-9Z M15 5H9v14h6V5Z" />
+          </svg>
+          <h2>Keine Quizzes gefunden</h2>
+          <p *ngIf="activeTab() === 'owned'">
+            {{ currentSearchTerm().trim() ? 'Kein eigenes Quiz passt zu deiner Suche.' : 'Du hast noch keine Quizzes erstellt. Lege mit "Neues Quiz erstellen" los.' }}
+          </p>
+          <p *ngIf="activeTab() === 'co-authored'">
+            {{ currentSearchTerm().trim() ? 'Kein Mit-Autor Quiz passt zu deiner Suche.' : 'Du wurdest noch bei keinem Quiz als Mit-Autor hinzugefügt.' }}
+          </p>
+          <p *ngIf="activeTab() === 'public'">
+            {{ publicSearchTerm().trim() ? 'Kein öffentliches Quiz passt zu deiner Suche.' : 'Es gibt noch keine öffentlichen Quizzes.' }}
+          </p>
+        </div>
+      } @else {
+        @for (quiz of displayedQuizzes(); track quiz.id) {
+          <div class="quiz-card">
+            <div class="quiz-card-header">
+              <div class="quiz-avatar">
+                {{ (quiz.title || 'Q').substring(0, 1).toUpperCase() }}
+              </div>
+
+              <div class="header-text">
+                <div class="title-row">
+                  <h3>{{ quiz.title }}</h3>
+                  <span
+                    class="badge"
+                    [ngClass]="{
+                      'badge-public': quiz.visibility === 'public',
+                      'badge-unlisted': quiz.visibility === 'unlisted',
+                      'badge-private': quiz.visibility !== 'public' && quiz.visibility !== 'unlisted'
+                    }">
+                    @if (quiz.visibility === 'public') {
+                      Öffentlich
+                    } @else if (quiz.visibility === 'unlisted') {
+                      Nicht gelistet
+                    } @else {
+                      Privat
+                    }
+                  </span>
+                </div>
+
+                <p class="quiz-description" *ngIf="quiz.description">
+                  {{ quiz.description }}
+                </p>
+              </div>
+            </div>
+
+            <div class="quiz-meta">
+              <div class="meta-item">
+                <div class="meta-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 11H3v9h6v-9Z M21 11h-6v9h6v-9Z M15 5H9v14h6V5Z" />
+                  </svg>
+                </div>
+                <div class="meta-copy">
+                  <span class="meta-label">Fragen</span>
+                  <span class="meta-value">{{ quiz.questionCount }}</span>
+                </div>
+              </div>
+
+              <div class="meta-item">
+                <div class="meta-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 6v6l4 2" />
+                  </svg>
+                </div>
+                <div class="meta-copy">
+                  <span class="meta-label">Aktualisiert</span>
+                  <span class="meta-value">{{ formatDate(quiz.updatedAt) }}</span>
+                </div>
+              </div>
+
+              <div class="meta-item">
+                <div class="meta-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </div>
+                <div class="meta-copy">
+                  <span class="meta-label">Zugriff</span>
+                  <span class="meta-value">
+                    @if (requiresEnrollment(quiz)) {
+                      Anmeldung nötig
+                    } @else if (isOwner(quiz)) {
+                      Besitzer
+                    } @else if (isCoAuthor(quiz)) {
+                      Mit-Autor
+                    } @else {
+                      Direkt startbar
+                    }
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="quiz-actions">
+              @if (requiresEnrollment(quiz) && !isEnrolled(quiz.id)) {
+                <button
+                  class="btn btn-secondary btn-small"
+                  [disabled]="isEnrollmentBusy(quiz.id)"
+                  (click)="enrollInQuiz(quiz)">
+                  @if (isEnrolling(quiz.id)) {
+                    Wird hinzugefügt...
+                  } @else {
+                    Hinzufügen
+                  }
+                </button>
+              }
+
+              @if (requiresEnrollment(quiz) && isEnrolled(quiz.id)) {
+                <button
+                  class="btn btn-secondary btn-small"
+                  [disabled]="isEnrollmentBusy(quiz.id)"
+                  (click)="unenrollFromQuiz(quiz)">
+                  @if (isUnenrolling(quiz.id)) {
+                    Entferne...
+                  } @else {
+                    Entfernen
+                  }
+                </button>
+              }
+
+              <button
+                class="btn btn-primary btn-small"
+                [disabled]="(requiresEnrollment(quiz) && !isEnrolled(quiz.id)) || isEnrollmentBusy(quiz.id)"
+                (click)="startQuiz(quiz)">
+                Quiz starten
+              </button>
+
+              <button class="btn btn-secondary btn-small" (click)="viewDetails(quiz.id)">
+                Details
+              </button>
+
+              @if (canEdit(quiz)) {
+                <button class="btn btn-secondary btn-small" (click)="editQuiz(quiz.id)">
+                  Bearbeiten
+                </button>
+              }
+
+              @if (isOwner(quiz)) {
+                <button class="btn btn-danger btn-small" (click)="deleteQuiz(quiz)">
+                  Löschen
+                </button>
+              }
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+
+  <div class="fab-container" [class.open]="fabOpen()">
+    <div class="fab-menu">
+      <a class="fab-item" (click)="$event.preventDefault(); createNewQuiz(); toggleFab()">
+        <span class="icon-circle">➕</span>
+        <span class="label">Neues Quiz</span>
+      </a>
+      <a class="fab-item" routerLink="/ai-quiz-generator" (click)="toggleFab()">
+        <span class="icon-circle">🤖</span>
+        <span class="label">AI Quiz</span>
+      </a>
+    </div>
+
+    <button class="fab"
+            type="button"
+            (click)="toggleFab()"
+            [attr.aria-expanded]="fabOpen()"
+            aria-label="Erstellen-Menü öffnen"
+            aria-haspopup="menu">
+      <span class="fab-lines" aria-hidden="true"></span>
+    </button>
+  </div>
+</div>

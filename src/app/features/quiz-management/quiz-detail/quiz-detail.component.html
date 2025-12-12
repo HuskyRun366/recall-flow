@@ -1,0 +1,125 @@
+<div class="quiz-detail-page" *ngIf="!isLoading(); else loading">
+  <ng-container *ngIf="quiz(); else errorBlock">
+    <div class="hero-card">
+      <div class="hero-left">
+        <div class="avatar">{{ quiz()!.title.charAt(0).toUpperCase() }}</div>
+        <div>
+          <p class="eyebrow">Quiz Detail</p>
+          <h1>{{ quiz()!.title }}</h1>
+          <p class="subtitle" *ngIf="quiz()!.description">{{ quiz()!.description }}</p>
+          <div class="badges">
+            <span class="badge" [ngClass]="quiz()!.visibility">
+              {{ quiz()!.visibility === 'public' ? 'Öffentlich' : quiz()!.visibility === 'unlisted' ? 'Nicht gelistet' : 'Privat' }}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <ng-container *ngIf="requiresEnrollment(); else directStart">
+          <button class="btn btn-secondary"
+                  [disabled]="enrollState() !== 'idle' || isEnrolled()"
+                  (click)="enroll()">
+            {{ enrollState() === 'loading' ? 'Wird hinzugefügt…' : (isEnrolled() ? 'Hinzugefügt' : 'Hinzufügen') }}
+          </button>
+          <button class="btn btn-secondary"
+                  *ngIf="isEnrolled()"
+                  [disabled]="enrollState() === 'removing'"
+                  (click)="unenroll()">
+            {{ enrollState() === 'removing' ? 'Entferne…' : 'Entfernen' }}
+          </button>
+          <button class="btn btn-primary"
+                  [disabled]="!canPlay()"
+                  (click)="startQuiz()">
+            Quiz starten
+          </button>
+        </ng-container>
+        <ng-template #directStart>
+          <button class="btn btn-primary" (click)="startQuiz()">Quiz starten</button>
+        </ng-template>
+        <button class="btn btn-secondary" *ngIf="canEdit()" (click)="editQuiz()">Bearbeiten</button>
+        <button class="btn btn-secondary" (click)="exportQuiz()" [title]="exportSuccess() ? 'Exportiert!' : 'Quiz exportieren'">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          {{ exportSuccess() ? '✓ Exportiert' : 'Exportieren' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div>
+          <div class="stat-value">{{ questions().length }}</div>
+          <div class="stat-label">Fragen</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⏱️</div>
+        <div>
+          <div class="stat-value">{{ quiz()!.updatedAt | date:'mediumDate' }}</div>
+          <div class="stat-label">Zuletzt aktualisiert</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🧑‍💻</div>
+        <div>
+          <div class="stat-value">{{ quiz()!.ownerId === currentUser()?.uid ? 'Besitzer' : 'Zugriff' }}</div>
+          @if (!(quiz()!.ownerId === currentUser()?.uid)) {
+            <div class="stat-label">{{ quiz()!.visibility }}</div>
+          }
+        </div>
+      </div>
+
+      <div class="stat-card" *ngIf="quiz()!.joinCode">
+        <div class="stat-icon">🔑</div>
+        <div>
+          <div class="stat-value">
+            {{ quiz()!.joinCode }}
+            <button class="copy-btn" (click)="copyJoinCode()" [title]="copySuccess() ? 'Kopiert!' : 'Code kopieren'">
+              {{ copySuccess() ? '✓' : '📋' }}
+            </button>
+          </div>
+          <div class="stat-label">Beitritts-Code</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card questions-card">
+      <div class="card-header">
+        <h2>Fragen ({{ questions().length }})</h2>
+      </div>
+      <div class="question-list">
+        <div class="question-item" *ngFor="let q of questions(); let i = index">
+          <div class="qi-left">
+            <div class="bubble">{{ i + 1 }}</div>
+            <div>
+            <div class="q-title">{{ q.questionText }}</div>
+            <div class="q-meta">{{ q.type === 'multiple-choice' ? 'Multiple Choice' : q.type === 'ordering' ? 'Ordering' : 'Matching' }}</div>
+          </div>
+        </div>
+        <div class="qi-right">
+          <span class="count" *ngIf="q.options && q.options!.length !== 0">Optionen: {{ q.options!.length }} </span>
+          <span class="count" *ngIf="q.orderItems && q.orderItems!.length !== 0">Items: {{ q.orderItems!.length }} </span>
+          <span class="count" *ngIf="q.matchingPairs && q.matchingPairs!.length !== 0">Paare: {{ q.matchingPairs!.length }} </span>
+        </div>
+      </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<ng-template #loading>
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>Wird geladen…</p>
+  </div>
+</ng-template>
+
+<ng-template #errorBlock>
+  <div class="error-state">
+    {{ error() || 'Fehler beim Laden' }}
+  </div>
+</ng-template>

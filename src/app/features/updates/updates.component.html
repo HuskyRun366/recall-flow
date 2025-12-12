@@ -1,0 +1,44 @@
+<div class="updates-page">
+  <div class="page-header">
+    <h1>📣 Updates & Changelog</h1>
+    <p class="subtitle">Alle Neuigkeiten und Änderungen an RecallFlow</p>
+  </div>
+
+  <div class="changelog-timeline">
+    @for (entry of changelog; track entry.version) {
+      <div class="changelog-entry">
+        <div class="entry-marker">
+          <div class="marker-dot"></div>
+          <div class="marker-line"></div>
+        </div>
+
+        <div class="entry-card">
+          <div class="entry-header">
+            <div class="version-badge">v{{ entry.version }}</div>
+            <div class="entry-date">{{ entry.date | date:'mediumDate' }}</div>
+          </div>
+
+          <h2 class="entry-title">{{ entry.title }}</h2>
+
+          @if (entry.description) {
+            <p class="entry-description">{{ entry.description }}</p>
+          }
+
+          <div class="changes-list">
+            @for (change of entry.changes; track change.text) {
+              <div class="change-item" [ngClass]="getTypeClass(change.type)">
+                <span class="change-icon">{{ getTypeIcon(change.type) }}</span>
+                <span class="change-type">{{ getTypeLabel(change.type) }}:</span>
+                <span class="change-text">{{ change.text }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="changelog-footer">
+    <p>Diese Liste wird regelmäßig mit neuen Updates aktualisiert.</p>
+  </div>
+</div>

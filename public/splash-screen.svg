@@ -1,0 +1,36 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#1976D2"/>
+
+  <!-- Logo -->
+  <g transform="translate(156, 156)">
+    <!-- Flowing circles representing spaced repetition -->
+    <circle cx="60" cy="100" r="32" fill="white" opacity="0.3"/>
+    <circle cx="100" cy="100" r="32" fill="white" opacity="0.6"/>
+    <circle cx="140" cy="100" r="32" fill="white" opacity="0.9"/>
+
+    <!-- Arrow showing flow direction -->
+    <path d="M168 100L180 100L176 92M176 108L180 100"
+          stroke="white"
+          stroke-width="6"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+  </g>
+
+  <!-- App Name -->
+  <text x="256" y="340"
+        font-family="system-ui, -apple-system, sans-serif"
+        font-size="48"
+        font-weight="700"
+        fill="white"
+        text-anchor="middle">RecallFlow</text>
+
+  <!-- Tagline -->
+  <text x="256" y="380"
+        font-family="system-ui, -apple-system, sans-serif"
+        font-size="18"
+        font-weight="400"
+        fill="white"
+        opacity="0.9"
+        text-anchor="middle">Master your knowledge</text>
+</svg>

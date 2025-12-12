@@ -1,0 +1,19 @@
+{
+  "name": "quiz-notification-server",
+  "version": "1.0.0",
+  "description": "Free notification server for RecallFlow quiz app",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0"
+  },
+  "author": "",
+  "license": "MIT"
+}

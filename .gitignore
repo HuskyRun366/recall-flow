@@ -1,0 +1,117 @@
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.claude/
+CLAUDE.md
+PROJECT_STATUS.md
+SETUP.md
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# Miscellaneous
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+
+# System files
+.DS_Store
+Thumbs.db
+
+# ============================================
+# SENSITIVE FILES - DO NOT COMMIT
+# ============================================
+
+# Environment files with API keys and secrets
+/src/environments/environment.ts
+/src/environments/environment.prod.ts
+/src/environments/*.local.ts
+.env
+.env.local
+.env.*.local
+
+# Firebase sensitive files
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+.firebaserc.local
+service-account-key.json
+serviceAccountKey.json
+*-firebase-adminsdk-*.json
+
+# Firebase emulator data (optional - uncomment if you don't want to commit)
+# .firebase/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Security
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+
+# Backup files
+*.bak
+*.backup
+*.old
+*~
+
+# Mac
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+FEATURE_IDEAS.md

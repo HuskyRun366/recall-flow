@@ -1,0 +1,26 @@
+@use '../styles/variables' as *;
+
+// Skip link for accessibility
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--color-primary);
+  color: white;
+  padding: $spacing-sm $spacing-md;
+  text-decoration: none;
+  font-weight: 600;
+  z-index: 10000;
+  border-radius: 0 0 $radius-md 0;
+  transition: top 0.2s ease;
+
+  &:focus {
+    top: 0;
+  }
+}
+
+#main-content {
+  &:focus {
+    outline: none;
+  }
+}

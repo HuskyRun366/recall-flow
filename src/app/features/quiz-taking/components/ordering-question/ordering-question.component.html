@@ -1,0 +1,60 @@
+<div class="ordering-question">
+  <div class="question-text">
+    <h3>{{ question.questionText }}</h3>
+    <p class="instruction">Drag the items to arrange them in the correct order</p>
+  </div>
+
+  <div class="question-image" *ngIf="question.imageUrl">
+    <img [src]="question.imageUrl" [alt]="question.questionText">
+  </div>
+
+  <div
+    class="order-list"
+    cdkDropList
+    (cdkDropListDropped)="drop($event)">
+    <div
+      *ngFor="let item of currentOrder(); let i = index"
+      class="order-item"
+      [class]="getItemClass(item, i)"
+      cdkDrag
+      [cdkDragDisabled]="disabled || submitted()">
+      <div class="drag-handle">
+        <svg width="16" height="16" viewBox="0 0 16 16">
+          <circle cx="4" cy="4" r="1.5" fill="currentColor"/>
+          <circle cx="12" cy="4" r="1.5" fill="currentColor"/>
+          <circle cx="4" cy="8" r="1.5" fill="currentColor"/>
+          <circle cx="12" cy="8" r="1.5" fill="currentColor"/>
+          <circle cx="4" cy="12" r="1.5" fill="currentColor"/>
+          <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+        </svg>
+      </div>
+      <span class="item-number">{{ i + 1 }}</span>
+      <span class="item-text">{{ item.text }}</span>
+      <span class="item-indicator" *ngIf="showResult">
+        <span *ngIf="item.correctOrder === i">✓</span>
+        <span *ngIf="item.correctOrder !== i">✗</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="submit-area" *ngIf="!submitted()">
+    <button class="btn btn-primary" (click)="submitAnswer()">
+      Submit Answer
+    </button>
+  </div>
+
+  <div class="result-message" *ngIf="showResult">
+    <div class="message" [class.correct]="isCorrect()" [class.incorrect]="!isCorrect()">
+      <strong>{{ isCorrect() ? 'Perfect!' : 'Nicht ganz' }}</strong>
+      <span *ngIf="!isCorrect()">Sieh dir die richtige Reihenfolge unten an.</span>
+    </div>
+
+    <div class="correct-order" *ngIf="!isCorrect()">
+      <p class="label">Richtige Reihenfolge</p>
+      <div class="pill" *ngFor="let item of correctOrder(); let idx = index">
+        <span class="badge">{{ idx + 1 }}</span>
+        <span class="text">{{ item.text }}</span>
+      </div>
+    </div>
+  </div>
+</div>

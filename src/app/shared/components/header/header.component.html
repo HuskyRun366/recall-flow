@@ -1,0 +1,155 @@
+<header class="header">
+  <div class="header-container">
+    <div class="header-left">
+      <a routerLink="/home" class="logo">
+        <svg width="32" height="32" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="64" height="64" rx="12" fill="var(--color-primary)"/>
+          <!-- Flowing circles representing spaced repetition -->
+          <circle cx="24" cy="32" r="8" fill="white" opacity="0.3"/>
+          <circle cx="32" cy="32" r="8" fill="white" opacity="0.6"/>
+          <circle cx="40" cy="32" r="8" fill="white" opacity="0.9"/>
+          <!-- Arrow showing flow direction -->
+          <path d="M46 32L50 32L48 28M48 36L50 32" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="logo-text">RecallFlow</span>
+      </a>
+
+      @if (isAuthenticated()) {
+        <nav class="nav-links" [class.open]="mobileMenuOpen()" cdkTrapFocus [cdkTrapFocusAutoCapture]="mobileMenuOpen()">
+          <a routerLink="/home" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Home</a>
+          <a routerLink="/quizzes" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Quiz</a>
+          <a routerLink="/lernen" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Lernen</a>
+          <a routerLink="/quiz-editor/new" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Create Quiz</a>
+          <a routerLink="/updates" routerLinkActive="active" (click)="mobileMenuOpen.set(false)" class="mobile-updates-link">
+            Updates
+            @if (hasNewUpdates()) {
+              <span class="badge-dot-mobile"></span>
+            }
+          </a>
+        </nav>
+      }
+    </div>
+
+    <div class="header-right">
+      <!-- Network Status Indicator -->
+      @if (isAuthenticated()) {
+        <app-network-status />
+      }
+
+      <!-- Updates Badge -->
+      @if (isAuthenticated()) {
+        <a routerLink="/updates" class="updates-badge" [title]="hasNewUpdates() ? 'Neue Updates verfügbar' : 'Updates ansehen'">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke-width="2" stroke="currentColor">
+            <path d="M21.9348 15.6583L18.6383 3.37924C18.2799 2.0442 16.6391 1.55235 15.603 2.46935L13.5253 4.30818C11.2132 6.35446 8.45556 7.83537 5.47068 8.63362C2.97216 9.30181 1.49142 11.8725 2.16089 14.3662C2.83037 16.8599 5.40053 18.3472 7.89906 17.679C10.8839 16.8807 14.014 16.787 17.0415 17.4054L19.762 17.961C21.1187 18.2381 22.2932 16.9933 21.9348 15.6583Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M7.71747 8L11.5 22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          @if (hasNewUpdates()) {
+            <span class="badge-dot"></span>
+          }
+        </a>
+      }
+
+      @if (isAuthenticated()) {
+        <button
+          class="mobile-menu-btn"
+          [class.open]="mobileMenuOpen()"
+          (click)="toggleMobileMenu()"
+          aria-label="Toggle navigation menu"
+          [attr.aria-expanded]="mobileMenuOpen()">
+          <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </button>
+      }
+
+      <button class="theme-toggle" (click)="toggleTheme()" aria-label="Toggle theme">
+        @if (isDarkMode()) {
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+        } @else {
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        }
+      </button>
+
+      @if (isAuthenticated()) {
+        <div class="user-menu">
+          <button class="user-button" type="button" (click)="toggleProfileMenu()">
+            @if (currentUser()?.photoURL) {
+              <img
+                [src]="currentUser()!.photoURL!"
+                [alt]="currentUser()!.displayName || 'User'"
+                class="user-avatar"
+                (error)="onImageError($event)"
+                loading="lazy" />
+            } @else {
+              <div class="user-avatar-placeholder">
+                {{ currentUser()?.displayName?.charAt(0) || 'U' }}
+              </div>
+            }
+            <span class="user-name">{{ currentUser()?.displayName }}</span>
+          </button>
+
+          <div class="dropdown-menu" [class.open]="profileMenuOpen()" cdkTrapFocus [cdkTrapFocusAutoCapture]="profileMenuOpen()">
+            <div class="user-info">
+              <div class="user-name-large">{{ currentUser()?.displayName }}</div>
+              <div class="user-email">{{ currentUser()?.email }}</div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a routerLink="/settings" class="dropdown-item" (click)="closeProfileMenu()">
+              <svg width="16" height="16" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M262.29,192.31a64,64,0,1,0,57.4,57.4A64.13,64.13,0,0,0,262.29,192.31ZM416.39,256a154.34,154.34,0,0,1-1.53,20.79l45.21,35.46A10.81,10.81,0,0,1,462.52,326l-42.77,74a10.81,10.81,0,0,1-13.14,4.59l-44.9-18.08a16.11,16.11,0,0,0-15.17,1.75A164.48,164.48,0,0,1,325,400.8a15.94,15.94,0,0,0-8.82,12.14l-6.73,47.89A11.08,11.08,0,0,1,298.77,470H213.23a11.11,11.11,0,0,1-10.69-8.87l-6.72-47.82a16.07,16.07,0,0,0-9-12.22,155.3,155.3,0,0,1-21.46-12.57,16,16,0,0,0-15.11-1.71l-44.89,18.07a10.81,10.81,0,0,1-13.14-4.58l-42.77-74a10.8,10.8,0,0,1,2.45-13.75l38.21-30a16.05,16.05,0,0,0,6-14.08c-.36-4.17-.58-8.33-.58-12.5s.21-8.27.58-12.35a16,16,0,0,0-6.07-13.94l-38.19-30A10.81,10.81,0,0,1,49.48,186l42.77-74a10.81,10.81,0,0,1,13.14-4.59l44.9,18.08a16.11,16.11,0,0,0,15.17-1.75A164.48,164.48,0,0,1,187,111.2a15.94,15.94,0,0,0,8.82-12.14l6.73-47.89A11.08,11.08,0,0,1,213.23,42h85.54a11.11,11.11,0,0,1,10.69,8.87l6.72,47.82a16.07,16.07,0,0,0,9,12.22,155.3,155.3,0,0,1,21.46,12.57,16,16,0,0,0,15.11,1.71l44.89-18.07a10.81,10.81,0,0,1,13.14,4.58l42.77,74a10.8,10.8,0,0,1-2.45,13.75l-38.21,30a16.05,16.05,0,0,0-6.05,14.08C416.17,247.67,416.39,251.83,416.39,256Z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="32px" />
+              </svg>
+              Einstellungen
+            </a>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" (click)="signOut()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+              Sign Out
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Mobile Menu Backdrop -->
+  @if (isAuthenticated()) {
+    <div
+      class="menu-backdrop"
+      [class.open]="mobileMenuOpen()"
+      (click)="mobileMenuOpen.set(false)">
+    </div>
+  }
+
+  <!-- Profile Menu Backdrop -->
+  @if (isAuthenticated()) {
+    <div
+      class="profile-backdrop"
+      [class.open]="profileMenuOpen()"
+      (click)="closeProfileMenu()">
+    </div>
+  }
+</header>

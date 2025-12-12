@@ -1,0 +1,204 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isQuizOwner(quizId) {
+      return isAuthenticated() &&
+        get(/databases/$(database)/documents/quizzes/$(quizId)).data.ownerId == request.auth.uid;
+    }
+
+    function isCoAuthor(quizId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/quizParticipants/$(quizId)/participants/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/quizParticipants/$(quizId)/participants/$(request.auth.uid)).data.role == 'co-author';
+    }
+
+    function canEditQuiz(quizId) {
+      return isQuizOwner(quizId) || isCoAuthor(quizId);
+    }
+
+    function canAccessQuiz(quizId) {
+      let quiz = get(/databases/$(database)/documents/quizzes/$(quizId)).data;
+      return quiz.visibility == 'public' ||
+             quiz.visibility == 'unlisted' ||
+             isQuizOwner(quizId) ||
+             exists(/databases/$(database)/documents/quizParticipants/$(quizId)/participants/$(request.auth.uid));
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();  // Allow reading user profiles for co-author lookup
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+
+      // User's quiz references
+      match /userQuizzes/{quizId} {
+        allow read: if isOwner(userId);
+        allow create: if (isOwner(userId) &&
+          get(/databases/$(database)/documents/quizzes/$(quizId)).data.visibility in ['public', 'unlisted']
+        ) || canEditQuiz(quizId); // Or if quiz owner/co-author is inviting them
+        allow update: if isOwner(userId) || canEditQuiz(quizId); // Allow quiz owner/co-author to update role
+        allow delete: if isOwner(userId) || canEditQuiz(quizId); // Allow quiz owner/co-author to remove participant
+      }
+
+      // FCM tokens for push notifications
+      match /fcmTokens/{token} {
+        allow create, delete: if request.auth != null && request.auth.uid == userId;
+        allow read: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // Email lookup collection
+    match /usersByEmail/{emailDocId} {
+      allow read: if isAuthenticated();
+      // Allow users to create their own email lookup entry
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      // Prevent modification and deletion for data integrity
+      allow update, delete: if false;
+    }
+
+    // Quizzes collection
+    match /quizzes/{quizId} {
+      // Allow reading if:
+      // 1. Quiz is public or unlisted (anyone can read)
+      // 2. User is the owner
+      // 3. User is a participant (checked via quizParticipants collection)
+      allow read: if resource.data.visibility in ['public', 'unlisted'] ||
+                     (isAuthenticated() && resource.data.ownerId == request.auth.uid) ||
+                     (isAuthenticated() && exists(/databases/$(database)/documents/quizParticipants/$(quizId)/participants/$(request.auth.uid)));
+      allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
+      allow update: if canEditQuiz(quizId);
+      allow delete: if isQuizOwner(quizId);
+    }
+
+    // Questions collection
+    match /questions/{questionId} {
+      allow read: if isAuthenticated() && canAccessQuiz(resource.data.quizId);
+      allow create: if isAuthenticated() && canEditQuiz(request.resource.data.quizId);
+      allow update: if isAuthenticated() && canEditQuiz(resource.data.quizId);
+      allow delete: if isAuthenticated() && canEditQuiz(resource.data.quizId);
+    }
+
+    // Quiz participants
+    match /quizParticipants/{quizId}/participants/{userId} {
+      allow read: if canAccessQuiz(quizId);
+      allow create: if canEditQuiz(quizId) || (
+        isAuthenticated() &&
+        request.auth.uid == userId &&
+        (
+          get(/databases/$(database)/documents/quizzes/$(quizId)).data.visibility == 'public' ||
+          get(/databases/$(database)/documents/quizzes/$(quizId)).data.visibility == 'unlisted'
+        ) &&
+        request.resource.data.role == 'participant' &&
+        request.resource.data.status == 'accepted'
+      );
+      allow update: if canEditQuiz(quizId) || (isOwner(userId) && request.resource.data.status == 'accepted');
+      allow delete: if canEditQuiz(quizId) || isOwner(userId);
+    }
+
+    // Quiz progress
+    match /quizProgress/{quizId}/userProgress/{userId} {
+      allow read: if isOwner(userId) || canEditQuiz(quizId);
+      allow write: if isOwner(userId) && canAccessQuiz(quizId);
+
+      // Question progress subcollection
+      match /questionProgress/{questionId} {
+        allow read: if isOwner(userId) || canEditQuiz(quizId);
+        allow write: if isOwner(userId) && canAccessQuiz(quizId);
+      }
+    }
+
+    // =============================================
+    // FLASHCARD DECK RULES (separate from quizzes)
+    // =============================================
+
+    // Helper functions for decks
+    function isDeckOwner(deckId) {
+      return isAuthenticated() &&
+        get(/databases/$(database)/documents/flashcardDecks/$(deckId)).data.ownerId == request.auth.uid;
+    }
+
+    function isCoAuthorDeck(deckId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/deckParticipants/$(deckId)/participants/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/deckParticipants/$(deckId)/participants/$(request.auth.uid)).data.role == 'co-author';
+    }
+
+    function canEditDeck(deckId) {
+      return isDeckOwner(deckId) || isCoAuthorDeck(deckId);
+    }
+
+    function canAccessDeck(deckId) {
+      let deck = get(/databases/$(database)/documents/flashcardDecks/$(deckId)).data;
+      return deck.visibility in ['public', 'unlisted'] ||
+             isDeckOwner(deckId) ||
+             exists(/databases/$(database)/documents/deckParticipants/$(deckId)/participants/$(request.auth.uid));
+    }
+
+    // User's deck references (denormalized for user queries)
+    match /users/{userId}/userDecks/{deckId} {
+      allow read: if isOwner(userId);
+      allow create: if (isOwner(userId) &&
+        get(/databases/$(database)/documents/flashcardDecks/$(deckId)).data.visibility in ['public', 'unlisted']
+      ) || canEditDeck(deckId);
+      allow update: if isOwner(userId) || canEditDeck(deckId);
+      allow delete: if isOwner(userId) || canEditDeck(deckId);
+    }
+
+    // Flashcard Decks collection
+    match /flashcardDecks/{deckId} {
+      allow read: if resource.data.visibility in ['public', 'unlisted'] ||
+                     (isAuthenticated() && resource.data.ownerId == request.auth.uid) ||
+                     (isAuthenticated() && exists(/databases/$(database)/documents/deckParticipants/$(deckId)/participants/$(request.auth.uid)));
+      allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
+      allow update: if canEditDeck(deckId);
+      allow delete: if isDeckOwner(deckId);
+    }
+
+    // Flashcards collection
+    match /flashcards/{cardId} {
+      allow read: if isAuthenticated() && canAccessDeck(resource.data.deckId);
+      allow create: if isAuthenticated() && canEditDeck(request.resource.data.deckId);
+      allow update: if isAuthenticated() && canEditDeck(resource.data.deckId);
+      allow delete: if isAuthenticated() && canEditDeck(resource.data.deckId);
+    }
+
+    // Deck participants
+    match /deckParticipants/{deckId}/participants/{userId} {
+      allow read: if canAccessDeck(deckId);
+      allow create: if canEditDeck(deckId) || (
+        isAuthenticated() &&
+        request.auth.uid == userId &&
+        (
+          get(/databases/$(database)/documents/flashcardDecks/$(deckId)).data.visibility == 'public' ||
+          get(/databases/$(database)/documents/flashcardDecks/$(deckId)).data.visibility == 'unlisted'
+        ) &&
+        request.resource.data.role == 'student' &&
+        request.resource.data.status == 'accepted'
+      );
+      allow update: if canEditDeck(deckId) || (isOwner(userId) && request.resource.data.status == 'accepted');
+      allow delete: if canEditDeck(deckId) || isOwner(userId);
+    }
+
+    // Flashcard progress
+    match /flashcardProgress/{deckId}/userProgress/{userId} {
+      allow read: if isOwner(userId) || canEditDeck(deckId);
+      allow write: if isOwner(userId) && canAccessDeck(deckId);
+
+      // Card progress subcollection
+      match /cardProgress/{cardId} {
+        allow read: if isOwner(userId) || canEditDeck(deckId);
+        allow write: if isOwner(userId) && canAccessDeck(deckId);
+      }
+    }
+  }
+}

@@ -1,0 +1,176 @@
+<div class="ai-generator-page">
+  <div class="generator-container">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-content">
+        <div class="icon">🤖</div>
+        <h1>Quiz mit KI generieren</h1>
+        <p class="subtitle">Laden Sie Bilder oder PDFs hoch und lassen Sie KI ein Quiz erstellen</p>
+      </div>
+    </div>
+
+    <!-- File Upload Section -->
+    <div class="upload-section" *ngIf="!isGenerating()">
+      <div class="upload-card">
+        <input
+          #fileInput
+          type="file"
+          id="file-input"
+          multiple
+          accept="image/*,.pdf"
+          (change)="onFilesSelected($event)"
+          [disabled]="isGenerating()"
+          hidden>
+
+        <div
+          class="upload-area"
+          [class.drag-over]="isDraggingOver()"
+          (click)="fileInput.click()"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)">
+          <div class="upload-icon">📁</div>
+          <h3>Dateien auswählen</h3>
+          <p>Bilder (JPG, PNG, GIF, WebP) oder PDFs</p>
+          <p class="limits">Max. {{ maxFiles }} Dateien, je {{ maxFileSizeMB }}MB</p>
+          <p class="drag-hint">Dateien hierher ziehen oder klicken zum Auswählen</p>
+          <button type="button" class="btn btn-primary" (click)="fileInput.click(); $event.stopPropagation()">
+            Durchsuchen
+          </button>
+        </div>
+      </div>
+
+      <!-- Configuration Section -->
+      <div class="config-section" *ngIf="selectedFiles().length > 0">
+        <h3>Quiz-Konfiguration</h3>
+
+        <!-- Teacher Style Selection -->
+        <div class="config-item">
+          <label>Lehrer-Stil</label>
+          <div class="teacher-style-selector">
+            <button
+              *ngFor="let style of teacherStyles"
+              type="button"
+              class="style-card"
+              [class.selected]="teacherStyle() === style.id"
+              (click)="teacherStyle.set(style.id)">
+              <span class="style-emoji">{{ style.emoji }}</span>
+              <span class="style-name">{{ style.name }}</span>
+              <span class="style-desc">{{ style.description }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Question Count -->
+        <div class="config-item">
+          <label>Anzahl der Fragen</label>
+          <div class="slider-container">
+            <input
+              type="range"
+              min="3"
+              max="30"
+              [value]="questionCount()"
+              (input)="questionCount.set(+$any($event.target).value)"
+              class="question-slider">
+            <div class="slider-labels">
+              <span>3</span>
+              <span class="current-value">{{ questionCount() }} Fragen</span>
+              <span>30</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question Type Distribution -->
+        <div class="config-item">
+          <label>Fragentyp-Verteilung</label>
+          <div class="type-sliders">
+            <div class="type-slider-group">
+              <span class="type-label">Multiple Choice</span>
+              <div class="slider-container">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="10"
+                  [value]="multipleChoicePercent()"
+                  (input)="onMultipleChoicePercentChange(+$any($event.target).value)"
+                  class="question-slider">
+                <span class="percent-value">{{ multipleChoicePercent() }}%</span>
+              </div>
+            </div>
+            <div class="type-slider-group">
+              <span class="type-label">Ordering</span>
+              <div class="slider-container">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="10"
+                  [value]="orderingPercent()"
+                  (input)="onOrderingPercentChange(+$any($event.target).value)"
+                  class="question-slider">
+                <span class="percent-value">{{ orderingPercent() }}%</span>
+              </div>
+            </div>
+            <div class="type-slider-group">
+              <span class="type-label">Matching</span>
+              <div class="slider-container">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="5"
+                  [value]="matchingPercent()"
+                  (input)="onMatchingPercentChange(+$any($event.target).value)"
+                  class="question-slider">
+                <span class="percent-value">{{ matchingPercent() }}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected Files -->
+      <div class="selected-files" *ngIf="selectedFiles().length > 0">
+        <h3>Ausgewählte Dateien ({{ selectedFiles().length }}/{{ maxFiles }})</h3>
+        <div class="file-list">
+          <div class="file-item" *ngFor="let file of selectedFiles(); let i = index">
+            <span class="file-icon">{{ file.type.includes('pdf') ? '📄' : '🖼️' }}</span>
+            <div class="file-info">
+              <span class="file-name">{{ file.name }}</span>
+              <span class="file-size">{{ fileProcessingService.formatFileSize(file.size) }}</span>
+            </div>
+            <button class="remove-btn" (click)="removeFile(i)" [disabled]="isGenerating()">×</button>
+          </div>
+        </div>
+        <div class="total-size">Gesamt: {{ getTotalSize() }}</div>
+      </div>
+
+      <!-- Error Display -->
+      <div class="error-message" *ngIf="error()">
+        <strong>⚠️ Fehler:</strong> {{ error() }}
+        <button class="btn btn-secondary" (click)="retry()" *ngIf="retryCount() < maxRetries && retryCount() > 0">
+          Erneut versuchen ({{ retryCount() }}/{{ maxRetries }})
+        </button>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button class="btn btn-secondary" (click)="cancel()">Abbrechen</button>
+        <button
+          class="btn btn-primary"
+          (click)="generateQuiz()"
+          [disabled]="selectedFiles().length === 0">
+          Quiz generieren
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-section" *ngIf="isGenerating()">
+      <div class="spinner"></div>
+      <h2>{{ generationProgress() }}</h2>
+      <p>Dies kann einige Sekunden dauern...</p>
+    </div>
+  </div>
+</div>

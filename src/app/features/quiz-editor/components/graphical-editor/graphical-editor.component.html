@@ -1,0 +1,269 @@
+<div class="graphical-editor">
+  <!-- Sidebar with question list -->
+  <div class="sidebar" id="settings">
+    <div class="sidebar-header">
+      <h3>Quiz Settings</h3>
+      <p class="sidebar-subtitle">Grunddaten & Fragenübersicht</p>
+    </div>
+
+    <div class="quiz-metadata">
+
+      <div class="form-group">
+        <label>Title</label>
+        <input
+          type="text"
+          name="quizTitle"
+          autocomplete="off"
+          [(ngModel)]="quiz.title"
+          (ngModelChange)="updateQuizMetadata('title', $event)"
+          placeholder="Quiz Title">
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea
+          name="quizDescription"
+          autocomplete="off"
+          [(ngModel)]="quiz.description"
+          (ngModelChange)="updateQuizMetadata('description', $event)"
+          placeholder="Quiz Description"
+          rows="3"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Visibility</label>
+        <select
+          name="quizVisibility"
+          [value]="quiz.visibility || 'private'"
+          [disabled]="!isOwner"
+          (change)="updateQuizMetadata('visibility', $any($event.target).value)">
+          <option value="private">Private</option>
+          <option value="public">Public</option>
+          <option value="unlisted">Unlisted</option>
+        </select>
+      </div>
+
+      <div class="coauthor-card">
+        <div class="coauthor-header">
+          <div>
+            <p class="eyebrow">Co-Authors</p>
+            <h4>Mitarbeitende hinzufügen</h4>
+          </div>
+          <span class="pill">Optional</span>
+        </div>
+
+        <div class="coauthor-input">
+          <label for="coAuthors">E-Mails (Komma oder Zeilen getrennt)</label>
+          <textarea id="coAuthors" name="coAuthors"
+            [value]="coAuthors.join(', ')"
+            [disabled]="!isOwner"
+            (input)="onCoAuthorInput($any($event.target).value)"
+            rows="2"
+            placeholder="anna@example.com, max@example.com"></textarea>
+          <small>Co-Authors dürfen bearbeiten, aber nicht löschen.</small>
+        </div>
+
+        <div class="coauthor-list" *ngIf="coAuthors?.length">
+          <div class="chip" *ngFor="let mail of coAuthors">{{ mail }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-header" id="questions">
+      <h3>Questions ({{ questions.length }})</h3>
+      <div class="add-buttons">
+        <button class="btn btn-small btn-primary" (click)="addQuestion('multiple-choice')" title="Add Multiple Choice">
+          + MC
+        </button>
+        <button class="btn btn-small btn-primary" (click)="addQuestion('ordering')" title="Add Ordering">
+          + Order
+        </button>
+        <button class="btn btn-small btn-primary" (click)="addQuestion('matching')" title="Add Matching">
+          + Match
+        </button>
+      </div>
+    </div>
+
+    <div class="question-list">
+      <div
+        *ngFor="let question of questions; let i = index; trackBy: trackByQuestion"
+        class="question-item"
+        [class.selected]="selectedQuestionIndex() === i"
+        (click)="selectQuestion(i)">
+        <div class="question-item-header">
+          <span class="question-type">
+            {{ question.type === 'multiple-choice' ? 'MC' : question.type === 'ordering' ? 'Order' : 'Match' }}
+          </span>
+          <span class="question-number">Q{{ i + 1 }}</span>
+        </div>
+        <div class="question-text">{{ question.questionText }}</div>
+        <div class="question-actions">
+          <button class="icon-btn" (click)="moveQuestion(i, 'up'); $event.stopPropagation()" [disabled]="i === 0" title="Move Up">↑</button>
+          <button class="icon-btn" (click)="moveQuestion(i, 'down'); $event.stopPropagation()" [disabled]="i === questions.length - 1" title="Move Down">↓</button>
+          <button class="icon-btn delete" (click)="deleteQuestion(i); $event.stopPropagation()" title="Delete">×</button>
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="questions.length === 0">
+        <div class="empty-badge">+</div>
+        <p>No questions yet</p>
+        <p class="hint">Click + MC or + Order to add questions</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main editor area -->
+  <div class="main-editor" id="editor">
+    <div class="editor-empty" *ngIf="selectedQuestionIndex() === null">
+      <div class="empty-content">
+        <div class="empty-icon">?</div>
+        <h2>Select a question to edit</h2>
+        <p>Or create a new question using the + buttons</p>
+      </div>
+    </div>
+
+    <div class="question-editor" *ngIf="selectedQuestionIndex() !== null && questions[selectedQuestionIndex()!] as question">
+      <div class="editor-header">
+        <div>
+          <div class="breadcrumb">Quiz · Frage {{ selectedQuestionIndex()! + 1 }}</div>
+          <h2>Question {{ selectedQuestionIndex()! + 1 }}</h2>
+        </div>
+        <div class="meta-chips">
+          <span class="chip chip-primary">
+            {{ question.type === 'multiple-choice' ? 'Multiple Choice' : question.type === 'ordering' ? 'Ordering' : 'Matching' }}
+          </span>
+          <span class="chip chip-soft">{{ (question.questionText || 'Neue Frage').slice(0, 32) || 'Neue Frage' }}</span>
+        </div>
+      </div>
+
+      <!-- Common fields -->
+      <div class="form-group">
+        <label>Question Text</label>
+        <textarea
+          [attr.name]="'questionText_' + selectedQuestionIndex()"
+          [value]="question.questionText"
+          (input)="updateQuestion(selectedQuestionIndex()!, 'questionText', $any($event.target).value)"
+          placeholder="Enter your question"
+          rows="2"></textarea>
+      </div>
+
+      <!-- Multiple Choice Options -->
+      <div *ngIf="question.type === 'multiple-choice'" class="options-section">
+        <div class="section-header">
+          <h3>Options</h3>
+          <button class="btn btn-small" (click)="addOption(selectedQuestionIndex()!)">+ Add Option</button>
+        </div>
+
+        <div class="options-list">
+          <div
+            *ngFor="let option of $any(question).options; let j = index; trackBy: trackByOption"
+            class="option-item">
+            <div class="option-header">
+              <span class="option-label">Option {{ j + 1 }}</span>
+              <button class="icon-btn delete" (click)="deleteOption(selectedQuestionIndex()!, j)">×</button>
+            </div>
+            <input
+              type="text"
+              [attr.name]="'option_' + selectedQuestionIndex() + '_' + j"
+              [value]="option.text"
+              (input)="updateOption(selectedQuestionIndex()!, j, 'text', $any($event.target).value)"
+              placeholder="Option text">
+            <label class="checkbox-label">
+              <input
+                type="checkbox"
+                [attr.name]="'optionCorrect_' + selectedQuestionIndex() + '_' + j"
+                [checked]="option.isCorrect"
+                (change)="updateOption(selectedQuestionIndex()!, j, 'isCorrect', $any($event.target).checked)">
+              <span id="correct-answer-text">Correct Answer</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ordering Items -->
+      <div *ngIf="question.type === 'ordering'" class="ordering-section">
+        <div class="section-header">
+          <h3>Items (Correct Order)</h3>
+          <button class="btn btn-small" (click)="addOrderItem(selectedQuestionIndex()!)">+ Add Item</button>
+        </div>
+
+        <div class="ordering-list">
+          <div
+            *ngFor="let item of $any(question).orderItems; let j = index; trackBy: trackByOrderItem"
+            class="order-item">
+            <div class="order-header">
+              <span class="order-number">{{ j + 1 }}</span>
+              <div class="order-actions">
+                <button class="icon-btn" (click)="moveOrderItem(selectedQuestionIndex()!, j, 'up')" [disabled]="j === 0">↑</button>
+                <button class="icon-btn" (click)="moveOrderItem(selectedQuestionIndex()!, j, 'down')" [disabled]="j === $any(question).orderItems.length - 1">↓</button>
+                <button class="icon-btn delete" (click)="deleteOrderItem(selectedQuestionIndex()!, j)">×</button>
+              </div>
+            </div>
+            <input
+              type="text"
+              [attr.name]="'orderItem_' + selectedQuestionIndex() + '_' + j"
+              [value]="item.text"
+              (input)="updateOrderItem(selectedQuestionIndex()!, j, 'text', $any($event.target).value)"
+              placeholder="Item text">
+          </div>
+        </div>
+      </div>
+
+      <!-- Matching Question -->
+      <div *ngIf="question.type === 'matching'" class="matching-section">
+        <div class="section-header">
+          <h3>Auswahloptionen (Dropdown)</h3>
+          <button class="btn btn-small" (click)="addMatchingChoice(selectedQuestionIndex()!)">+ Option</button>
+        </div>
+
+        <div class="options-list matching-choices">
+          <div *ngFor="let choice of $any(question).matchingChoices; trackBy: trackByMatchingChoice" class="matching-choice">
+            <div class="option-header">
+              <span class="option-label">Option</span>
+              <button class="icon-btn delete" (click)="deleteMatchingChoice(selectedQuestionIndex()!, choice.id)">×</button>
+            </div>
+            <input
+              type="text"
+              [attr.name]="'matchingChoice_' + selectedQuestionIndex() + '_' + choice.id"
+              [value]="choice.text"
+              (input)="updateMatchingChoice(selectedQuestionIndex()!, choice.id, $any($event.target).value)"
+              placeholder="Optionstext">
+          </div>
+        </div>
+
+        <div class="section-header mt-24">
+          <h3>Paare (links · korrekte Auswahl)</h3>
+          <button class="btn btn-small" (click)="addMatchingPair(selectedQuestionIndex()!)">+ Paar</button>
+        </div>
+
+        <div class="matching-pairs">
+          <div *ngFor="let pair of $any(question).matchingPairs; trackBy: trackByMatchingPair" class="pair-row">
+            <div class="pair-left">
+              <label>Linker Text</label>
+              <input
+                type="text"
+                [attr.name]="'pair_left_' + selectedQuestionIndex() + '_' + pair.id"
+                [value]="pair.leftText"
+                (input)="updateMatchingPairText(selectedQuestionIndex()!, pair.id, $any($event.target).value)"
+                placeholder="Zuordnungs-Text">
+            </div>
+            <div class="pair-right">
+              <label>Korrekter Dropdown-Wert</label>
+              <select
+                [attr.name]="'pair_choice_' + selectedQuestionIndex() + '_' + pair.id"
+                [(ngModel)]="pair.correctChoiceId"
+                [ngModelOptions]="{ standalone: true }"
+                (ngModelChange)="updateMatchingPairChoice(selectedQuestionIndex()!, pair.id, $event)">
+                <option *ngFor="let choice of $any(question).matchingChoices" [ngValue]="choice.id">
+                  {{ choice.text }}
+                </option>
+              </select>
+            </div>
+            <button class="icon-btn delete pair-delete" (click)="deleteMatchingPair(selectedQuestionIndex()!, pair.id)" title="Paar löschen">×</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

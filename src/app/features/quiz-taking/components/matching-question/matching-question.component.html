@@ -1,0 +1,58 @@
+<div class="matching-question">
+  <div class="question-text">
+    <h3>{{ question.questionText }}</h3>
+  </div>
+
+  <div class="question-image" *ngIf="question.imageUrl">
+    <img [src]="question.imageUrl" [alt]="question.questionText">
+  </div>
+
+  <div class="pairs">
+    <div
+      class="pair"
+      *ngFor="let pair of question.matchingPairs || []; let i = index"
+      [ngClass]="{
+        selected: selections().get(pair.id),
+        correct: showResult && selections().get(pair.id) === pair.correctChoiceId,
+        incorrect: showResult && selections().get(pair.id) !== pair.correctChoiceId
+      }">
+      <div class="pair-badge">{{ String.fromCharCode(65 + i) }}</div>
+      <div class="pair-left">
+        <span class="pair-text">{{ pair.leftText }}</span>
+      </div>
+      <div class="pair-right">
+        <select
+          [disabled]="disabled || submitted()"
+          [value]="selections().get(pair.id) || ''"
+          (change)="selectChoice(pair.id, $any($event.target).value)">
+          <option value="" disabled>Bitte wählen</option>
+          <option *ngFor="let choice of question.matchingChoices || []" [value]="choice.id">
+            {{ choice.text }}
+          </option>
+        </select>
+        <span class="pair-indicator" *ngIf="showResult">
+          <span *ngIf="selections().get(pair.id) === pair.correctChoiceId">✓</span>
+          <span *ngIf="selections().get(pair.id) !== pair.correctChoiceId">✗</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="submit-area" *ngIf="!submitted()">
+    <button class="btn btn-primary gradient" [disabled]="isSelectionMissing()" (click)="submitAnswer()">
+      Submit Answer
+    </button>
+  </div>
+
+  <div class="result" *ngIf="showResult">
+    <div class="correct-pairs" *ngIf="!resultCorrect()">
+      <p class="label">Richtige Zuordnung</p>
+      <div class="pill" *ngFor="let opt of question.matchingPairs">
+        <span class="dot" [class.correct-dot]="isPairCorrect(opt.id)"></span>
+        <span class="text" [class.correct-text]="isPairCorrect(opt.id)">{{ opt.leftText }}</span>
+        <span class="arrow">→</span>
+        <span class="text" [class.correct-text]="isPairCorrect(opt.id)">{{ choiceText(opt.correctChoiceId) }}</span>
+    </div>
+    </div>
+  </div>
+</div>

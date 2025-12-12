@@ -1,0 +1,21 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with rounded corners -->
+  <rect width="512" height="512" rx="96" fill="#1976D2"/>
+
+  <!-- Flowing circles representing spaced repetition -->
+  <!-- First circle (30% opacity) - representing initial learning -->
+  <circle cx="192" cy="256" r="64" fill="white" opacity="0.3"/>
+
+  <!-- Second circle (60% opacity) - representing reinforcement -->
+  <circle cx="256" cy="256" r="64" fill="white" opacity="0.6"/>
+
+  <!-- Third circle (90% opacity) - representing mastery -->
+  <circle cx="320" cy="256" r="64" fill="white" opacity="0.9"/>
+
+  <!-- Arrow showing continuous flow -->
+  <path d="M368 256L400 256L384 224M384 288L400 256"
+        stroke="white"
+        stroke-width="16"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+</svg>

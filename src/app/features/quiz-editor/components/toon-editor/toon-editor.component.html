@@ -1,0 +1,106 @@
+<div class="toon-editor">
+  <div class="toon-toolbar">
+    <div class="toolbar-left">
+      <h3>TOON Editor</h3>
+      <span class="info-text">Token Oriented Object Notation</span>
+      <div style="display:flex; justify-content:flex-end; margin-bottom:0.5rem;">
+  <button
+    type="button"
+    (click)="openAbout()"
+    aria-label="Was ist Toon?"
+    style="
+      width:28px;
+      height:28px;
+      border-radius:9999px;
+      border:1px solid #d1d5db;
+      background:#f8fafc;
+      color:#0f172a;
+      font-weight:700;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 1px 2px rgba(0,0,0,0.06);
+    ">
+    ?
+  </button>
+</div>
+    </div>
+    <div class="toolbar-right">
+      <button class="btn btn-small" (click)="formatDocument()">Format</button>
+      <button class="btn btn-small" (click)="foldAll()">Fold all</button>
+      <button class="btn btn-small" (click)="unfoldAll()">Unfold all</button>
+      <button class="btn btn-small" (click)="insertExample()">Insert Example</button>
+    </div>
+  </div>
+
+  <div class="parse-error" *ngIf="parseError()">
+    <strong>Parse Error:</strong> {{ parseError() }}
+  </div>
+
+  <div class="codemirror-container">
+    <div #editorContainer></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="showAbout()" (click)="closeAbout()"></div>
+<div class="modal" *ngIf="showAbout()">
+  <div class="modal-header">
+    <h3>TOON Format</h3>
+    <button class="close-btn" type="button" (click)="closeAbout()">×</button>
+  </div>
+  <div class="modal-body">
+    <p><strong><a href="https://github.com/toon-format/toon" target="_blank" rel="noopener noreferrer">TOON</a></strong> (Token Oriented Object Notation) beschreibt ein Quiz in klaren Abschnitten:
+      <code>quiz</code> (Metadaten), <code>questions</code>, <code>options</code> und <code>orderItems</code>.
+    </p>
+    <p>Warum? Einfache, schnelle Bearbeitung im Editor, gute Lesbarkeit für Menschen, geringerer Token-Aufwand und bessere Genauigkeit für LLMs.</p>
+    <ul>
+      <li>Klare Struktur: Fragen + Antworten + Reihenfolgen</li>
+      <li>Perfekt für Batch‑Importe/Exporte</li>
+    </ul>
+    <p>Tipp: Autocomplete mit Tab oder Enter annehmen, Fold für Blöcke nutzen.</p>
+  </div>
+  <div class="model-compare">
+  <div class="model-title">gemini-2.5-flash</div>
+
+  <div class="model-row" style="--pct: 87.6%">
+    <span class="label">TOON</span>
+    <div class="bar"><div class="fill"></div></div>
+    <span class="value">87.6% (183/209)</span>
+  </div>
+
+  <div class="model-row" style="--pct: 86.2%">
+    <span class="label">CSV</span>
+    <div class="bar"><div class="fill"></div></div>
+    <span class="value">86.2% (94/109)</span>
+  </div>
+
+  <div class="model-row" style="--pct: 82.3%">
+    <span class="label">JSON compact</span>
+    <div class="bar"><div class="fill"></div></div>
+    <span class="value">82.3% (172/209)</span>
+  </div>
+
+  <div class="model-row" style="--pct: 79.4%">
+    <span class="label">YAML</span>
+    <div class="bar"><div class="fill"></div></div>
+    <span class="value">79.4% (166/209)</span>
+  </div>
+
+  <div class="model-row" style="--pct: 79.4%">
+    <span class="label">XML</span>
+    <div class="bar"><div class="fill"></div></div>
+    <span class="value">79.4% (166/209)</span>
+  </div>
+
+  <div class="model-row" style="--pct: 77%">
+    <span class="label">JSON</span>
+    <div class="bar"><div class="fill"></div></div>
+    <span class="value">77.0% (161/209)</span>
+  </div>
+</div>
+
+  <div class="modal-actions">
+    <button class="btn btn-primary" type="button" (click)="closeAbout()">Alles klar</button>
+  </div>
+</div>

@@ -1,0 +1,230 @@
+<div class="settings-page">
+  <div class="page-header">
+    <div class="title-block">
+      <p class="eyebrow">Einstellungen</p>
+      <h1>App-Einstellungen</h1>
+      <p class="subtitle">Verwalte Benachrichtigungen und Offline-Zugriff</p>
+    </div>
+  </div>
+
+  <!-- PWA Notice (only show if not in PWA mode) -->
+  @if (!isPWA()) {
+    <div class="pwa-notice">
+      <div class="notice-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <div class="notice-content">
+        <strong>Hinweis</strong>
+        <p>Einige Funktionen sind nur im PWA-Modus verfügbar. Installiere die App auf deinem Gerät, um alle Features zu nutzen.</p>
+      </div>
+    </div>
+  }
+
+  <!-- Notification Settings Section -->
+  <div class="settings-section">
+    <div class="section-header">
+      <div class="section-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+      </div>
+      <div>
+        <h2>Push-Benachrichtigungen</h2>
+        <p class="section-description">Erhalte Updates zu deinen Quizzes</p>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      @if (!isPWA()) {
+        <div class="info-message">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <p>Push-Benachrichtigungen sind nur im PWA-Modus verfügbar.</p>
+        </div>
+      } @else if (notificationPermission() === 'denied') {
+        <div class="warning-message">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <div>
+            <strong>Benachrichtigungen blockiert</strong>
+            <p>Du hast Benachrichtigungen für diese App blockiert. Bitte aktiviere sie in deinen Browser-Einstellungen.</p>
+          </div>
+        </div>
+      } @else if (isNotificationsEnabled()) {
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-icon enabled">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+            </div>
+            <div>
+              <strong>Benachrichtigungen aktiviert</strong>
+              <p>Du erhältst Push-Benachrichtigungen für diese App</p>
+            </div>
+          </div>
+          <button
+            class="btn btn-danger btn-small"
+            [disabled]="isDisabling()"
+            (click)="disableNotifications()">
+            @if (isDisabling()) {
+              <span>Deaktiviere...</span>
+            } @else {
+              <span>Deaktivieren</span>
+            }
+          </button>
+        </div>
+      } @else if (canEnableNotifications()) {
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+            </div>
+            <div>
+              <strong>Benachrichtigungen deaktiviert</strong>
+              <p>Aktiviere Benachrichtigungen, um Updates zu erhalten</p>
+            </div>
+          </div>
+          <button
+            class="btn btn-primary btn-small"
+            [disabled]="isEnabling()"
+            (click)="enableNotifications()">
+            @if (isEnabling()) {
+              <div class="spinner-small"></div>
+              <span>Aktiviere...</span>
+            } @else {
+              <span>Aktivieren</span>
+            }
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Offline Download Section -->
+  <div class="settings-section">
+    <div class="section-header">
+      <div class="section-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+      </div>
+      <div>
+        <h2>Offline-Modus</h2>
+        <p class="section-description">Lade deine Quizzes für die Offline-Nutzung herunter</p>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      @if (!isPWA()) {
+        <div class="info-message">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <p>Offline-Downloads sind nur im PWA-Modus verfügbar.</p>
+        </div>
+      } @else {
+        <div class="download-section">
+          <!-- Download Status -->
+          <div class="download-status">
+            <div class="status-item">
+              <div class="status-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 11H3v9h6v-9Z M21 11h-6v9h6v-9Z M15 5H9v14h6V5Z"/>
+                </svg>
+              </div>
+              <div class="status-info">
+                <div class="status-value">{{ preloadedCount() }} / {{ totalQuizzesCount() }}</div>
+                <div class="status-label">Quizzes heruntergeladen</div>
+              </div>
+            </div>
+
+            @if (!isOnline()) {
+              <div class="status-badge offline">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                  <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/>
+                  <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/>
+                  <path d="M10.71 5.05A16 16 0 0 1 22.58 9"/>
+                  <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/>
+                  <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+                  <line x1="12" y1="20" x2="12.01" y2="20"/>
+                </svg>
+                Offline
+              </div>
+            } @else {
+              <div class="status-badge online">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+                  <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+                  <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+                  <line x1="12" y1="20" x2="12.01" y2="20"/>
+                </svg>
+                Online
+              </div>
+            }
+          </div>
+
+          <!-- Download Actions -->
+          <div class="download-actions">
+            @if (isPreloading()) {
+              <div class="preload-progress">
+                <div class="spinner-small"></div>
+                <span>Lade Quizzes herunter... {{ preloadProgress()?.current }} / {{ preloadProgress()?.total }}</span>
+              </div>
+            } @else if (!isOnline()) {
+              <div class="info-message">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <p>Du bist offline. Verbinde dich mit dem Internet, um Quizzes herunterzuladen.</p>
+              </div>
+            } @else {
+              <button
+                class="btn btn-primary"
+                (click)="preloadQuizzesForOffline()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Alle Quizzes jetzt herunterladen
+              </button>
+            }
+          </div>
+
+          <!-- Info Text -->
+          <div class="help-text">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <p>Heruntergeladene Quizzes werden auf deinem Gerät gespeichert und sind auch ohne Internetverbindung verfügbar.</p>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,274 @@
+<div class="flashcard-editor">
+  <!-- Header -->
+  <div class="editor-header">
+    <div class="header-left">
+      <p class="eyebrow">Deck Editor{{ unsavedChanges() ? ' • Unsaved' : '' }}</p>
+      <h1>{{ deck()?.title || 'Default' }}{{ unsavedChanges() ? ' *' : '' }}</h1>
+      <p class="subtitle">{{ cards().length }} {{ cards().length === 1 ? 'Karte' : 'Karten' }}</p>
+    </div>
+    <div class="header-right">
+      <button
+        class="btn btn-secondary"
+        (click)="openImportDialog()"
+        [disabled]="isLoading() || isSaving()">
+        📥 Import
+      </button>
+      <button
+        class="btn btn-primary"
+        (click)="saveDeck()"
+        [disabled]="isLoading() || isSaving() || !unsavedChanges()">
+        {{ isSaving() ? 'Saving...' : 'Save' }}
+      </button>
+      <button
+        class="btn btn-secondary"
+        (click)="goBack()"
+        [disabled]="isSaving()">
+        Cancel
+      </button>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <h2>Fehler beim Laden</h2>
+      <p>{{ error() }}</p>
+      <button class="btn btn-primary" (click)="retry()">
+        Erneut versuchen
+      </button>
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading deck...</p>
+    </div>
+  }
+
+  <!-- Editor Content -->
+  @if (!isLoading() && !error() && deck()) {
+    <div class="editor-layout">
+      <!-- Sidebar: Deck Settings -->
+      <div class="sidebar">
+        <div class="deck-settings-card">
+          <h3>Deck Einstellungen</h3>
+
+          <div class="form-group">
+            <label>Title</label>
+            <input
+              type="text"
+              name="deckTitle"
+              autocomplete="off"
+              [(ngModel)]="deck()!.title"
+              (ngModelChange)="updateDeckMetadata('title', $event)"
+              placeholder="Deck Title">
+          </div>
+
+          <div class="form-group">
+            <label>Beschreibung</label>
+            <textarea
+              name="deckDescription"
+              autocomplete="off"
+              [(ngModel)]="deck()!.description"
+              (ngModelChange)="updateDeckMetadata('description', $event)"
+              placeholder="Kurze Beschreibung..."
+              rows="3"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Sichtbarkeit</label>
+            <select
+              name="deckVisibility"
+              [value]="deck()?.visibility || 'private'"
+              (change)="updateDeckMetadata('visibility', $any($event.target).value)">
+              <option value="private">Privat</option>
+              <option value="public">Öffentlich</option>
+              <option value="unlisted">Nicht gelistet</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Area: Flashcards -->
+      <div class="main-area">
+        <!-- Cards Header -->
+        <div class="cards-header">
+          <div class="cards-title">
+            <h2>Flashcards</h2>
+            <span class="card-count">{{ cards().length }} {{ cards().length === 1 ? 'Karte' : 'Karten' }}</span>
+          </div>
+          <button class="btn btn-primary" (click)="addCard()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Neue Karte
+          </button>
+        </div>
+
+        <!-- Empty State -->
+        @if (cards().length === 0) {
+          <div class="empty-cards-state">
+            <div class="empty-icon">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="7" width="18" height="13" rx="2"/>
+                <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+            </div>
+            <h3>Noch keine Karten</h3>
+            <p>Erstelle deine erste Flashcard oder importiere bestehende Karten.</p>
+            <div class="empty-actions">
+              <button class="btn btn-primary" (click)="addCard()">
+                Erste Karte erstellen
+              </button>
+              <button class="btn btn-secondary" (click)="openImportDialog()">
+                Karten importieren
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- Cards Grid -->
+        @if (cards().length > 0) {
+          <div class="cards-grid">
+            <div
+              *ngFor="let card of cards(); let i = index; trackBy: trackByCard"
+              class="flashcard-preview"
+              [class.selected]="selectedCardIndex() === i"
+              (click)="selectCard(i)">
+
+              <div class="flashcard-preview-header">
+                <span class="card-number">#{{ i + 1 }}</span>
+              </div>
+
+              <div class="flashcard-preview-content">
+                <div class="preview-side front">
+                  <span class="side-label">VORNE</span>
+                  <p>{{ card.front || 'Leer' }}</p>
+                </div>
+                <div class="preview-divider">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </div>
+                <div class="preview-side back">
+                  <span class="side-label">HINTEN</span>
+                  <p>{{ card.back || 'Leer' }}</p>
+                </div>
+              </div>
+
+              <div class="flashcard-preview-actions">
+                <button
+                  class="action-btn edit-btn"
+                  (click)="selectCard(i); $event.stopPropagation()"
+                  title="Bearbeiten">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+                <button
+                  class="action-btn delete-btn"
+                  (click)="deleteCard(i); $event.stopPropagation()"
+                  [disabled]="isSaving()"
+                  title="Löschen">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Card Editor Modal (when card is selected) -->
+    @if (selectedCardIndex() !== null && cards()[selectedCardIndex()!]) {
+      <div class="editor-modal-overlay" (click)="selectedCardIndex.set(null)">
+        <div class="editor-modal" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3>Karte #{{ selectedCardIndex()! + 1 }} bearbeiten</h3>
+            <button class="close-btn" (click)="selectedCardIndex.set(null)">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="modal-content">
+            <div class="form-group">
+              <label for="cardFront">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                </svg>
+                Vorderseite (Frage)
+              </label>
+              <textarea
+                id="cardFront"
+                name="cardFront"
+                [ngModel]="cards()[selectedCardIndex()!].front"
+                (ngModelChange)="updateCardField(selectedCardIndex()!, 'front', $event)"
+                placeholder="Was möchtest du lernen?"
+                rows="5"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="cardBack">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <line x1="9" y1="9" x2="15" y2="15"/>
+                  <line x1="15" y1="9" x2="9" y2="15"/>
+                </svg>
+                Rückseite (Antwort)
+              </label>
+              <textarea
+                id="cardBack"
+                name="cardBack"
+                [ngModel]="cards()[selectedCardIndex()!].back"
+                (ngModelChange)="updateCardField(selectedCardIndex()!, 'back', $event)"
+                placeholder="Die Antwort oder Erklärung..."
+                rows="5"></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button
+              class="btn btn-secondary"
+              (click)="selectedCardIndex.set(null)">
+              Schließen
+            </button>
+            <button
+              class="btn btn-danger"
+              (click)="deleteCard(selectedCardIndex()!); selectedCardIndex.set(null)"
+              [disabled]="isSaving()">
+              Löschen
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  }
+
+  <!-- Unsaved Changes Indicator -->
+  <div class="unsaved-indicator" *ngIf="unsavedChanges()">
+    <span class="dot"></span>
+    Ungespeicherte Änderungen
+  </div>
+
+  <!-- Import Dialog -->
+  <app-import-dialog
+    *ngIf="showImportDialog()"
+    (importComplete)="handleImportComplete($event)"
+    (close)="closeImportDialog()">
+  </app-import-dialog>
+</div>

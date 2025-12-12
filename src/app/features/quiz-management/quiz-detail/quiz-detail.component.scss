@@ -1,0 +1,271 @@
+@use '../../../../styles/variables' as *;
+
+.quiz-detail-page {
+  max-width: 1200px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: $spacing-xxl $spacing-lg;
+  overflow-x: hidden;
+}
+
+.hero-card {
+  display: flex;
+  justify-content: space-between;
+  gap: $spacing-lg;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-xl;
+  padding: $spacing-xl;
+  box-shadow: $shadow-lg;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  .hero-left {
+    display: flex;
+    gap: $spacing-md;
+    align-items: center;
+
+    .avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 1.4rem;
+      box-shadow: $shadow-md;
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.8rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.4rem, 5vw, 2rem);
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    .subtitle {
+      margin: $spacing-xs 0 0;
+      color: var(--color-text-secondary);
+      font-size: clamp(0.95rem, 3.6vw, 1.05rem);
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+
+    .badges {
+      margin-top: $spacing-sm;
+
+      .badge {
+        padding: 4px 10px;
+        border-radius: $radius-md;
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+
+        &.public { background: rgba(76,175,80,0.15); color: var(--color-success); }
+        &.unlisted { background: rgba(255,152,0,0.15); color: var(--color-warning); }
+        &.private { background: rgba(158,158,158,0.2); color: var(--color-text-secondary); }
+      }
+    }
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: $spacing-sm;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+}
+
+.stats-grid {
+  margin: $spacing-xl 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: $spacing-md;
+}
+
+.stat-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  display: flex;
+  gap: $spacing-md;
+  align-items: center;
+  box-shadow: $shadow-md;
+
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-size: 1.2rem;
+  }
+
+  .stat-value {
+    font-weight: 700;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+
+    .copy-btn {
+      background: var(--color-surface-elevated);
+      border: 1px solid var(--color-border);
+      border-radius: $radius-sm;
+      padding: 4px 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all $transition-fast;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+
+      &:hover {
+        background: var(--color-background);
+        transform: scale(1.05);
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+    }
+  }
+
+  .stat-label {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+  }
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+  padding: $spacing-xl;
+}
+
+.questions-card {
+  .question-list {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  .question-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-sm;
+    border: 1px solid var(--color-border);
+    border-radius: $radius-md;
+    background: var(--color-surface-elevated);
+
+    .qi-left {
+      display: flex;
+      gap: $spacing-sm;
+      align-items: center;
+
+      .bubble {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+      }
+
+      .q-title {
+        font-weight: 600;
+      }
+
+      .q-meta {
+        color: var(--color-text-secondary);
+        font-size: 0.9rem;
+      }
+    }
+
+    .qi-right {
+      color: var(--color-text-secondary);
+      font-size: 0.9rem;
+    }
+  }
+}
+
+.btn {
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+  border: 1px solid transparent;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &.btn-primary {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    color: #fff;
+    &:hover { filter: brightness(0.98); box-shadow: $shadow-md; }
+  }
+
+  &.btn-secondary {
+    background: var(--color-surface-elevated);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+    &:hover { background: var(--color-background); }
+  }
+}
+
+.loading-state, .error-state {
+  padding: $spacing-xl;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 640px) {
+  .quiz-detail-page { padding: $spacing-xl $spacing-md; }
+
+  .hero-card {
+    flex-direction: column;
+    align-items: flex-start;
+    overflow: hidden;
+  }
+
+  .hero-actions { width: 100%; gap: $spacing-sm; 
+    .btn { flex: 1 1 45%; text-align: center; }
+  }
+
+  .stat-card { gap: $spacing-sm; }
+
+  .questions-card { padding: $spacing-lg; }
+}
+
+@media (max-width: 768px) {
+  .quiz-detail-page { padding: $spacing-xl $spacing-md; }
+  .hero-card, .stat-card, .questions-card, .meta-card {
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    padding: $spacing-lg;
+  }
+
+  .hero-left h1 { font-size: clamp(1.3rem, 6vw, 1.6rem); }
+  .hero-left .subtitle { font-size: clamp(0.9rem, 3.5vw, 1rem); }
+}

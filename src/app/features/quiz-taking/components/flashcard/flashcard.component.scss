@@ -1,0 +1,240 @@
+@use '../../../../../styles/variables' as *;
+
+.flashcard-container {
+  position: relative;
+  width: 600px;
+  max-width: 100%;
+  margin: 0 auto;
+  perspective: 1000px;
+
+  &.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  @media (max-width: 640px) {
+    width: 100%;
+  }
+}
+
+.flashcard {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+  cursor: pointer;
+
+  &.flipped {
+    transform: rotateY(180deg);
+  }
+
+  &:hover {
+    box-shadow: var(--shadow-xl);
+  }
+}
+
+.flashcard-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xxl;
+  border-radius: $radius-xl;
+  border: 2px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  background: var(--color-surface);
+}
+
+.flashcard-front {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  color: white;
+  border: none;
+}
+
+.flashcard-back {
+  background: var(--color-surface);
+  transform: rotateY(180deg);
+}
+
+.face-content {
+  text-align: center;
+  width: 100%;
+}
+
+.card-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.8;
+  margin-bottom: $spacing-md;
+  font-weight: 600;
+}
+
+.question-text,
+.answer-text {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.6;
+  margin-bottom: $spacing-lg;
+  white-space: pre-line;
+}
+
+.question-text {
+  color: white;
+}
+
+.answer-text {
+  color: var(--color-text-primary);
+}
+
+.tap-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  margin-top: $spacing-xl;
+  font-size: 0.9rem;
+  opacity: 0.9;
+  animation: pulse 2s ease-in-out infinite;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.flashcard-actions {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: $spacing-lg;
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-xl;
+  border: 2px solid;
+  border-radius: $radius-lg;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.btn-unknown {
+  background: transparent;
+  border-color: #f44336;
+  color: #f44336;
+
+  &:hover {
+    background: #f44336;
+    color: white;
+  }
+}
+
+.btn-known {
+  background: #4caf50;
+  border-color: #4caf50;
+  color: white;
+
+  &:hover {
+    background: #2e7d32;
+    border-color: #2e7d32;
+  }
+}
+
+.swipe-indicators {
+  display: flex;
+  justify-content: space-between;
+  margin-top: $spacing-md;
+  padding: 0 $spacing-md;
+  opacity: 0.6;
+}
+
+.indicator {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.indicator-left {
+  svg {
+    color: #f44336;
+  }
+}
+
+.indicator-right {
+  svg {
+    color: #4caf50;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Mobile responsiveness
+@media (max-width: 520px) {
+  .flashcard {
+    min-height: 350px;
+  }
+
+  .flashcard-face {
+    min-height: 350px;
+    padding: $spacing-xl $spacing-lg;
+  }
+
+  .question-text,
+  .answer-text {
+    font-size: 1.2rem;
+  }
+
+  .flashcard-actions {
+    flex-direction: column;
+
+    .action-btn {
+      width: 100%;
+    }
+  }
+}

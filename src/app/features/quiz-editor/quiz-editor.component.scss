@@ -1,0 +1,179 @@
+@use '../../../styles/variables' as *;
+
+.quiz-editor {
+  --bg-primary: var(--color-surface);
+  --bg-secondary: var(--color-background);
+  --bg-tertiary: var(--color-surface-elevated);
+  --bg-quaternary: var(--color-background);
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-tertiary: var(--color-text-secondary);
+  --primary-color: var(--color-primary);
+  --primary-hover: var(--color-primary-dark);
+  --border-color: var(--color-border);
+
+  min-height: calc(100vh - 64px);
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+  background: var(--color-background);
+  padding: $spacing-xl $spacing-lg;
+}
+
+.editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-lg;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-md;
+
+  .header-left {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.8rem;
+      color: var(--color-text-secondary);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      color: var(--color-text-secondary);
+      font-size: 0.95rem;
+    }
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    flex-wrap: wrap;
+  }
+}
+
+.btn {
+  padding: $spacing-sm $spacing-md;
+  border: none;
+  border-radius: $radius-md;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &.btn-primary {
+    background: var(--color-primary);
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background: var(--color-primary-dark);
+      box-shadow: $shadow-md;
+      transform: translateY(-1px);
+    }
+  }
+
+  &.btn-secondary {
+    background: var(--color-surface-elevated);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+
+    &:hover:not(:disabled) {
+      background: var(--color-background);
+      transform: translateY(-1px);
+    }
+  }
+}
+
+.error-message {
+  padding: $spacing-md $spacing-lg;
+  background: rgba(244, 67, 54, 0.08);
+  color: #c33;
+  border: 1px solid #f9c0c0;
+  border-radius: $radius-md;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  gap: $spacing-sm;
+
+  .spinner {
+    width: 42px;
+    height: 42px;
+    border: 4px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  p {
+    color: var(--color-text-secondary);
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.editor-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.unsaved-indicator {
+  position: fixed;
+  bottom: $spacing-xl;
+  right: $spacing-xl;
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  box-shadow: $shadow-md;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    background: var(--color-warning);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}

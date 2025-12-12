@@ -1,0 +1,45 @@
+<div class="multiple-choice">
+  <div class="question-text">
+    <h3>{{ question.questionText }}</h3>
+  </div>
+
+  <div class="question-image" *ngIf="question.imageUrl">
+    <img [src]="question.imageUrl" [alt]="question.questionText">
+  </div>
+
+  <div class="options">
+    <div
+      *ngFor="let option of question.options; let i = index"
+      class="option"
+      [ngClass]="{
+        selected: isSelected(option.id) && !submitted(),
+        correct: showResult && option.isCorrect,
+        incorrect: showResult && isSelected(option.id) && !option.isCorrect
+      }"
+      (click)="toggleOption(option.id)">
+      <span class="option-letter">{{ String.fromCharCode(65 + i) }}</span>
+      <span class="option-text">{{ option.text }}</span>
+      <span class="option-indicator" *ngIf="showResult">
+        <span *ngIf="option.isCorrect">✓</span>
+        <span *ngIf="!option.isCorrect && isSelected(option.id)">✗</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="submit-area" *ngIf="!submitted()">
+    <button
+      class="btn btn-primary"
+      [disabled]="selectedCount() === 0"
+      (click)="submitAnswer()">
+      Submit Answer
+    </button>
+  </div>
+
+  <div class="correct-answers" *ngIf="showResult && !resultCorrect()">
+    <p class="label">Richtige Antworten</p>
+    <div class="pill" *ngFor="let opt of question.options">
+      <span class="dot" [class.correct-dot]="opt.isCorrect"></span>
+      <span class="text" [class.correct-text]="opt.isCorrect">{{ opt.text }}</span>
+    </div>
+  </div>
+</div>

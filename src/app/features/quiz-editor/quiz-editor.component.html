@@ -1,0 +1,109 @@
+<div class="quiz-editor">
+  <!-- Header -->
+  <div class="editor-header">
+    <div class="header-left">
+      <p class="eyebrow">Quiz Editor{{ unsavedChanges() ? ' • Unsaved' : '' }}</p>
+      <h1>{{ quiz()?.title || 'New Quiz' }}{{ unsavedChanges() ? ' *' : '' }}</h1>
+      <p class="subtitle">
+        {{ editorMode() === 'toon' ? 'Bearbeite Fragen, Optionen und Reihenfolgen im TOON Format.' : 'Baue Fragen, Optionen und Reihenfolgen im visuellen Editor.' }}
+      </p>
+    </div>
+    <div class="header-right">
+      <a
+        class="btn btn-secondary ghost"
+        routerLink="/ai-quiz-generator"
+        [class.disabled]="isLoading() || isSaving()">
+        🤖 Use AI
+      </a>
+      <button
+        class="btn btn-secondary"
+        (click)="openImportDialog()"
+        [disabled]="isLoading() || isSaving()">
+        📥 Import
+      </button>
+      <button
+        class="btn btn-secondary"
+        (click)="toggleEditorMode()"
+        [disabled]="isLoading() || isSaving()">
+        {{ editorMode() === 'toon' ? 'Grafischer Editor' : 'TOON Editor' }}
+      </button>
+      <button
+        class="btn btn-primary"
+        (click)="saveQuiz()"
+        [disabled]="isLoading() || isSaving() || !unsavedChanges()">
+        {{ isSaving() ? 'Saving...' : 'Save' }}
+      </button>
+      <button
+        class="btn btn-secondary"
+        (click)="cancel()"
+        [disabled]="isSaving()">
+        Cancel
+      </button>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <h2>Fehler beim Laden</h2>
+      <p>{{ error() }}</p>
+      <button class="btn btn-primary" (click)="retry()">
+        Erneut versuchen
+      </button>
+    </div>
+  }
+
+  <!-- Co-Author Errors -->
+  <div class="error-message co-author-errors" *ngIf="coAuthorErrors().length > 0">
+    <strong>Co-Author Issues:</strong>
+    <ul>
+      <li *ngFor="let err of coAuthorErrors()">{{ err }}</li>
+    </ul>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading()">
+    <div class="spinner"></div>
+    <p>Loading quiz...</p>
+  </div>
+
+  <!-- Editor Content -->
+  <div class="editor-content" *ngIf="!isLoading() && quiz()">
+    <app-toon-editor
+      *ngIf="editorMode() === 'toon'"
+      [quiz]="quiz()!"
+      [questions]="questions()"
+      (quizChange)="onQuizUpdate($event)"
+      (questionsChange)="questions.set($event); unsavedChanges.set(true)">
+    </app-toon-editor>
+
+    <app-graphical-editor
+      *ngIf="editorMode() === 'graphical'"
+      [quiz]="quiz()!"
+      [questions]="questions()"
+      [coAuthors]="coAuthors()"
+      [isOwner]="isOwner()"
+      (quizChange)="onQuizUpdate($event)"
+      (questionsChange)="questions.set($event); unsavedChanges.set(true)"
+      (coAuthorsChange)="onCoAuthorsChange($event)">
+    </app-graphical-editor>
+  </div>
+
+  <!-- Unsaved Changes Indicator -->
+  <div class="unsaved-indicator" *ngIf="unsavedChanges()">
+    <span class="dot"></span>
+    Unsaved changes
+  </div>
+
+  <!-- Import Dialog -->
+  <app-import-dialog
+    *ngIf="showImportDialog()"
+    (importComplete)="handleImportComplete($event)"
+    (close)="closeImportDialog()">
+  </app-import-dialog>
+</div>
