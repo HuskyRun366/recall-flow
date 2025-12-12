@@ -20,3 +20,6 @@ export * from './level-badge/level-badge.component';
 
 // SkeletonLoader (existing)
 export * from './skeleton-loader/skeleton-loader.component';
+
+// ModeSwitch
+export * from './mode-switch/mode-switch.component';

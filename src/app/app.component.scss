@@ -20,7 +20,20 @@
 }
 
 #main-content {
+  position: relative;
+  min-height: calc(100vh - 64px); // Account for header height
+  overflow-x: hidden;
+
   &:focus {
     outline: none;
+  }
+}
+
+// Respect reduced motion preferences
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

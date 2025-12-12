@@ -1,7 +1,7 @@
 <header class="header">
   <div class="header-container">
     <div class="header-left">
-      <a routerLink="/home" class="logo">
+      <a [routerLink]="modeService.getHomeRoute()" class="logo">
         <svg width="32" height="32" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="64" height="64" rx="12" fill="var(--color-primary)"/>
           <!-- Flowing circles representing spaced repetition -->
@@ -16,10 +16,13 @@
 
       @if (isAuthenticated()) {
         <nav class="nav-links" [class.open]="mobileMenuOpen()" cdkTrapFocus [cdkTrapFocusAutoCapture]="mobileMenuOpen()">
-          <a routerLink="/home" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Home</a>
-          <a routerLink="/quizzes" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Quiz</a>
-          <a routerLink="/lernen" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Lernen</a>
-          <a routerLink="/quiz-editor/new" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Create Quiz</a>
+          @if (modeService.isQuizMode()) {
+            <a routerLink="/home" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Home</a>
+            <a routerLink="/quizzes" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Quizzes</a>
+          } @else {
+            <a routerLink="/lernen/home" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Home</a>
+            <a routerLink="/lernen/decks" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Decks</a>
+          }
           <a routerLink="/updates" routerLinkActive="active" (click)="mobileMenuOpen.set(false)" class="mobile-updates-link">
             Updates
             @if (hasNewUpdates()) {
@@ -29,6 +32,12 @@
         </nav>
       }
     </div>
+
+    @if (isAuthenticated()) {
+      <div class="header-center">
+        <app-mode-switch />
+      </div>
+    }
 
     <div class="header-right">
       <!-- Network Status Indicator -->

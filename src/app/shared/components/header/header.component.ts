@@ -4,20 +4,23 @@ import { RouterModule } from '@angular/router';
 import { A11yModule } from '@angular/cdk/a11y';
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
+import { ModeService } from '../../../core/services/mode.service';
 import { UpdatesService } from '../../../core/services/updates.service';
 import { NetworkStatusComponent } from '../network-status/network-status.component';
+import { ModeSwitchComponent } from '../mode-switch/mode-switch.component';
 import { signal } from '@angular/core';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule, A11yModule, NetworkStatusComponent],
+  imports: [CommonModule, RouterModule, A11yModule, NetworkStatusComponent, ModeSwitchComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent {
   private authService = inject(AuthService);
   private themeService = inject(ThemeService);
+  modeService = inject(ModeService);
   private updatesService = inject(UpdatesService);
 
   currentUser = this.authService.currentUser;

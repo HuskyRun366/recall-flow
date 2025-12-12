@@ -24,20 +24,33 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
   },
+  // Lernen Mode Routes
   {
     path: 'lernen',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/lernen/lernen.component').then(m => m.LernenComponent)
-  },
-  {
-    path: 'lernen/deck-editor/:id',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/lernen/flashcard-editor/flashcard-editor.component').then(m => m.FlashcardEditorComponent)
-  },
-  {
-    path: 'lernen/deck/:id/study',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/lernen/flashcard-session/flashcard-session.component').then(m => m.FlashcardSessionComponent)
+    children: [
+      {
+        path: '',
+        redirectTo: 'home',
+        pathMatch: 'full'
+      },
+      {
+        path: 'home',
+        loadComponent: () => import('./features/lernen/lernen.component').then(m => m.LernenComponent) // Temporary, will be replaced with LernenHomeComponent in Phase 2
+      },
+      {
+        path: 'decks',
+        loadComponent: () => import('./features/lernen/lernen.component').then(m => m.LernenComponent) // Temporary, will be replaced with LernenListComponent in Phase 3
+      },
+      {
+        path: 'deck-editor/:id',
+        loadComponent: () => import('./features/lernen/flashcard-editor/flashcard-editor.component').then(m => m.FlashcardEditorComponent)
+      },
+      {
+        path: 'deck/:id/study',
+        loadComponent: () => import('./features/lernen/flashcard-session/flashcard-session.component').then(m => m.FlashcardSessionComponent)
+      }
+    ]
   },
   {
     path: 'settings',

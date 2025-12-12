@@ -28,6 +28,20 @@
   gap: $spacing-xxl;
 }
 
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 0 $spacing-md;
+
+  @media (max-width: 768px) {
+    order: 4;
+    flex-basis: 100%;
+    padding: $spacing-sm 0;
+    justify-content: center;
+  }
+}
+
 .logo {
   display: flex;
   align-items: center;

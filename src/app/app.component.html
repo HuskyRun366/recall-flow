@@ -2,7 +2,7 @@
 <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
 
 <app-header />
-<main id="main-content">
+<main id="main-content" [@routeAnimation]="getRouteAnimation()">
   <router-outlet />
 </main>
 
