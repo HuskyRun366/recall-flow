@@ -35,10 +35,18 @@
   padding: 0 $spacing-md;
 
   @media (max-width: 768px) {
-    order: 4;
-    flex-basis: 100%;
-    padding: $spacing-sm 0;
-    justify-content: center;
+    display: none; // Hide on mobile - mode switch is in hamburger menu
+  }
+}
+
+.mobile-mode-switch {
+  display: none; // Hide on desktop
+
+  @media (max-width: 768px) {
+    display: block;
+    padding: $spacing-md 0;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: $spacing-sm;
   }
 }
 

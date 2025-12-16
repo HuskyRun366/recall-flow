@@ -36,11 +36,15 @@ export const routes: Routes = [
       },
       {
         path: 'home',
-        loadComponent: () => import('./features/lernen/lernen.component').then(m => m.LernenComponent) // Temporary, will be replaced with LernenHomeComponent in Phase 2
+        loadComponent: () => import('./features/lernen/lernen-home/lernen-home.component').then(m => m.LernenHomeComponent)
       },
       {
         path: 'decks',
-        loadComponent: () => import('./features/lernen/lernen.component').then(m => m.LernenComponent) // Temporary, will be replaced with LernenListComponent in Phase 3
+        loadComponent: () => import('./features/lernen/lernen-list/lernen-list.component').then(m => m.LernenListComponent)
+      },
+      {
+        path: 'deck/:id',
+        loadComponent: () => import('./features/lernen/deck-detail/deck-detail.component').then(m => m.DeckDetailComponent)
       },
       {
         path: 'deck-editor/:id',

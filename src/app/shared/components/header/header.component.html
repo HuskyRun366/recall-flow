@@ -16,6 +16,11 @@
 
       @if (isAuthenticated()) {
         <nav class="nav-links" [class.open]="mobileMenuOpen()" cdkTrapFocus [cdkTrapFocusAutoCapture]="mobileMenuOpen()">
+          <!-- Mode Switch - Mobile Only -->
+          <div class="mobile-mode-switch">
+            <app-mode-switch />
+          </div>
+
           @if (modeService.isQuizMode()) {
             <a routerLink="/home" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Home</a>
             <a routerLink="/quizzes" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Quizzes</a>
