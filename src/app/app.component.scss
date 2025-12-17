@@ -35,60 +35,6 @@
   }
 }
 
-.route-transition-overlay {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  background: conic-gradient(
-    from 180deg at 50% 50%,
-    var(--color-primary),
-    var(--color-accent),
-    var(--color-primary)
-  );
-  filter: blur(32px) saturate(1.25);
-  mix-blend-mode: screen;
-  will-change: transform, opacity;
-  transform: translate3d(-140%, 0, 0) skewX(-18deg) rotate(-8deg);
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-  }
-
-  // Shimmer stripes so the effect is clearly visible
-  &::before {
-    background: repeating-linear-gradient(
-      115deg,
-      rgba(255, 255, 255, 0) 0,
-      rgba(255, 255, 255, 0) 18px,
-      rgba(255, 255, 255, 0.22) 22px,
-      rgba(255, 255, 255, 0) 32px
-    );
-    opacity: 0.25;
-    mix-blend-mode: overlay;
-    filter: blur(0.6px);
-  }
-
-  // Subtle highlights to add depth (works on light + dark)
-  &::after {
-    background:
-      radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.55) 0, rgba(255, 255, 255, 0) 55%),
-      radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.35) 0, rgba(255, 255, 255, 0) 55%);
-    opacity: 0.18;
-    mix-blend-mode: soft-light;
-  }
-}
-
-.route-transition-overlay-clip {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-  pointer-events: none;
-  overflow: hidden;
-}
-
 // Respect reduced motion preferences
 @media (prefers-reduced-motion: reduce) {
   * {

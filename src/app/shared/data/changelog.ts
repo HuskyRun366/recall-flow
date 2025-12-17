@@ -24,7 +24,8 @@ export const CHANGELOG: ChangelogEntry[] = [
       { type: 'improvement', text: 'Material Viewer now preserves interactive JavaScript and only applies theme sync when supported by the HTML' },
       { type: 'improvement', text: 'Show a one-time safety warning when opening public/unlisted learning materials' },
       { type: 'improvement', text: 'Harden material iframes by removing allow-same-origin (Viewer + Editor preview)' },
-      { type: 'bugfix', text: 'Restore scroll position properly on navigation (prevents “black bar” when opening viewer pages)' }
+      { type: 'bugfix', text: 'Restore scroll position properly on navigation (prevents “black bar” when opening viewer pages)' },
+      { type: 'improvement', text: 'Replace flashy mode transitions with subtle slide animations for a more business-like feel' }
     ]
   },
   {

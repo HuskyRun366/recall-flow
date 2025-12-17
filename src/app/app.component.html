@@ -3,15 +3,12 @@
 
 <app-header />
 <main id="main-content"
-      [@routeAnimation]="getRouteAnimation()"
+      [@routeAnimation]="prepareRoute(outlet)"
       (@routeAnimation.start)="onRouteAnimationStart()"
       (@routeAnimation.done)="onRouteAnimationDone()"
       [@.disabled]="prefersReducedMotion"
       [class.route-transitioning]="isRouteTransitioning">
-  <div class="route-transition-overlay-clip" aria-hidden="true">
-    <div class="route-transition-overlay"></div>
-  </div>
-  <router-outlet />
+  <router-outlet #outlet="outlet"></router-outlet>
 </main>
 
 <!-- Global Components -->
