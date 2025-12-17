@@ -359,7 +359,7 @@ export class QuizSessionComponent implements OnInit, OnDestroy {
 
     if (wrongQuestions.length === 0) {
       // No wrong answers, return to home
-      this.router.navigate(['/home']);
+      this.router.navigate(['/quiz', 'home']);
       return;
     }
 
@@ -379,7 +379,7 @@ export class QuizSessionComponent implements OnInit, OnDestroy {
 
   // Exit to home
   exitToHome(): void {
-    this.router.navigate(['/home']);
+    this.router.navigate(['/quiz', 'home']);
   }
 
   // Toggle flashcard mode
@@ -391,7 +391,7 @@ export class QuizSessionComponent implements OnInit, OnDestroy {
 
   exitQuiz(): void {
     if (confirm('Are you sure you want to exit? Your progress has been saved.')) {
-      this.router.navigate(['/home']);
+      this.router.navigate(['/quiz', 'home']);
     }
   }
 

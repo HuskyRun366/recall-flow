@@ -302,7 +302,7 @@ export class AiQuizGeneratorComponent implements OnInit {
 
       // Step 6: Navigate to editor
       this.generationProgress.set('Fertig! Quiz wird geöffnet...');
-      await this.router.navigate(['/quiz-editor', quizId]);
+      await this.router.navigate(['/quiz', 'editor', quizId]);
 
     } catch (err: any) {
       console.error('Generation error:', err);
@@ -325,7 +325,7 @@ export class AiQuizGeneratorComponent implements OnInit {
   }
 
   cancel(): void {
-    this.router.navigate(['/home']);
+    this.router.navigate(['/quiz', 'home']);
   }
 
   getTotalSize(): string {

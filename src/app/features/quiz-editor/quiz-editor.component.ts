@@ -232,7 +232,7 @@ export class QuizEditorComponent implements OnInit {
         // Save co-authors
         await this.saveCoAuthors(newId);
 
-        this.router.navigate(['/quiz-editor', newId], { replaceUrl: true });
+        this.router.navigate(['/quiz', 'editor', newId], { replaceUrl: true });
         this.unsavedChanges.set(false);
         this.isSaving.set(false);
       } else if (this.quizId) {
@@ -274,7 +274,7 @@ export class QuizEditorComponent implements OnInit {
     if (this.unsavedChanges() && !confirm('You have unsaved changes. Are you sure you want to leave?')) {
       return;
     }
-    this.router.navigate(['/home']);
+    this.router.navigate(['/quiz', 'home']);
   }
 
   /**

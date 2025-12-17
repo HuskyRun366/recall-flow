@@ -4,7 +4,7 @@ import { authGuard } from './core/guards/auth.guard';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'quiz/home',
     pathMatch: 'full'
   },
   {
@@ -22,11 +22,55 @@ export const routes: Routes = [
     data: { animationIndex: 91 },
     loadComponent: () => import('./features/legal/terms.component').then(m => m.TermsComponent)
   },
+  // Legacy Quiz URLs (redirect to the new /quiz/* structure)
+  { path: 'home', redirectTo: 'quiz/home', pathMatch: 'full' },
+  { path: 'quizzes', redirectTo: 'quiz/quizzes', pathMatch: 'full' },
+  { path: 'quizzes/:id', redirectTo: 'quiz/:id', pathMatch: 'full' },
+  { path: 'quiz-detail/:id', redirectTo: 'quiz/:id', pathMatch: 'full' },
+  { path: 'quiz-editor/:id', redirectTo: 'quiz/editor/:id', pathMatch: 'full' },
+  { path: 'ai-quiz-generator', redirectTo: 'quiz/ai-quiz-generator', pathMatch: 'full' },
+
+  // Quiz Mode Routes (mirrors the nested structure of /lernen/*)
   {
-    path: 'home',
+    path: 'quiz',
     canActivate: [authGuard],
-    data: { animationIndex: 10 },
-    loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
+    children: [
+      {
+        path: '',
+        redirectTo: 'home',
+        pathMatch: 'full'
+      },
+      {
+        path: 'home',
+        data: { animationIndex: 10 },
+        loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
+      },
+      {
+        path: 'quizzes',
+        data: { animationIndex: 40 },
+        loadComponent: () => import('./features/quiz-management/quiz-list/quiz-list.component').then(m => m.QuizListComponent)
+      },
+      {
+        path: 'editor/:id',
+        data: { animationIndex: 42 },
+        loadComponent: () => import('./features/quiz-editor/quiz-editor.component').then(m => m.QuizEditorComponent)
+      },
+      {
+        path: 'ai-quiz-generator',
+        data: { animationIndex: 44 },
+        loadComponent: () => import('./features/ai-quiz-generator/ai-quiz-generator.component').then(m => m.AiQuizGeneratorComponent)
+      },
+      {
+        path: ':id/take',
+        data: { animationIndex: 43 },
+        loadComponent: () => import('./features/quiz-taking/quiz-session/quiz-session.component').then(m => m.QuizSessionComponent)
+      },
+      {
+        path: ':id',
+        data: { animationIndex: 41 },
+        loadComponent: () => import('./features/quiz-management/quiz-detail/quiz-detail.component').then(m => m.QuizDetailComponent)
+      }
+    ]
   },
   // Lernen Mode Routes
   {
@@ -99,44 +143,7 @@ export const routes: Routes = [
     loadComponent: () => import('./features/updates/updates.component').then(m => m.UpdatesComponent)
   },
   {
-    path: 'quizzes',
-    canActivate: [authGuard],
-    data: { animationIndex: 40 },
-    loadComponent: () => import('./features/quiz-management/quiz-list/quiz-list.component').then(m => m.QuizListComponent)
-  },
-  {
-    path: 'quizzes/:id',
-    canActivate: [authGuard],
-    data: { animationIndex: 41 },
-    loadComponent: () => import('./features/quiz-management/quiz-detail/quiz-detail.component').then(m => m.QuizDetailComponent)
-  },
-  {
-    path: 'quiz-editor/:id',
-    canActivate: [authGuard],
-    data: { animationIndex: 42 },
-    loadComponent: () => import('./features/quiz-editor/quiz-editor.component').then(m => m.QuizEditorComponent)
-  },
-  {
-    path: 'ai-quiz-generator',
-    canActivate: [authGuard],
-    data: { animationIndex: 44 },
-    loadComponent: () => import('./features/ai-quiz-generator/ai-quiz-generator.component').then(m => m.AiQuizGeneratorComponent)
-  },
-  {
-    path: 'quiz/:id/take',
-    canActivate: [authGuard],
-    data: { animationIndex: 43 },
-    loadComponent: () => import('./features/quiz-taking/quiz-session/quiz-session.component').then(m => m.QuizSessionComponent)
-  },
-  {
-  path: 'quiz-detail/:id',
-  canActivate: [authGuard],
-  data: { animationIndex: 41 },
-  loadComponent: () => import('./features/quiz-management/quiz-detail/quiz-detail.component')
-    .then(m => m.QuizDetailComponent)
- },
-  {
     path: '**',
-    redirectTo: 'home'
+    redirectTo: 'quiz/home'
   }
 ];

@@ -32,14 +32,14 @@ export class KeyboardShortcutsService {
       key: 'n',
       ctrlOrCmd: true,
       description: 'Neues Quiz erstellen',
-      action: () => this.router.navigate(['/quiz-editor/new'])
+      action: () => this.router.navigate(['/quiz', 'editor', 'new'])
     });
 
     this.register({
       key: 'h',
       ctrlOrCmd: true,
       description: 'Zur Startseite',
-      action: () => this.router.navigate(['/home'])
+      action: () => this.router.navigate(['/quiz', 'home'])
     });
   }
 

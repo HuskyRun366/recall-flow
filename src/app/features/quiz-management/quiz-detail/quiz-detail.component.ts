@@ -165,7 +165,7 @@ export class QuizDetailComponent implements OnInit {
 
   editQuiz(): void {
     const q = this.quiz();
-    if (q) this.router.navigate(['/quiz-editor', q.id]);
+    if (q) this.router.navigate(['/quiz', 'editor', q.id]);
   }
 
   copyJoinCode(): void {

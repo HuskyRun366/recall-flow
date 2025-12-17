@@ -273,15 +273,15 @@ export class QuizListComponent implements OnInit {
   }
 
   createNewQuiz(): void {
-    this.router.navigate(['/quiz-editor', 'new']);
+    this.router.navigate(['/quiz', 'editor', 'new']);
   }
 
   editQuiz(quizId: string): void {
-    this.router.navigate(['/quiz-editor', quizId]);
+    this.router.navigate(['/quiz', 'editor', quizId]);
   }
 
   viewDetails(quizId: string): void {
-    this.router.navigate(['/quiz-detail', quizId]);
+    this.router.navigate(['/quiz', quizId]);
   }
 
   startQuiz(quiz: Quiz): void {
@@ -503,7 +503,7 @@ export class QuizListComponent implements OnInit {
       }
 
       // Navigate to quiz detail
-      this.router.navigate(['/quiz-detail', quiz.id]);
+      this.router.navigate(['/quiz', quiz.id]);
     } catch (err: any) {
       console.error('Error joining quiz by code:', err);
       this.joinError.set('Fehler beim Beitreten: ' + (err.message || 'Unbekannter Fehler'));

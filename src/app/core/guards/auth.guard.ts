@@ -27,5 +27,5 @@ export const adminGuard: CanActivateFn = (route, state) => {
   }
 
   // Redirect to home page if not admin
-  return router.createUrlTree(['/home']);
+  return router.createUrlTree(['/quiz/home']);
 };

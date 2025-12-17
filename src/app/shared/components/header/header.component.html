@@ -22,8 +22,8 @@
           </div>
 
           @if (modeService.isQuizMode()) {
-            <a routerLink="/home" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Home</a>
-            <a routerLink="/quizzes" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Quizzes</a>
+            <a routerLink="/quiz/home" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Home</a>
+            <a routerLink="/quiz/quizzes" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Quizzes</a>
           } @else {
             <a routerLink="/lernen/home" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Home</a>
             <a routerLink="/lernen/decks" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Flashcards</a>

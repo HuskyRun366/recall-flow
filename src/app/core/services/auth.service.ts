@@ -59,7 +59,7 @@ export class AuthService {
 
       if (result.user) {
         await this.ensureUserDocument(result.user);
-        await this.router.navigate(['/home']);
+        await this.router.navigate(['/quiz', 'home']);
       }
     } catch (error) {
       console.error('Error signing in with Google:', error);

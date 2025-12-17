@@ -48,8 +48,11 @@ export class ModeService {
     this.modeSignal.set(mode);
 
     // Navigate to mode's home page
-    const homeRoute = mode === 'quiz' ? '/home' : '/lernen/home';
-    await this.router.navigate([homeRoute]);
+    if (mode === 'quiz') {
+      await this.router.navigate(['/quiz', 'home']);
+    } else {
+      await this.router.navigate(['/lernen', 'home']);
+    }
   }
 
   /**
@@ -64,13 +67,13 @@ export class ModeService {
    * Get home route for current mode
    */
   getHomeRoute(): string {
-    return this.mode() === 'quiz' ? '/home' : '/lernen/home';
+    return this.mode() === 'quiz' ? '/quiz/home' : '/lernen/home';
   }
 
   /**
    * Get list route for current mode
    */
   getListRoute(): string {
-    return this.mode() === 'quiz' ? '/quizzes' : '/lernen/decks';
+    return this.mode() === 'quiz' ? '/quiz/quizzes' : '/lernen/decks';
   }
 }
