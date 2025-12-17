@@ -154,6 +154,8 @@ export class LernenHomeComponent implements OnInit {
     };
   });
 
+  fabOpen = signal(false);
+
   ngOnInit(): void {
     this.loadDecks();
   }
@@ -221,5 +223,9 @@ export class LernenHomeComponent implements OnInit {
     this.isLoading.set(true);
     this.error.set(null);
     this.loadDecks();
+  }
+
+  toggleFab(): void {
+    this.fabOpen.update(open => !open);
   }
 }

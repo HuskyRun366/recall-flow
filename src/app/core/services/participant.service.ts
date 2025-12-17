@@ -43,9 +43,9 @@ export class ParticipantService {
       userId,
       email,
       role,
-      invitedBy,
       invitedAt: Timestamp.now() as any,
-      status
+      status,
+      ...(invitedBy ? { invitedBy } : {})
     };
     batch.set(participantDoc, participantData);
 

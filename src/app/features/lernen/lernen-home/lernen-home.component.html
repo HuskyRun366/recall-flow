@@ -139,10 +139,25 @@
 
 <!-- FAB (Floating Action Button) -->
 @if (!isLoading() && !error()) {
-  <a routerLink="/lernen/deck-editor/new" class="fab" aria-label="Neues Deck erstellen">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <line x1="12" y1="5" x2="12" y2="19"/>
-      <line x1="5" y1="12" x2="19" y2="12"/>
-    </svg>
-  </a>
+  <div class="fab-container" [class.open]="fabOpen()">
+    <div class="fab-menu">
+      <a class="fab-item" routerLink="/lernen/deck-editor/new" (click)="toggleFab()">
+        <span class="icon-circle">➕</span>
+        <span class="label">Neues Deck</span>
+      </a>
+      <a class="fab-item" routerLink="/lernen/material-editor/new" (click)="toggleFab()">
+        <span class="icon-circle">📄</span>
+        <span class="label">Neue Unterlage</span>
+      </a>
+    </div>
+
+    <button type="button"
+            class="fab"
+            (click)="toggleFab()"
+            [attr.aria-expanded]="fabOpen()"
+            aria-label="Erstellen-Menü öffnen"
+            aria-haspopup="menu">
+      <span class="fab-lines" aria-hidden="true"></span>
+    </button>
+  </div>
 }
