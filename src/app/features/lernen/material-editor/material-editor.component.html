@@ -1,0 +1,282 @@
+<div class="material-editor">
+  <!-- Header -->
+  <div class="editor-header">
+    <div class="header-left">
+      <p class="eyebrow">Lernunterlagen Editor{{ unsavedChanges() ? ' • Ungespeichert' : '' }}</p>
+      <h1>{{ material()?.title || 'Neue Lernunterlage' }}{{ unsavedChanges() ? ' *' : '' }}</h1>
+      <p class="subtitle">{{ formatBytes(htmlContent().length) }}</p>
+    </div>
+    <div class="header-right">
+      <button
+        class="btn btn-secondary"
+        (click)="togglePreview()"
+        [disabled]="isLoading() || !htmlContent()">
+        {{ showPreview() ? 'Editor' : 'Vorschau' }}
+      </button>
+      <button
+        class="btn btn-primary"
+        (click)="saveMaterial()"
+        [disabled]="isLoading() || isSaving() || (!unsavedChanges() && !isNewMaterial())">
+        {{ isSaving() ? 'Speichern...' : 'Speichern' }}
+      </button>
+      <button
+        class="btn btn-secondary"
+        (click)="goBack()"
+        [disabled]="isSaving()">
+        Abbrechen
+      </button>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <h2>Fehler</h2>
+      <p>{{ error() }}</p>
+      <button class="btn btn-primary" (click)="retry()">
+        Erneut versuchen
+      </button>
+    </div>
+  }
+
+  <!-- Success Message -->
+  @if (successMessage()) {
+    <div class="success-toast">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+      {{ successMessage() }}
+    </div>
+  }
+
+  <!-- Co-Author Errors -->
+  @if (coAuthorErrors().length > 0) {
+    <div class="error-message co-author-errors">
+      <strong>Mit-Autoren Probleme:</strong>
+      <ul>
+        @for (err of coAuthorErrors(); track err) {
+          <li>{{ err }}</li>
+        }
+      </ul>
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Lade Unterlage...</p>
+    </div>
+  }
+
+  <!-- Editor Content -->
+  @if (!isLoading() && !error() && material()) {
+    <div class="editor-layout">
+      <!-- Sidebar: Settings -->
+      <div class="sidebar">
+        <div class="settings-card">
+          <h3>Einstellungen</h3>
+
+          <div class="form-group">
+            <label>Titel</label>
+            <input
+              type="text"
+              name="materialTitle"
+              autocomplete="off"
+              [(ngModel)]="material()!.title"
+              (ngModelChange)="materialForm.patchValue({title: $event}); unsavedChanges.set(true)"
+              placeholder="Titel der Unterlage">
+          </div>
+
+          <div class="form-group">
+            <label>Beschreibung</label>
+            <textarea
+              name="materialDescription"
+              autocomplete="off"
+              [(ngModel)]="material()!.description"
+              (ngModelChange)="materialForm.patchValue({description: $event}); unsavedChanges.set(true)"
+              placeholder="Kurze Beschreibung..."
+              rows="3"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Tags (kommagetrennt)</label>
+            <input
+              type="text"
+              name="materialTags"
+              autocomplete="off"
+              [value]="(material()?.tags || []).join(', ')"
+              (input)="materialForm.patchValue({tags: $any($event.target).value}); unsavedChanges.set(true)"
+              placeholder="mathe, physik, formeln">
+          </div>
+
+          <div class="form-group">
+            <label>Sichtbarkeit</label>
+            <select
+              name="materialVisibility"
+              [value]="material()?.visibility || 'private'"
+              (change)="materialForm.patchValue({visibility: $any($event.target).value}); unsavedChanges.set(true)">
+              <option value="private">Privat</option>
+              <option value="public">Öffentlich</option>
+              <option value="unlisted">Nicht gelistet (mit Code)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="coauthor-card">
+          <div class="coauthor-header">
+            <div>
+              <p class="eyebrow">Mit-Autoren</p>
+              <h4>Mitarbeitende hinzufügen</h4>
+            </div>
+            <span class="pill">Optional</span>
+          </div>
+
+          <div class="coauthor-input">
+            <label for="materialCoAuthors">E-Mails (Komma oder Zeilen getrennt)</label>
+            <textarea id="materialCoAuthors" name="materialCoAuthors"
+              [value]="coAuthors().join(', ')"
+              [disabled]="!isOwner()"
+              (input)="onCoAuthorInput($any($event.target).value)"
+              rows="2"
+              placeholder="anna@example.com, max@example.com"></textarea>
+            <small>Mit-Autoren dürfen bearbeiten, aber nicht löschen.</small>
+          </div>
+
+          @if (coAuthors().length) {
+            <div class="coauthor-list">
+              @for (mail of coAuthors(); track mail) {
+                <div class="chip">{{ mail }}</div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Delete Button (only for owner of existing material) -->
+        @if (!isNewMaterial() && isOwner()) {
+          <button
+            class="btn btn-danger btn-full"
+            (click)="deleteMaterial()"
+            [disabled]="isSaving()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+            Unterlage löschen
+          </button>
+        }
+      </div>
+
+      <!-- Main Area: Upload/Editor/Preview -->
+      <div class="main-area">
+        @if (!showPreview()) {
+          <!-- Upload Zone -->
+          <div
+            class="upload-zone"
+            [class.dragging]="isDragging()"
+            [class.has-content]="!!htmlContent()"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            (drop)="onDrop($event)"
+            (click)="triggerFileInput()">
+
+            <input
+              #fileInput
+              type="file"
+              accept=".html,.htm"
+              (change)="onFileSelect($event)"
+              hidden>
+
+            @if (!htmlContent()) {
+              <div class="upload-content">
+                <div class="upload-icon">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                </div>
+                <h3>HTML-Datei hierher ziehen</h3>
+                <p>oder klicken zum Auswählen</p>
+                <span class="file-hint">.html oder .htm, max. 500KB</span>
+              </div>
+            } @else {
+              <div class="upload-content has-file">
+                <div class="file-info">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                  <div>
+                    <span class="file-name">{{ fileName() || 'HTML-Inhalt' }}</span>
+                    <span class="file-size">{{ formatBytes(htmlContent().length) }}</span>
+                  </div>
+                </div>
+                <button class="btn btn-secondary btn-small" (click)="$event.stopPropagation()">
+                  Andere Datei wählen
+                </button>
+              </div>
+            }
+          </div>
+
+          <!-- HTML Editor -->
+          <div class="html-editor">
+            <div class="editor-toolbar">
+              <span class="toolbar-label">HTML-Inhalt</span>
+              <span class="char-count">{{ htmlContent().length.toLocaleString() }} Zeichen</span>
+            </div>
+            <textarea
+              class="code-textarea"
+              [value]="htmlContent()"
+              (input)="onHtmlContentChange($any($event.target).value)"
+              placeholder="<!DOCTYPE html>
+<html>
+<head>
+  <title>Lernunterlage</title>
+</head>
+<body>
+  <h1>Titel</h1>
+  <p>Inhalt hier...</p>
+</body>
+</html>"
+              spellcheck="false"></textarea>
+          </div>
+        } @else {
+          <!-- Preview -->
+          <div class="preview-container">
+            <div class="preview-header">
+              <h3>Vorschau</h3>
+              <button class="btn btn-secondary btn-small" (click)="togglePreview()">
+                Zurück zum Editor
+              </button>
+            </div>
+            @if (sanitizedPreview()) {
+              <iframe
+                class="preview-frame"
+                [srcdoc]="sanitizedPreview()"
+                sandbox="allow-scripts allow-same-origin allow-popups"
+                title="Vorschau der Lernunterlage">
+              </iframe>
+            } @else {
+              <div class="preview-empty">
+                <p>Kein Inhalt zum Anzeigen</p>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Unsaved Changes Indicator -->
+  <div class="unsaved-indicator" *ngIf="unsavedChanges()">
+    <span class="dot"></span>
+    Ungespeicherte Änderungen
+  </div>
+</div>

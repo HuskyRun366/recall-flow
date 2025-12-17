@@ -200,5 +200,69 @@ service cloud.firestore {
         allow write: if isOwner(userId) && canAccessDeck(deckId);
       }
     }
+
+    // =============================================
+    // LEARNING MATERIALS RULES
+    // =============================================
+
+    // Helper functions for learning materials
+    function isMaterialOwner(materialId) {
+      return isAuthenticated() &&
+        get(/databases/$(database)/documents/learningMaterials/$(materialId)).data.ownerId == request.auth.uid;
+    }
+
+    function isCoAuthorMaterial(materialId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/materialParticipants/$(materialId)/participants/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/materialParticipants/$(materialId)/participants/$(request.auth.uid)).data.role == 'co-author';
+    }
+
+    function canEditMaterial(materialId) {
+      return isMaterialOwner(materialId) || isCoAuthorMaterial(materialId);
+    }
+
+    function canAccessMaterial(materialId) {
+      let material = get(/databases/$(database)/documents/learningMaterials/$(materialId)).data;
+      return material.visibility in ['public', 'unlisted'] ||
+             isMaterialOwner(materialId) ||
+             exists(/databases/$(database)/documents/materialParticipants/$(materialId)/participants/$(request.auth.uid));
+    }
+
+    // User's material references (denormalized for user queries)
+    match /users/{userId}/userMaterials/{materialId} {
+      allow read: if isOwner(userId);
+      allow create: if (isOwner(userId) &&
+        get(/databases/$(database)/documents/learningMaterials/$(materialId)).data.visibility in ['public', 'unlisted']
+      ) || canEditMaterial(materialId);
+      allow update: if isOwner(userId) || canEditMaterial(materialId);
+      allow delete: if isOwner(userId) || canEditMaterial(materialId);
+    }
+
+    // Learning Materials collection
+    match /learningMaterials/{materialId} {
+      allow read: if resource.data.visibility in ['public', 'unlisted'] ||
+                     (isAuthenticated() && resource.data.ownerId == request.auth.uid) ||
+                     (isAuthenticated() && exists(/databases/$(database)/documents/materialParticipants/$(materialId)/participants/$(request.auth.uid)));
+      allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
+      allow update: if canEditMaterial(materialId);
+      allow delete: if isMaterialOwner(materialId);
+    }
+
+    // Material participants
+    match /materialParticipants/{materialId}/participants/{userId} {
+      allow read: if canAccessMaterial(materialId);
+      allow create: if canEditMaterial(materialId) || (
+        isAuthenticated() &&
+        request.auth.uid == userId &&
+        (
+          get(/databases/$(database)/documents/learningMaterials/$(materialId)).data.visibility == 'public' ||
+          get(/databases/$(database)/documents/learningMaterials/$(materialId)).data.visibility == 'unlisted'
+        ) &&
+        request.resource.data.role == 'student' &&
+        request.resource.data.status == 'accepted'
+      );
+      allow update: if canEditMaterial(materialId) || (isOwner(userId) && request.resource.data.status == 'accepted');
+      allow delete: if canEditMaterial(materialId) || isOwner(userId);
+    }
   }
 }

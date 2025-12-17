@@ -1,0 +1,295 @@
+<div class="material-list-page" appPullToRefresh (refresh)="onRefresh()">
+  <div class="page-header">
+    <div class="title-block">
+      <p class="eyebrow">Übersicht</p>
+      <h1>Lernunterlagen</h1>
+      <p class="subtitle">Interaktive HTML-Dokumente für dein Studium</p>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn btn-secondary" type="button" (click)="createNewMaterial()">
+        Neue Unterlage erstellen
+      </button>
+    </div>
+  </div>
+
+  <div class="toolbar-row">
+    <div class="tab-group" role="tablist" aria-label="Unterlagen-Kategorien">
+      <button
+        class="tab-btn"
+        role="tab"
+        [class.active]="activeTab() === 'owned'"
+        [attr.aria-selected]="activeTab() === 'owned'"
+        (click)="setActiveTab('owned')">
+        Eigene
+        <span class="count">{{ ownedMaterials().length }}</span>
+      </button>
+      <button
+        class="tab-btn"
+        role="tab"
+        [class.active]="activeTab() === 'co-authored'"
+        [attr.aria-selected]="activeTab() === 'co-authored'"
+        (click)="setActiveTab('co-authored')">
+        Mit-Autor
+        <span class="count">{{ coAuthoredMaterials().length }}</span>
+      </button>
+      <button
+        class="tab-btn"
+        role="tab"
+        [class.active]="activeTab() === 'public'"
+        [attr.aria-selected]="activeTab() === 'public'"
+        (click)="setActiveTab('public')">
+        Öffentlich
+        <span class="count">{{ publicMaterials().length }}</span>
+      </button>
+    </div>
+
+    <div class="toolbar-pill">
+      <span class="pill">{{ activeTab() === 'owned' ? 'Eigene Unterlagen' : activeTab() === 'co-authored' ? 'Mit-Autor' : 'Öffentliche Unterlagen' }}</span>
+    </div>
+
+    <!-- Join by Code Modal -->
+    <div class="join-wrapper">
+      <input type="checkbox" id="join-toggle" class="join-toggle" />
+      <label for="join-toggle" class="btn btn-secondary join-btn">Mit Code beitreten</label>
+
+      <div class="join-modal">
+        <div class="join-card">
+          <h3>Unterlage per Code beitreten</h3>
+          <p>Gib den Unterlagen-Code ein, um beizutreten.</p>
+          <input type="text"
+                 placeholder="ABCD-1234"
+                 class="join-input"
+                 aria-label="Beitritts-Code"
+                 [value]="joinCode()"
+                 (input)="joinCode.set($any($event.target).value)" />
+          <div class="join-error" *ngIf="joinError()">{{ joinError() }}</div>
+          <div class="join-actions">
+            <label for="join-toggle" class="btn btn-secondary">Abbrechen</label>
+            <button class="btn btn-primary" type="button"
+                    [disabled]="joinBusy()"
+                    (click)="joinByCode()">
+              {{ joinBusy() ? 'Beitreten...' : 'Beitreten' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-summary">
+    <app-stat-card [config]="{
+      icon: 'svg',
+      iconContent: '<path d=\'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\'/><polyline points=\'14 2 14 8 20 8\'/>',
+      value: displayedMaterialCount(),
+      label: 'Unterlagen'
+    }" />
+
+    <app-stat-card [config]="{
+      icon: 'svg',
+      iconContent: '<path d=\'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\'/><polyline points=\'17 8 12 3 7 8\'/><line x1=\'12\' y1=\'3\' x2=\'12\' y2=\'15\'/>',
+      value: totalContentSize(),
+      label: 'Gesamtgröße'
+    }" />
+
+    <app-stat-card [config]="{
+      icon: 'svg',
+      iconContent: '<path d=\'M22 11.08V12a10 10 0 1 1-5.93-9.14\'/><polyline points=\'22 4 12 14.01 9 11.01\'/>',
+      value: latestUpdatedDate() ? formatDate(latestUpdatedDate()!) : '—',
+      label: 'Zuletzt aktualisiert'
+    }" />
+  </div>
+
+  @if (!isLoading() && !error()) {
+    <app-search-bar
+      [searchTerm]="currentSearchTerm()"
+      [resultCount]="displayedMaterials().length"
+      [placeholder]="searchPlaceholder()"
+      [ariaLabel]="'Unterlagen durchsuchen'"
+      (searchChange)="onSearch($event)"
+      (clear)="clearSearch()" />
+  }
+
+  @if (isLoading()) {
+    <div class="skeleton-grid">
+      @for (item of [1,2,3,4,5,6]; track item) {
+        <app-skeleton-loader type="card" />
+      }
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+      <h2>Fehler beim Laden</h2>
+      <p>{{ error() }}</p>
+    </div>
+  } @else {
+    <div class="material-grid">
+      @if (displayedMaterials().length === 0) {
+        <div class="empty-state">
+          <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          <h2>Keine Unterlagen gefunden</h2>
+          <p *ngIf="activeTab() === 'owned'">
+            {{ currentSearchTerm().trim() ? 'Keine eigene Unterlage passt zu deiner Suche.' : 'Du hast noch keine Unterlagen erstellt. Lege mit "Neue Unterlage erstellen" los.' }}
+          </p>
+          <p *ngIf="activeTab() === 'co-authored'">
+            {{ currentSearchTerm().trim() ? 'Keine Mit-Autor Unterlage passt zu deiner Suche.' : 'Du wurdest noch bei keiner Unterlage als Mit-Autor hinzugefügt.' }}
+          </p>
+          <p *ngIf="activeTab() === 'public'">
+            {{ publicSearchTerm().trim() ? 'Keine öffentliche Unterlage passt zu deiner Suche.' : 'Es gibt noch keine öffentlichen Unterlagen.' }}
+          </p>
+        </div>
+      } @else {
+        @for (material of displayedMaterials(); track material.id) {
+          <div class="material-card">
+            <div class="material-card-header">
+              <div class="material-avatar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+              </div>
+
+              <div class="header-text">
+                <div class="title-row">
+                  <h3>{{ material.title }}</h3>
+                  <app-badge [config]="{
+                    variant: material.visibility === 'public' ? 'public' : material.visibility === 'unlisted' ? 'unlisted' : 'private',
+                    label: material.visibility === 'public' ? 'Öffentlich' : material.visibility === 'unlisted' ? 'Nicht gelistet' : 'Privat'
+                  }" />
+                </div>
+
+                <p class="material-description" *ngIf="material.description">
+                  {{ material.description }}
+                </p>
+              </div>
+            </div>
+
+            <div class="material-meta">
+              <div class="meta-item">
+                <div class="meta-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                </div>
+                <div class="meta-copy">
+                  <span class="meta-label">Größe</span>
+                  <span class="meta-value">{{ formatBytes(material.contentSize) }}</span>
+                </div>
+              </div>
+
+              <div class="meta-item">
+                <div class="meta-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 6v6l4 2" />
+                  </svg>
+                </div>
+                <div class="meta-copy">
+                  <span class="meta-label">Aktualisiert</span>
+                  <span class="meta-value">{{ formatDate(material.updatedAt) }}</span>
+                </div>
+              </div>
+
+              <div class="meta-item">
+                <div class="meta-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </div>
+                <div class="meta-copy">
+                  <span class="meta-label">Zugriff</span>
+                  <span class="meta-value">
+                    @if (requiresEnrollment(material)) {
+                      Anmeldung nötig
+                    } @else if (isOwner(material)) {
+                      Besitzer
+                    } @else if (isCoAuthor(material)) {
+                      Mit-Autor
+                    } @else {
+                      Direkt verfügbar
+                    }
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="material-actions">
+              @if (requiresEnrollment(material) && !isEnrolled(material.id)) {
+                <button
+                  class="btn btn-secondary btn-small"
+                  [disabled]="isEnrollmentBusy(material.id)"
+                  (click)="enrollInMaterial(material)">
+                  @if (isEnrolling(material.id)) {
+                    Wird hinzugefügt...
+                  } @else {
+                    Hinzufügen
+                  }
+                </button>
+              }
+
+              @if (requiresEnrollment(material) && isEnrolled(material.id)) {
+                <button
+                  class="btn btn-secondary btn-small"
+                  [disabled]="isEnrollmentBusy(material.id)"
+                  (click)="unenrollFromMaterial(material)">
+                  @if (isUnenrolling(material.id)) {
+                    Entferne...
+                  } @else {
+                    Entfernen
+                  }
+                </button>
+              }
+
+              <button
+                class="btn btn-primary btn-small"
+                [disabled]="(requiresEnrollment(material) && !isEnrolled(material.id)) || isEnrollmentBusy(material.id)"
+                (click)="viewMaterial(material.id)">
+                Anzeigen
+              </button>
+
+              @if (canEdit(material)) {
+                <button class="btn btn-secondary btn-small" (click)="editMaterial(material.id)">
+                  Bearbeiten
+                </button>
+              }
+
+              @if (isOwner(material)) {
+                <button class="btn btn-danger btn-small" (click)="deleteMaterial(material)">
+                  Löschen
+                </button>
+              }
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+
+  <div class="fab-container" [class.open]="fabOpen()">
+    <div class="fab-menu">
+      <a class="fab-item" (click)="$event.preventDefault(); createNewMaterial(); toggleFab()">
+        <span class="icon-circle">+</span>
+        <span class="label">Neue Unterlage</span>
+      </a>
+    </div>
+
+    <button class="fab"
+            type="button"
+            (click)="toggleFab()"
+            [attr.aria-expanded]="fabOpen()"
+            aria-label="Erstellen-Menü öffnen"
+            aria-haspopup="menu">
+      <span class="fab-lines" aria-hidden="true"></span>
+    </button>
+  </div>
+</div>

@@ -53,6 +53,23 @@ export const routes: Routes = [
       {
         path: 'deck/:id/study',
         loadComponent: () => import('./features/lernen/flashcard-session/flashcard-session.component').then(m => m.FlashcardSessionComponent)
+      },
+      // Learning Materials Routes
+      {
+        path: 'materials',
+        loadComponent: () => import('./features/lernen/material-list/material-list.component').then(m => m.MaterialListComponent)
+      },
+      {
+        path: 'material/:id',
+        loadComponent: () => import('./features/lernen/material-viewer/material-viewer.component').then(m => m.MaterialViewerComponent)
+      },
+      {
+        path: 'material-editor/new',
+        loadComponent: () => import('./features/lernen/material-editor/material-editor.component').then(m => m.MaterialEditorComponent)
+      },
+      {
+        path: 'material-editor/:id',
+        loadComponent: () => import('./features/lernen/material-editor/material-editor.component').then(m => m.MaterialEditorComponent)
       }
     ]
   },

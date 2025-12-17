@@ -8,3 +8,5 @@ export * from './flashcard-deck.model';
 export * from './flashcard.model';
 export * from './flashcard-progress.model';
 export * from './deck-participant.model';
+export * from './learning-material.model';
+export * from './material-participant.model';
