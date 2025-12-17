@@ -8,7 +8,9 @@
       (@routeAnimation.done)="onRouteAnimationDone()"
       [@.disabled]="prefersReducedMotion"
       [class.route-transitioning]="isRouteTransitioning">
-  <div class="route-transition-overlay" aria-hidden="true"></div>
+  <div class="route-transition-overlay-clip" aria-hidden="true">
+    <div class="route-transition-overlay"></div>
+  </div>
   <router-outlet />
 </main>
 

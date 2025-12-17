@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy, signal, computed, inject, effect } from '
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import DOMPurify from 'dompurify';
 import { LearningMaterialService } from '../../../core/services/learning-material.service';
 import { MaterialParticipantService } from '../../../core/services/material-participant.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -53,6 +52,8 @@ export class MaterialViewerComponent implements OnInit, OnDestroy {
     this.isFullscreen.set(!!document.fullscreenElement);
   };
 
+  private readonly UNTRUSTED_MATERIAL_WARNING_KEY_PREFIX = 'recallflow:material-untrusted-warning:v1:';
+
   constructor() {
     // Effect to update iframe content when theme changes
     effect(() => {
@@ -84,6 +85,12 @@ export class MaterialViewerComponent implements OnInit, OnDestroy {
     this.materialService.getMaterialById(materialId).subscribe({
       next: (material) => {
         if (material) {
+          if (!this.confirmUntrustedMaterialIfNeeded(materialId, material)) {
+            this.isLoading.set(false);
+            this.goBack();
+            return;
+          }
+
           this.material.set(material);
           this.prepareContent(material.htmlContent);
 
@@ -108,43 +115,207 @@ export class MaterialViewerComponent implements OnInit, OnDestroy {
     });
   }
 
-  private prepareContent(htmlContent: string): void {
-    // Sanitize HTML with DOMPurify
-    const sanitized = DOMPurify.sanitize(htmlContent, {
-      WHOLE_DOCUMENT: true,
-      ALLOW_DATA_ATTR: true,
-      ADD_TAGS: ['style'],
-      ADD_ATTR: ['target', 'onclick']
-    });
+  private confirmUntrustedMaterialIfNeeded(materialId: string, material: LearningMaterial): boolean {
+    const visibility = material.visibility;
+    if (visibility !== 'public' && visibility !== 'unlisted') {
+      return true;
+    }
 
-    // Inject theme support styles
-    const themedContent = this.injectThemeSupport(sanitized);
+    const userId = this.currentUser()?.uid;
+    if (userId && userId === material.ownerId) {
+      return true;
+    }
+
+    const warningKey = this.getUntrustedMaterialWarningKey(materialId);
+    try {
+      if (localStorage.getItem(warningKey) === '1') {
+        return true;
+      }
+    } catch {
+      // If storage isn't available, fall back to showing the warning each time.
+    }
+
+    const label = visibility === 'public' ? 'öffentliche' : 'nicht gelistete';
+    const proceed = confirm(
+      `Sicherheitshinweis\n\nDu öffnest eine ${label} Lernunterlage. Sie kann interaktiven Code (JavaScript) enthalten.\n\nÖffne sie nur, wenn du dem Ersteller vertraust.\n\nFortfahren?`
+    );
+
+    if (!proceed) {
+      return false;
+    }
+
+    try {
+      localStorage.setItem(warningKey, '1');
+    } catch {
+      // Ignore storage failures (warning will be shown again next time).
+    }
+
+    return true;
+  }
+
+  private getUntrustedMaterialWarningKey(materialId: string): string {
+    return `${this.UNTRUSTED_MATERIAL_WARNING_KEY_PREFIX}${materialId}`;
+  }
+
+  private prepareContent(htmlContent: string): void {
+    // NOTE: We intentionally do not sanitize away scripts here because learning materials
+    // are meant to be interactive. Security is handled via iframe sandboxing (no same-origin).
+    const cleanedOriginal = this.stripInvalidSourceMappingUrls(htmlContent);
+    const runtimeInjected = this.injectRuntimeSupport(cleanedOriginal);
+    const themedContent = this.injectThemeSupport(runtimeInjected);
+    const cleanedContent = this.stripInvalidSourceMappingUrls(themedContent);
 
     // Use srcdoc-compatible format
-    this.sanitizedContent.set(this.sanitizer.bypassSecurityTrustHtml(themedContent));
+    this.sanitizedContent.set(this.sanitizer.bypassSecurityTrustHtml(cleanedContent));
+  }
+
+  /**
+   * Firefox DevTools can throw noisy source-map errors for about:srcdoc when the embedded document
+   * contains empty or "null" sourceMappingURL hints. They are non-functional anyway, so strip them.
+   */
+  private stripInvalidSourceMappingUrls(html: string): string {
+    return html
+      // JS single-line sourcemap hints (empty or null only)
+      .replace(/\/\/[#@]\s*sourceMappingURL\s*=\s*(?:null)?\s*(?=\r?\n|$)/g, '')
+      // CSS/JS block sourcemap hints (empty or null only)
+      .replace(/\/\*#\s*sourceMappingURL\s*=\s*(?:null)?\s*\*\//g, '');
+  }
+
+  /**
+   * Provide lightweight runtime shims so common patterns (like localStorage) don't crash in sandboxed iframes.
+   * This preserves interactivity while keeping a safer sandbox configuration (no same-origin).
+   */
+  private injectRuntimeSupport(html: string): string {
+    if (html.includes('id="recallflow-material-runtime"')) {
+      return html;
+    }
+
+    const runtimeScript = `
+      <script id="recallflow-material-runtime">
+        (function () {
+          function createMemoryStorage() {
+            let data = Object.create(null);
+
+            return {
+              getItem: function (key) {
+                key = String(key);
+                return Object.prototype.hasOwnProperty.call(data, key) ? data[key] : null;
+              },
+              setItem: function (key, value) {
+                data[String(key)] = String(value);
+              },
+              removeItem: function (key) {
+                delete data[String(key)];
+              },
+              clear: function () {
+                data = Object.create(null);
+              },
+              key: function (index) {
+                return Object.keys(data)[index] || null;
+              },
+              get length() {
+                return Object.keys(data).length;
+              }
+            };
+          }
+
+          function ensureStorage(name) {
+            try {
+              const storage = window[name];
+              if (!storage) throw new Error('missing');
+
+              const testKey = '__rf_test__';
+              storage.setItem(testKey, '1');
+              storage.removeItem(testKey);
+              return;
+            } catch (e) {
+              const fallback = createMemoryStorage();
+              try { window[name] = fallback; } catch (_) {}
+              try {
+                Object.defineProperty(window, name, {
+                  value: fallback,
+                  configurable: true,
+                  enumerable: true,
+                  writable: true
+                });
+              } catch (_) {}
+            }
+          }
+
+          ensureStorage('localStorage');
+          ensureStorage('sessionStorage');
+
+          // Some browsers keep iframe scroll position when srcdoc is updated.
+          // Ensure materials always start at the top when opened.
+          function resetScroll() {
+            try {
+              window.scrollTo(0, 0);
+            } catch (_) {}
+          }
+
+          if (document.readyState === 'complete') {
+            resetScroll();
+          } else {
+            window.addEventListener('load', function () {
+              resetScroll();
+              try { requestAnimationFrame(resetScroll); } catch (_) {}
+            }, { once: true });
+          }
+        })();
+      </script>
+    `;
+
+    if (html.includes('</head>')) {
+      return html.replace('</head>', `${runtimeScript}</head>`);
+    }
+
+    if (html.includes('<body')) {
+      return html.replace('<body', `${runtimeScript}<body`);
+    }
+
+    return runtimeScript + html;
   }
 
   private injectThemeSupport(html: string): string {
     const isDark = this.currentTheme() === 'dark';
 
+    const supportsThemeVars = /var\(--bg\b|--bg\s*:|var\(--text\b|--text\s*:|var\(--surface\b|--surface\s*:|var\(--border\b|--border\s*:/i.test(html);
+    const supportsDarkModeClass = /\bdark-mode\b/i.test(html);
+
+    // If the material doesn't appear to support theming hooks, don't override anything.
+    if (!supportsThemeVars && !supportsDarkModeClass) {
+      return html;
+    }
+
     const themeStyles = `
       <style id="injected-theme-styles">
+        ${supportsThemeVars ? `
         :root {
-          --injected-bg: ${isDark ? '#1a1a2e' : '#ffffff'};
-          --injected-text: ${isDark ? '#e0e0e0' : '#333333'};
-          --injected-surface: ${isDark ? '#252540' : '#f8f9fa'};
-          --injected-border: ${isDark ? '#3a3a5a' : '#e0e0e0'};
-        }
-        html, body {
-          background-color: var(--bg, var(--injected-bg)) !important;
-          color: var(--text, var(--injected-text)) !important;
-        }
-        /* Support for dark-mode class in uploaded HTML */
-        ${isDark ? 'html { class: dark-mode; } body.dark-mode, html.dark-mode body { background-color: var(--bg, #1a1a2e) !important; }' : ''}
+          --bg: ${isDark ? '#1a1a2e' : '#ffffff'};
+          --text: ${isDark ? '#e0e0e0' : '#333333'};
+          --surface: ${isDark ? '#252540' : '#f8f9fa'};
+          --border: ${isDark ? '#3a3a5a' : '#e0e0e0'};
+        }` : ''}
+        ${isDark ? 'html { color-scheme: dark; }' : ''}
       </style>
       <script>
-        // Apply dark mode class if needed
-        ${isDark ? "document.documentElement.classList.add('dark-mode'); document.body.classList.add('dark-mode');" : "document.documentElement.classList.remove('dark-mode'); document.body.classList.remove('dark-mode');"}
+        (function () {
+          const enableDarkMode = ${isDark ? 'true' : 'false'};
+
+          function applyDarkModeClasses() {
+            ${supportsDarkModeClass ? `
+            document.documentElement.classList.toggle('dark-mode', enableDarkMode);
+            const body = document.body;
+            if (body) body.classList.toggle('dark-mode', enableDarkMode);
+            ` : ''}
+          }
+
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', applyDarkModeClasses, { once: true });
+          } else {
+            applyDarkModeClasses();
+          }
+        })();
       </script>
     `;
 

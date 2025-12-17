@@ -37,9 +37,7 @@
 
 .route-transition-overlay {
   position: absolute;
-  inset: -18%;
-  z-index: 10;
-  pointer-events: none;
+  inset: 0;
   opacity: 0;
   background: conic-gradient(
     from 180deg at 50% 50%,
@@ -81,6 +79,14 @@
     opacity: 0.18;
     mix-blend-mode: soft-light;
   }
+}
+
+.route-transition-overlay-clip {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  overflow: hidden;
 }
 
 // Respect reduced motion preferences

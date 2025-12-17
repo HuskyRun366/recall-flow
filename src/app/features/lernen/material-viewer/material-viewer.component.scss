@@ -1,15 +1,18 @@
 @use '../../../../styles/variables' as *;
 
 .material-viewer-page {
+  height: calc(100dvh - 64px);
   min-height: calc(100vh - 64px);
   display: flex;
   flex-direction: column;
   background: var(--color-background);
+  overflow: hidden;
 
   &.fullscreen {
     position: fixed;
     inset: 0;
     z-index: 9999;
+    height: 100dvh;
     min-height: 100vh;
   }
 }
@@ -155,10 +158,12 @@
 }
 
 .material-viewer-container {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
   position: relative;
   display: flex;
   background: var(--color-background);
+  overflow: hidden;
 
   .content-frame {
     flex: 1;

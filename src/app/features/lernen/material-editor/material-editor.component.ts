@@ -221,8 +221,8 @@ export class MaterialEditorComponent implements OnInit {
       return;
     }
 
-    if (file.size > 500 * 1024) { // 500KB limit
-      this.error.set('Die Datei ist zu groß. Maximale Größe: 500KB');
+    if (file.size > 250 * 1024) { // 250KB limit
+      this.error.set('Die Datei ist zu groß. Maximale Größe: 250KB');
       return;
     }
 

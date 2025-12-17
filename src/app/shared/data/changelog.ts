@@ -13,6 +13,21 @@ export interface ChangelogItem {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '2.1',
+    date: new Date('2025-12-17'),
+    title: 'Materials Integration & Viewer Fixes',
+    changes: [
+      { type: 'feature', text: 'Add "Material" as sub-section of Lernen with navigation link and quick access' },
+      { type: 'improvement', text: 'Add multi-action FAB in Lernen (create Flashcards/Decks and Materials)' },
+      { type: 'bugfix', text: 'Fix Firestore participant writes failing when invitedBy is undefined' },
+      { type: 'bugfix', text: 'Fix Material Viewer layout so embedded HTML fills the available height (no more tiny scroll strip)' },
+      { type: 'improvement', text: 'Material Viewer now preserves interactive JavaScript and only applies theme sync when supported by the HTML' },
+      { type: 'improvement', text: 'Show a one-time safety warning when opening public/unlisted learning materials' },
+      { type: 'improvement', text: 'Harden material iframes by removing allow-same-origin (Viewer + Editor preview)' },
+      { type: 'bugfix', text: 'Restore scroll position properly on navigation (prevents “black bar” when opening viewer pages)' }
+    ]
+  },
+  {
     version: '2.0',
     date: new Date('2025-12-13'),
     title: 'Lern & Flashcard-System',
