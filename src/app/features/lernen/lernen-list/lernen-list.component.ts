@@ -9,7 +9,7 @@ import { FlashcardProgressService } from '../../../core/services/flashcard-progr
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { SkeletonLoaderComponent } from '../../../shared/components/skeleton-loader/skeleton-loader.component';
-import { StatCardComponent, StatCardConfig, BadgeComponent } from '../../../shared/components';
+import { StatCardComponent, StatCardConfig, BadgeComponent, SearchBarComponent } from '../../../shared/components';
 import { FlashcardDeck, UserDeckReference } from '../../../models';
 import { combineLatest, forkJoin, of, timeout } from 'rxjs';
 import { switchMap, map, catchError } from 'rxjs/operators';
@@ -20,7 +20,7 @@ type TabType = 'owned' | 'co-authored' | 'public';
 @Component({
   selector: 'app-lernen-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, PullToRefreshDirective, SkeletonLoaderComponent, StatCardComponent, BadgeComponent],
+  imports: [CommonModule, RouterModule, PullToRefreshDirective, SkeletonLoaderComponent, StatCardComponent, BadgeComponent, SearchBarComponent],
   templateUrl: './lernen-list.component.html',
   styleUrls: ['./lernen-list.component.scss']
 })
@@ -56,6 +56,18 @@ export class LernenListComponent implements OnInit {
         return this.publicSearchTerm();
     }
   });
+
+  searchPlaceholder = computed(() => {
+    switch (this.activeTab()) {
+      case 'owned':
+        return 'Eigene Decks durchsuchen';
+      case 'co-authored':
+        return 'Mit-Autor Decks durchsuchen';
+      case 'public':
+        return 'Öffentliche Decks durchsuchen';
+    }
+  });
+
   activeTab = signal<TabType>('owned');
   isLoading = signal(true);
   error = signal<string | null>(null);

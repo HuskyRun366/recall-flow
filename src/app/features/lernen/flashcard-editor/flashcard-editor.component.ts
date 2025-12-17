@@ -9,9 +9,11 @@ import { FlashcardService } from '../../../core/services/flashcard.service';
 import { FlashcardProgressService } from '../../../core/services/flashcard-progress.service';
 import { DeckParticipantService } from '../../../core/services/deck-participant.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { UserLookupService } from '../../../core/services/user-lookup.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { FlashcardDeck, Flashcard } from '../../../models';
-import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { switchMap, catchError } from 'rxjs/operators';
+import { firstValueFrom, of } from 'rxjs';
 import { ImportDialogComponent } from '../../quiz-editor/components/import-dialog/import-dialog.component';
 import { ImportedQuestion } from '../../../core/services/import.service';
 
@@ -40,6 +42,8 @@ export class FlashcardEditorComponent implements OnInit {
   private progressService = inject(FlashcardProgressService);
   private participantService = inject(DeckParticipantService);
   private authService = inject(AuthService);
+  private userLookupService = inject(UserLookupService);
+  private toastService = inject(ToastService);
   private destroyRef = inject(DestroyRef);
 
   deckForm!: FormGroup;
@@ -58,6 +62,10 @@ export class FlashcardEditorComponent implements OnInit {
   currentUser = this.authService.currentUser;
 
   canEdit = signal(true); // Will be set based on user permissions
+  isOwner = computed(() => this.deck()?.ownerId === this.currentUser()?.uid);
+
+  coAuthors = signal<string[]>([]);
+  coAuthorErrors = signal<string[]>([]);
 
   ngOnInit(): void {
     this.initializeForm();
@@ -89,6 +97,8 @@ export class FlashcardEditorComponent implements OnInit {
       this.deckId.set(null);
       this.isLoading.set(false);
       this.cards.set([]);
+      this.coAuthors.set([]);
+      this.coAuthorErrors.set([]);
 
       // Set default values for new deck
       const userId = this.currentUser()?.uid;
@@ -136,11 +146,21 @@ export class FlashcardEditorComponent implements OnInit {
 
         // Check permissions
         const userId = this.currentUser()?.uid;
+        if (!userId) {
+          throw new Error('User not authenticated');
+        }
+
         if (deck.ownerId !== userId) {
-          const isCoAuthor = await this.participantService.hasRole(id, userId!, 'co-author');
+          const isCoAuthor = await this.participantService.hasRole(id, userId, 'co-author');
           this.canEdit.set(isCoAuthor);
           if (!isCoAuthor) {
-            throw new Error('You do not have permission to edit this deck');
+            this.error.set('Du hast keine Berechtigung, dieses Deck zu bearbeiten');
+            this.toastService.error('Du hast keine Berechtigung, dieses Deck zu bearbeiten');
+            this.isLoading.set(false);
+            setTimeout(() => {
+              this.router.navigate(['/lernen/deck', id]);
+            }, 2000);
+            return deck;
           }
         } else {
           this.canEdit.set(true);
@@ -153,6 +173,20 @@ export class FlashcardEditorComponent implements OnInit {
           tags: deck.tags.join(', '),
           visibility: deck.visibility
         }, { emitEvent: false }); // Don't trigger unsavedChanges on initial load
+
+        const navState = history.state as any;
+        const hasDraftState = navState?.deckId === id && Array.isArray(navState?.coAuthorsDraft);
+
+        if (hasDraftState) {
+          this.coAuthors.set(navState.coAuthorsDraft);
+          this.coAuthorErrors.set(Array.isArray(navState?.coAuthorErrors) ? navState.coAuthorErrors : []);
+
+          if (this.coAuthorErrors().length > 0) {
+            this.unsavedChanges.set(true);
+          }
+        } else {
+          this.loadCoAuthors(id);
+        }
 
         return deck;
       }),
@@ -225,16 +259,28 @@ export class FlashcardEditorComponent implements OnInit {
       this.deckService.createDeck(deckData).pipe(
         takeUntilDestroyed(this.destroyRef)
       ).subscribe({
-        next: (deckId) => {
+        next: async (deckId) => {
           this.deckId.set(deckId);
 
           // Owner is identified by ownerId field in deck document (no participant record needed)
+
+          try {
+            await this.saveCoAuthors(deckId);
+          } catch (err) {
+            console.error('Failed to save co-authors for new deck:', err);
+          }
 
           this.successMessage.set('Deck created successfully!');
           this.isSaving.set(false);
 
           // Navigate to the editor for this deck
-          this.router.navigate(['/lernen/deck-editor', deckId]);
+          this.router.navigate(['/lernen/deck-editor', deckId], {
+            state: {
+              deckId,
+              coAuthorsDraft: this.coAuthors(),
+              coAuthorErrors: this.coAuthorErrors()
+            }
+          });
         },
         error: (err) => {
           console.error('Error creating deck:', err);
@@ -468,6 +514,13 @@ export class FlashcardEditorComponent implements OnInit {
         });
       }
 
+      // Save co-authors (best-effort, owner only)
+      try {
+        await this.saveCoAuthors(this.deckId()!);
+      } catch (err) {
+        console.error('Failed to save co-authors:', err);
+      }
+
       // Save all unsaved cards
       const unsavedCards = this.cards().filter((card, index) =>
         !card.id && card.front.trim() && card.back.trim()
@@ -497,8 +550,9 @@ export class FlashcardEditorComponent implements OnInit {
         }
       }
 
-      this.unsavedChanges.set(false);
-      this.successMessage.set('Alle Änderungen gespeichert');
+      const hasCoAuthorErrors = this.coAuthorErrors().length > 0;
+      this.unsavedChanges.set(hasCoAuthorErrors);
+      this.successMessage.set(hasCoAuthorErrors ? 'Deck gespeichert (Mit-Autoren teilweise fehlgeschlagen)' : 'Alle Änderungen gespeichert');
       setTimeout(() => this.successMessage.set(null), 2000);
     } catch (err) {
       console.error('Error saving deck:', err);
@@ -545,6 +599,110 @@ export class FlashcardEditorComponent implements OnInit {
     this.cards.set([...existingCards, ...newCards]);
     this.unsavedChanges.set(true);
     this.closeImportDialog();
+  }
+
+  onCoAuthorInput(raw: string): void {
+    const emails = raw
+      .split(/[\n,;]/)
+      .map(e => e.trim().toLowerCase())
+      .filter(e => !!e);
+    const unique = Array.from(new Set(emails));
+
+    this.coAuthors.set(unique);
+    this.coAuthorErrors.set([]);
+    this.unsavedChanges.set(true);
+  }
+
+  private loadCoAuthors(deckId: string): void {
+    this.participantService.getParticipantsByDeckId(deckId).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (participants) => {
+        const coAuthorEmails = participants
+          .filter(p => p.role === 'co-author')
+          .map(p => (p.email || '').trim().toLowerCase())
+          .filter(e => !!e);
+        this.coAuthors.set(Array.from(new Set(coAuthorEmails)));
+        this.coAuthorErrors.set([]);
+      },
+      error: (err) => console.error('Error loading co-authors:', err)
+    });
+  }
+
+  private async saveCoAuthors(deckId: string): Promise<void> {
+    const userId = this.currentUser()?.uid;
+    if (!userId || !deckId) return;
+
+    // UI only allows owners to edit co-authors; enforce here as well.
+    if (!this.isOwner()) return;
+
+    const emails = this.coAuthors();
+    const errors: string[] = [];
+
+    const existingParticipants = await firstValueFrom(
+      this.participantService.getParticipantsByDeckId(deckId)
+    );
+    const existingCoAuthors = existingParticipants.filter(p => p.role === 'co-author');
+    const existingEmails = new Set(
+      existingCoAuthors.map(p => (p.email || '').trim().toLowerCase()).filter(e => !!e)
+    );
+    const newEmailsSet = new Set(emails);
+
+    // Remove co-authors no longer in list
+    const toRemove = existingCoAuthors.filter(p => !newEmailsSet.has((p.email || '').trim().toLowerCase()));
+    for (const participant of toRemove) {
+      try {
+        await this.participantService.removeParticipant(deckId, participant.userId);
+      } catch (err) {
+        console.error(`Failed to remove co-author ${participant.email}:`, err);
+      }
+    }
+
+    // Add new co-authors
+    const toAdd = emails.filter(email => !existingEmails.has(email));
+    for (const email of toAdd) {
+      if (email === this.currentUser()?.email?.toLowerCase()) {
+        continue;
+      }
+
+      if (!this.isValidEmail(email)) {
+        errors.push(`Invalid email format: ${email}`);
+        continue;
+      }
+
+      try {
+        const coAuthorUserId = await this.userLookupService.getUserIdByEmail(email);
+
+        if (!coAuthorUserId) {
+          errors.push(`User not found: ${email} (must sign up first)`);
+          continue;
+        }
+
+        await this.participantService.addParticipant(
+          deckId,
+          coAuthorUserId,
+          email,
+          'co-author',
+          userId,
+          'accepted'
+        );
+      } catch (err: any) {
+        console.error(`Failed to add co-author ${email}:`, err);
+        errors.push(`Failed to add ${email}: ${err.message}`);
+      }
+    }
+
+    if (errors.length > 0) {
+      this.coAuthorErrors.set(errors);
+      this.toastService.warning('Einige Mit-Autoren konnten nicht hinzugefügt werden.');
+    } else {
+      this.coAuthorErrors.set([]);
+    }
+  }
+
+  private isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   }
 
   async deleteDeck(): Promise<void> {

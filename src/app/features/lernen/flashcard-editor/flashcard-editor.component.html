@@ -44,6 +44,18 @@
     </div>
   }
 
+  <!-- Co-Author Errors -->
+  @if (coAuthorErrors().length > 0) {
+    <div class="error-message co-author-errors">
+      <strong>Mit-Autoren Probleme:</strong>
+      <ul>
+        @for (err of coAuthorErrors(); track err) {
+          <li>{{ err }}</li>
+        }
+      </ul>
+    </div>
+  }
+
   <!-- Loading State -->
   @if (isLoading()) {
     <div class="loading-container">
@@ -93,6 +105,35 @@
               <option value="unlisted">Nicht gelistet</option>
             </select>
           </div>
+        </div>
+
+        <div class="coauthor-card">
+          <div class="coauthor-header">
+            <div>
+              <p class="eyebrow">Mit-Autoren</p>
+              <h4>Mitarbeitende hinzufügen</h4>
+            </div>
+            <span class="pill">Optional</span>
+          </div>
+
+          <div class="coauthor-input">
+            <label for="deckCoAuthors">E-Mails (Komma oder Zeilen getrennt)</label>
+            <textarea id="deckCoAuthors" name="deckCoAuthors"
+              [value]="coAuthors().join(', ')"
+              [disabled]="!isOwner()"
+              (input)="onCoAuthorInput($any($event.target).value)"
+              rows="2"
+              placeholder="anna@example.com, max@example.com"></textarea>
+            <small>Mit-Autoren dürfen bearbeiten, aber nicht löschen.</small>
+          </div>
+
+          @if (coAuthors().length) {
+            <div class="coauthor-list">
+              @for (mail of coAuthors(); track mail) {
+                <div class="chip">{{ mail }}</div>
+              }
+            </div>
+          }
         </div>
       </div>
 

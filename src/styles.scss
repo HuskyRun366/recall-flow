@@ -63,6 +63,15 @@ input, textarea, select {
   outline: none;
 }
 
+// Prevent FAB artifacts during route transitions (animated/3D content can temporarily clip it)
+#main-content.route-transitioning .fab,
+#main-content.route-transitioning .fab-container {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: none !important;
+}
+
 // Scrollbar styling
 ::-webkit-scrollbar {
   width: 10px;

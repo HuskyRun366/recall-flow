@@ -7,8 +7,9 @@ import { FlashcardProgressService } from '../../../core/services/flashcard-progr
 import { DeckParticipantService } from '../../../core/services/deck-participant.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
-import { FlashcardDeck, Flashcard, CardProgress } from '../../../models';
+import { FlashcardDeck, Flashcard, CardProgress, DeckParticipant } from '../../../models';
 import { StatCardComponent, BadgeComponent, LevelBadgeComponent } from '../../../shared/components';
+import { PullToRefreshDirective } from '../../../shared/directives/pull-to-refresh.directive';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
@@ -22,7 +23,7 @@ interface FlashcardWithProgress {
 @Component({
   selector: 'app-deck-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, StatCardComponent, BadgeComponent, LevelBadgeComponent],
+  imports: [CommonModule, RouterModule, StatCardComponent, BadgeComponent, LevelBadgeComponent, PullToRefreshDirective],
   templateUrl: './deck-detail.component.html',
   styleUrls: ['./deck-detail.component.scss']
 })
@@ -38,6 +39,7 @@ export class DeckDetailComponent implements OnInit {
 
   deck = signal<FlashcardDeck | null>(null);
   flashcards = signal<FlashcardWithProgress[]>([]);
+  coAuthors = signal<DeckParticipant[]>([]);
   isLoading = signal(true);
   error = signal<string | null>(null);
 
@@ -93,6 +95,7 @@ export class DeckDetailComponent implements OnInit {
         this.deck.set(d);
         this.loadFlashcards(id);
         this.loadEnrollment(id);
+        this.loadCoAuthors(id);
 
         // Check edit permission
         const userId = this.currentUser()?.uid;
@@ -154,6 +157,16 @@ export class DeckDetailComponent implements OnInit {
     this.participantService.getParticipant(deckId, uid).subscribe({
       next: (p) => this.isEnrolled.set(!!p && (p.role === 'student' || p.role === 'co-author')),
       error: (err) => console.error('Enrollment laden fehlgeschlagen', err)
+    });
+  }
+
+  private loadCoAuthors(deckId: string): void {
+    this.participantService.getParticipantsByDeckId(deckId).subscribe({
+      next: (participants) => {
+        const coAuthors = participants.filter(p => p.role === 'co-author');
+        this.coAuthors.set(coAuthors);
+      },
+      error: (err) => console.error('Co-Autoren laden fehlgeschlagen', err)
     });
   }
 
@@ -328,5 +341,35 @@ export class DeckDetailComponent implements OnInit {
       month: 'long',
       day: 'numeric'
     }).format(date);
+  }
+
+  onRefresh(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) return;
+
+    this.isLoading.set(true);
+    this.error.set(null);
+
+    this.deckService.getDeckById(id).subscribe({
+      next: (d) => {
+        if (d) {
+          this.deck.set(d);
+          this.loadFlashcards(id);
+          this.loadEnrollment(id);
+          this.loadCoAuthors(id);
+
+          const userId = this.currentUser()?.uid;
+          if (userId) {
+            this.checkCanEdit(d, userId);
+          }
+        }
+        this.isLoading.set(false);
+      },
+      error: (err: unknown) => {
+        console.error('Refresh error:', err);
+        this.error.set('Fehler beim Aktualisieren');
+        this.isLoading.set(false);
+      }
+    });
   }
 }

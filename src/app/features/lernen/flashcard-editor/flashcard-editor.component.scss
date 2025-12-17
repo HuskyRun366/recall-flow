@@ -117,6 +117,19 @@
 }
 
 // States
+.error-message {
+  padding: $spacing-md $spacing-lg;
+  background: rgba(244, 67, 54, 0.08);
+  color: #c33;
+  border: 1px solid #f9c0c0;
+  border-radius: $radius-md;
+
+  ul {
+    margin: $spacing-sm 0 0 0;
+    padding-left: $spacing-lg;
+  }
+}
+
 .error-state,
 .loading-container {
   display: flex;
@@ -180,6 +193,87 @@
     margin: 0 0 $spacing-lg 0;
     font-size: 1.1rem;
     color: var(--color-text-primary);
+  }
+}
+
+.coauthor-card {
+  padding: $spacing-md;
+  border: 1px dashed var(--color-border);
+  border-radius: $radius-lg;
+  background: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+
+  .coauthor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-sm;
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.75rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    h4 {
+      margin: 0;
+      color: var(--color-text-primary);
+    }
+
+    .pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--color-border);
+      color: var(--color-text-secondary);
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+  }
+
+  .coauthor-input {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+
+    textarea {
+      width: 100%;
+      min-height: 70px;
+      padding: $spacing-sm $spacing-md;
+      border: 1px solid var(--color-border);
+      border-radius: $radius-md;
+      background: var(--color-surface-elevated);
+      color: var(--color-text-primary);
+    }
+
+    small {
+      color: var(--color-text-secondary);
+    }
+
+    :disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+      background: var(--color-background);
+    }
+  }
+
+  .coauthor-list {
+    display: flex;
+    gap: $spacing-xs;
+    flex-wrap: wrap;
+
+    .chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--color-background);
+      border: 1px solid var(--color-border);
+      color: var(--color-text-primary);
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
   }
 }
 

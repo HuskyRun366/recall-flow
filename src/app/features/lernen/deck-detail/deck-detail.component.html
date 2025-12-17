@@ -1,4 +1,4 @@
-<div class="deck-detail-page" *ngIf="!isLoading(); else loading">
+<div class="deck-detail-page" *ngIf="!isLoading(); else loading" appPullToRefresh (refresh)="onRefresh()">
   <ng-container *ngIf="deck(); else errorBlock">
     <div class="hero-card">
       <div class="hero-left">
@@ -86,29 +86,70 @@
       </div>
     </div>
 
+    @if (coAuthors().length > 0) {
+      <div class="card coauthors-card">
+        <div class="card-header">
+          <h2>Mit-Autoren ({{ coAuthors().length }})</h2>
+        </div>
+        <div class="coauthors-list">
+          @for (coAuthor of coAuthors(); track coAuthor.userId) {
+            <div class="coauthor-item">
+              <div class="coauthor-avatar">
+                {{ (coAuthor.email || 'U').charAt(0).toUpperCase() }}
+              </div>
+              <div class="coauthor-info">
+                <div class="coauthor-email">{{ coAuthor.email }}</div>
+                <div class="coauthor-meta">
+                  Hinzugefügt: {{ formatDate(coAuthor.invitedAt) }}
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
     <div class="card flashcards-card">
       <div class="card-header">
         <h2>Karten ({{ flashcards().length }})</h2>
       </div>
       <div class="flashcard-list">
-        <div class="flashcard-item" *ngFor="let item of flashcards(); let i = index">
-          <div class="fc-left">
-            <div class="bubble">{{ i + 1 }}</div>
-            <div class="fc-content">
-              <div class="fc-front">
-                <span class="fc-label">Vorne:</span>
-                <span class="fc-text">{{ item.flashcard.front }}</span>
+        @if (flashcards().length === 0) {
+          <div class="empty-state">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="2" y="7" width="20" height="14" rx="2"/>
+              <path d="M2 11h20"/>
+            </svg>
+            <h3>Keine Karten vorhanden</h3>
+            <p>Dieses Deck enthält noch keine Lernkarten.</p>
+            @if (canEdit()) {
+              <button class="btn btn-primary" (click)="editDeck()">
+                Karten hinzufügen
+              </button>
+            }
+          </div>
+        } @else {
+          @for (item of flashcards(); track item.flashcard.id) {
+            <div class="flashcard-item">
+              <div class="fc-left">
+                <div class="bubble">{{ $index + 1 }}</div>
+                <div class="fc-content">
+                  <div class="fc-front">
+                    <span class="fc-label">Vorne:</span>
+                    <span class="fc-text">{{ item.flashcard.front }}</span>
+                  </div>
+                  <div class="fc-back">
+                    <span class="fc-label">Hinten:</span>
+                    <span class="fc-text">{{ item.flashcard.back }}</span>
+                  </div>
+                </div>
               </div>
-              <div class="fc-back">
-                <span class="fc-label">Hinten:</span>
-                <span class="fc-text">{{ item.flashcard.back }}</span>
+              <div class="fc-right" *ngIf="item.progress">
+                <app-level-badge [config]="{ level: item.progress.level, showLabel: true }" />
               </div>
             </div>
-          </div>
-          <div class="fc-right" *ngIf="item.progress">
-            <app-level-badge [config]="{ level: item.progress.level, showLabel: true }" />
-          </div>
-        </div>
+          }
+        }
       </div>
     </div>
   </ng-container>

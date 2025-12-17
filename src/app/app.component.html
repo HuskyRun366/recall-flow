@@ -2,7 +2,13 @@
 <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
 
 <app-header />
-<main id="main-content" [@routeAnimation]="getRouteAnimation()">
+<main id="main-content"
+      [@routeAnimation]="getRouteAnimation()"
+      (@routeAnimation.start)="onRouteAnimationStart()"
+      (@routeAnimation.done)="onRouteAnimationDone()"
+      [@.disabled]="prefersReducedMotion"
+      [class.route-transitioning]="isRouteTransitioning">
+  <div class="route-transition-overlay" aria-hidden="true"></div>
   <router-outlet />
 </main>
 

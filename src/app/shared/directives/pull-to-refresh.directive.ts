@@ -23,7 +23,6 @@ export class PullToRefreshDirective implements OnInit, OnDestroy {
   private currentY = 0;
   private isPulling = false;
   private pullIndicator: HTMLElement | null = null;
-  private originalScroll = 0;
 
   constructor(
     private el: ElementRef<HTMLElement>,
@@ -76,6 +75,30 @@ export class PullToRefreshDirective implements OnInit, OnDestroy {
     this.renderer.insertBefore(parent, this.pullIndicator, parent.firstChild);
   }
 
+  private resetPullTransform(animateBack: boolean): void {
+    const host = this.el.nativeElement;
+
+    if (animateBack) {
+      this.renderer.setStyle(host, 'transition', 'transform 0.3s ease');
+    } else {
+      this.renderer.setStyle(host, 'transition', 'none');
+    }
+
+    // Use `none` (not `translateY(0)`) so we don't leave a transformed ancestor behind.
+    this.renderer.setStyle(host, 'transform', 'none');
+
+    const cleanup = () => {
+      this.renderer.removeStyle(host, 'transition');
+      this.renderer.removeStyle(host, 'transform');
+    };
+
+    if (animateBack) {
+      setTimeout(cleanup, 300);
+    } else {
+      cleanup();
+    }
+  }
+
   @HostListener('touchstart', ['$event'])
   onTouchStart(event: TouchEvent): void {
     if (!this.pullToRefreshEnabled) return;
@@ -121,6 +144,7 @@ export class PullToRefreshDirective implements OnInit, OnDestroy {
       this.renderer.setStyle(this.el.nativeElement, 'transition', 'none');
     } else if (diff < 0 || windowScrollY > 0 || docScrollTop > 0) {
       // Cancel pulling if user scrolls down or page is not at top
+      this.resetPullTransform(false);
       this.isPulling = false;
     }
   }
@@ -132,8 +156,7 @@ export class PullToRefreshDirective implements OnInit, OnDestroy {
     const diff = this.currentY - this.startY;
 
     // Reset styles
-    this.renderer.setStyle(this.el.nativeElement, 'transition', 'transform 0.3s ease');
-    this.renderer.setStyle(this.el.nativeElement, 'transform', 'translateY(0)');
+    this.resetPullTransform(true);
 
     if (this.pullIndicator) {
       setTimeout(() => {

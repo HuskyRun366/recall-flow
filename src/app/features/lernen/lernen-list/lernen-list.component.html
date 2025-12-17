@@ -101,31 +101,13 @@
   </div>
 
   @if (!isLoading() && !error()) {
-    <div class="search-bar">
-      <div class="search-field">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
-        <input
-          type="search"
-          #deckSearch
-          [value]="currentSearchTerm()"
-          (input)="onSearch(deckSearch.value)"
-          [placeholder]="activeTab() === 'owned' ? 'Eigene Decks durchsuchen' : activeTab() === 'co-authored' ? 'Mit-Autor Decks durchsuchen' : 'Öffentliche Decks durchsuchen'"
-          aria-label="Decks durchsuchen" />
-        <button
-          type="button"
-          class="clear-btn"
-          *ngIf="currentSearchTerm()"
-          (click)="clearSearch()">
-          Zurücksetzen
-        </button>
-      </div>
-      <div class="result-count">
-        {{ displayedDecks().length }} Ergebnis{{ displayedDecks().length === 1 ? '' : 'se' }}
-      </div>
-    </div>
+    <app-search-bar
+      [searchTerm]="currentSearchTerm()"
+      [resultCount]="displayedDecks().length"
+      [placeholder]="searchPlaceholder()"
+      [ariaLabel]="'Decks durchsuchen'"
+      (searchChange)="onSearch($event)"
+      (clear)="clearSearch()" />
   }
 
   @if (isLoading()) {

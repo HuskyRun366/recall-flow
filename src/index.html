@@ -90,6 +90,17 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="RecallFlow">
+
+  <!-- Import map for Node built-in shims (sql.js, etc.) -->
+  <script type="importmap">
+    {
+      "imports": {
+        "fs": "/shims/fs.js",
+        "path": "/shims/path.js",
+        "crypto": "/shims/crypto.js"
+      }
+    }
+  </script>
 </head>
 <body>
   <!-- Loading Screen -->
