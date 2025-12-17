@@ -426,6 +426,35 @@
     }
   }
 
+  .codemirror-container {
+    min-height: 400px;
+    max-height: 600px;
+    overflow: auto;
+
+    .cm-editor {
+      height: 100%;
+      min-height: 400px;
+
+      &.cm-focused {
+        outline: none;
+      }
+    }
+
+    .cm-scroller {
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .cm-gutters {
+      border-right: 1px solid var(--color-border);
+    }
+
+    .cm-content {
+      padding: $spacing-sm 0;
+    }
+  }
+
   .code-textarea {
     width: 100%;
     min-height: 400px;

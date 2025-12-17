@@ -1,14 +1,18 @@
-import { Component, OnInit, signal, inject, DestroyRef, computed, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, signal, inject, DestroyRef, computed, ElementRef, ViewChild, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { EditorView } from '@codemirror/view';
+import { EditorState, StateEffect } from '@codemirror/state';
 import { LearningMaterialService } from '../../../core/services/learning-material.service';
 import { MaterialParticipantService } from '../../../core/services/material-participant.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserLookupService } from '../../../core/services/user-lookup.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { ThemeService } from '../../../core/services/theme.service';
+import { CodeMirrorHtmlConfigService } from '../../../shared/services/codemirror-html-config.service';
 import { LearningMaterial } from '../../../models';
 import { switchMap, catchError } from 'rxjs/operators';
 import { firstValueFrom, of } from 'rxjs';
@@ -21,8 +25,9 @@ import DOMPurify from 'dompurify';
   templateUrl: './material-editor.component.html',
   styleUrls: ['./material-editor.component.scss']
 })
-export class MaterialEditorComponent implements OnInit {
+export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('editorContainer') editorContainer!: ElementRef<HTMLDivElement>;
 
   private fb = inject(FormBuilder);
   private router = inject(Router);
@@ -34,6 +39,10 @@ export class MaterialEditorComponent implements OnInit {
   private userLookupService = inject(UserLookupService);
   private toastService = inject(ToastService);
   private destroyRef = inject(DestroyRef);
+  private themeService = inject(ThemeService);
+  private codeMirrorConfig = inject(CodeMirrorHtmlConfigService);
+
+  editorView?: EditorView;
 
   materialForm!: FormGroup;
   material = signal<LearningMaterial | null>(null);
@@ -59,10 +68,83 @@ export class MaterialEditorComponent implements OnInit {
   isDragging = signal(false);
   showPreview = signal(false);
   fileName = signal<string | null>(null);
+  editorReady = signal(false);
+
+  constructor() {
+    // Update editor theme when app theme changes
+    effect(() => {
+      const isDark = this.themeService.theme() === 'dark';
+      this.updateEditorTheme(isDark);
+    });
+  }
 
   ngOnInit(): void {
     this.initializeForm();
     this.loadMaterialData();
+  }
+
+  ngAfterViewInit(): void {
+    // Initialize CodeMirror editor after view is ready
+    setTimeout(() => {
+      this.initializeCodeMirror();
+    }, 100);
+  }
+
+  ngOnDestroy(): void {
+    if (this.editorView) {
+      this.editorView.destroy();
+    }
+  }
+
+  private initializeCodeMirror(): void {
+    if (!this.editorContainer?.nativeElement) return;
+
+    const isDark = this.themeService.theme() === 'dark';
+    const initialContent = this.htmlContent();
+
+    this.editorView = new EditorView({
+      state: EditorState.create({
+        doc: initialContent,
+        extensions: this.codeMirrorConfig.getEditorExtensions(
+          isDark,
+          (content) => this.onCodeMirrorChange(content)
+        )
+      }),
+      parent: this.editorContainer.nativeElement
+    });
+
+    this.editorReady.set(true);
+  }
+
+  private updateEditorTheme(isDark: boolean): void {
+    if (!this.editorView) return;
+
+    this.editorView.dispatch({
+      effects: StateEffect.reconfigure.of(
+        this.codeMirrorConfig.getEditorExtensions(
+          isDark,
+          (content) => this.onCodeMirrorChange(content)
+        )
+      )
+    });
+  }
+
+  private onCodeMirrorChange(content: string): void {
+    this.htmlContent.set(content);
+    this.updatePreview(content);
+    this.unsavedChanges.set(true);
+  }
+
+  private updateEditorContent(content: string): void {
+    if (!this.editorView) return;
+
+    this.editorView.dispatch({
+      changes: {
+        from: 0,
+        to: this.editorView.state.doc.length,
+        insert: content
+      }
+    });
   }
 
   private initializeForm(): void {
@@ -129,6 +211,7 @@ export class MaterialEditorComponent implements OnInit {
 
         this.material.set(material);
         this.htmlContent.set(material.htmlContent);
+        this.updateEditorContent(material.htmlContent);
         this.updatePreview(material.htmlContent);
 
         const userId = this.currentUser()?.uid;
@@ -229,6 +312,7 @@ export class MaterialEditorComponent implements OnInit {
     try {
       const content = await this.readFileAsText(file);
       this.htmlContent.set(content);
+      this.updateEditorContent(content);
       this.fileName.set(file.name);
       this.updatePreview(content);
       this.unsavedChanges.set(true);

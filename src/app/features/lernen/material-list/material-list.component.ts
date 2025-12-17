@@ -486,4 +486,16 @@ export class MaterialListComponent implements OnInit {
       this.joinBusy.set(false);
     }
   }
+
+  async copyJoinCode(material: LearningMaterial): Promise<void> {
+    if (!material.joinCode) return;
+
+    try {
+      await navigator.clipboard.writeText(material.joinCode);
+      this.toastService.success(`Code "${material.joinCode}" kopiert!`);
+    } catch (err) {
+      console.error('Failed to copy join code:', err);
+      this.toastService.error('Kopieren fehlgeschlagen');
+    }
+  }
 }

@@ -266,6 +266,43 @@
       }
     }
 
+    .badge-row {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+      margin-top: $spacing-xs;
+
+      .copy-code-btn {
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        border: none;
+        background: var(--color-background);
+        border-radius: $radius-sm;
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all $transition-fast;
+
+        &:hover {
+          background: var(--color-primary);
+          color: #fff;
+          transform: scale(1.05);
+        }
+
+        &:active {
+          transform: scale(0.95);
+        }
+
+        svg {
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+
     .material-description {
       color: var(--color-text-secondary);
       margin-top: $spacing-xs;
