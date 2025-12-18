@@ -12,7 +12,7 @@ import { DeckParticipantService } from '../../../core/services/deck-participant.
 import { AuthService } from '../../../core/services/auth.service';
 import { UserLookupService } from '../../../core/services/user-lookup.service';
 import { ToastService } from '../../../core/services/toast.service';
-import { FlashcardDeck, Flashcard } from '../../../models';
+import { FlashcardDeck, Flashcard, ContentCategory, DifficultyLevel } from '../../../models';
 import { switchMap, catchError } from 'rxjs/operators';
 import { firstValueFrom, of } from 'rxjs';
 import { ImportDialogComponent } from '../../quiz-editor/components/import-dialog/import-dialog.component';
@@ -67,6 +67,16 @@ export class FlashcardEditorComponent implements OnInit {
 
   coAuthors = signal<string[]>([]);
   coAuthorErrors = signal<string[]>([]);
+
+  // Metadata options for marketplace
+  categories: ContentCategory[] = ['math', 'science', 'languages', 'history', 'geography', 'technology', 'arts', 'business', 'health', 'other'];
+  difficulties: DifficultyLevel[] = ['beginner', 'intermediate', 'advanced'];
+  languages = [
+    { code: 'de', label: 'Deutsch' },
+    { code: 'en', label: 'English' },
+    { code: 'es', label: 'Español' },
+    { code: 'fr', label: 'Français' }
+  ];
 
   ngOnInit(): void {
     this.initializeForm();

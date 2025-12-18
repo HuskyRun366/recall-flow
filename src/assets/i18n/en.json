@@ -1137,5 +1137,125 @@
 
   "toast": {
     "ariaLabel": "Notifications"
+  },
+
+  "discover": {
+    "title": "Discover",
+    "subtitle": "Explore public content from the community",
+    "searchPlaceholder": "Search quizzes, decks, materials...",
+    "noResults": "No results found",
+    "noResultsHint": "Try different keywords or filters",
+    "noChartResults": "No content in this category",
+    "noContent": "No content available yet",
+    "searchResults": "Search Results",
+    "allContent": "All Content",
+    "loading": "Loading content...",
+    "topCharts": "Top Charts",
+    "mostPopular": "Most Popular",
+    "trending": "Trending",
+    "recentlyAdded": "Recently Added",
+    "questions": "Questions",
+    "cards": "Cards",
+    "kb": "KB",
+    "users": "Users",
+    "viewDetails": "View Details",
+    "forkedFrom": "Forked from {{title}}",
+    "featured": {
+      "title": "Featured",
+      "subtitle": "Hand-picked by our team"
+    },
+    "popular": {
+      "title": "Most Popular",
+      "subtitle": "All-time favorites"
+    },
+    "recent": {
+      "title": "Recently Added",
+      "subtitle": "Fresh content"
+    },
+    "contentTypes": {
+      "all": "All",
+      "quiz": "Quiz",
+      "deck": "Deck",
+      "material": "Material",
+      "quizzes": "Quizzes",
+      "decks": "Flashcard Decks",
+      "materials": "Learning Materials"
+    },
+    "categories": {
+      "all": "All Categories",
+      "math": "Mathematics",
+      "science": "Science",
+      "languages": "Languages",
+      "history": "History",
+      "geography": "Geography",
+      "technology": "Technology",
+      "arts": "Arts",
+      "business": "Business",
+      "health": "Health",
+      "other": "Other"
+    },
+    "difficulties": {
+      "all": "All Levels",
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "filters": {
+      "title": "Filters",
+      "category": "Category",
+      "difficulty": "Difficulty",
+      "language": "Language",
+      "clearAll": "Clear all"
+    },
+    "card": {
+      "by": "by",
+      "questions": "questions",
+      "cards": "cards",
+      "forkedFrom": "Forked from",
+      "noRatings": "No ratings yet"
+    },
+    "rating": {
+      "title": "Ratings & Reviews",
+      "average": "Average rating",
+      "count": "{{count}} reviews",
+      "noReviews": "No reviews yet",
+      "beFirst": "Be the first to review!",
+      "yourReview": "Your review",
+      "writeReview": "Write a review",
+      "editReview": "Edit review",
+      "deleteReview": "Delete review",
+      "submitReview": "Submit review",
+      "updateReview": "Update review",
+      "reviewPlaceholder": "Share your experience with this content...",
+      "thankYou": "Thank you for your review!",
+      "stars": {
+        "1": "Poor",
+        "2": "Fair",
+        "3": "Good",
+        "4": "Very Good",
+        "5": "Excellent"
+      }
+    },
+    "fork": {
+      "button": "Fork",
+      "buttonTooltip": "Create your own copy",
+      "success": "Successfully forked!",
+      "error": "Failed to fork content",
+      "dialog": {
+        "title": "Fork this content",
+        "description": "Create your own copy that you can edit and customize.",
+        "newTitle": "New title",
+        "confirm": "Create fork",
+        "cancel": "Cancel"
+      }
+    },
+    "metadata": {
+      "category": "Category",
+      "difficulty": "Difficulty",
+      "language": "Language",
+      "selectCategory": "Select category",
+      "selectDifficulty": "Select difficulty",
+      "selectLanguage": "Select language"
+    }
   }
 }

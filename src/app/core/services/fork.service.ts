@@ -29,6 +29,19 @@ export class ForkService {
   private injector = inject(Injector);
 
   /**
+   * Remove undefined values from an object (Firestore doesn't accept undefined)
+   */
+  private stripUndefined<T extends Record<string, any>>(obj: T): T {
+    const result: Record<string, any> = {};
+    for (const [key, value] of Object.entries(obj)) {
+      if (value !== undefined) {
+        result[key] = value;
+      }
+    }
+    return result as T;
+  }
+
+  /**
    * Fork a quiz - creates a copy owned by the current user
    * Includes all questions
    */
@@ -69,7 +82,7 @@ export class ForkService {
       updatedAt: serverTimestamp()
     };
 
-    batch.set(newQuizRef, forkedQuiz);
+    batch.set(newQuizRef, this.stripUndefined(forkedQuiz));
 
     // 2. Copy all questions
     const questionsRef = collection(this.firestore, 'questions');
@@ -162,7 +175,7 @@ export class ForkService {
       updatedAt: serverTimestamp()
     };
 
-    batch.set(newDeckRef, forkedDeck);
+    batch.set(newDeckRef, this.stripUndefined(forkedDeck));
 
     // 2. Copy all flashcards
     const flashcardsRef = collection(this.firestore, 'flashcards');

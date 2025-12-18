@@ -29,7 +29,7 @@
   <!-- Featured Section (only show if no active filters) -->
   @if (!hasSearchFilters() && featuredItems().length > 0) {
     <section class="featured-section">
-      <h2 class="section-title">{{ 'discover.featured' | translate }}</h2>
+      <h2 class="section-title">{{ 'discover.featured.title' | translate }}</h2>
       <div class="featured-scroll">
         @if (isLoadingFeatured()) {
           @for (i of [1,2,3]; track i) {

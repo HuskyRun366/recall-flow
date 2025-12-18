@@ -14,7 +14,7 @@ import { UserLookupService } from '../../../core/services/user-lookup.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { CodeMirrorHtmlConfigService } from '../../../shared/services/codemirror-html-config.service';
-import { LearningMaterial } from '../../../models';
+import { LearningMaterial, ContentCategory, DifficultyLevel } from '../../../models';
 import { switchMap, catchError } from 'rxjs/operators';
 import { firstValueFrom, of } from 'rxjs';
 import DOMPurify from 'dompurify';
@@ -70,6 +70,16 @@ export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit
   showPreview = signal(false);
   fileName = signal<string | null>(null);
   editorReady = signal(false);
+
+  // Metadata options for marketplace
+  categories: ContentCategory[] = ['math', 'science', 'languages', 'history', 'geography', 'technology', 'arts', 'business', 'health', 'other'];
+  difficulties: DifficultyLevel[] = ['beginner', 'intermediate', 'advanced'];
+  languages = [
+    { code: 'de', label: 'Deutsch' },
+    { code: 'en', label: 'English' },
+    { code: 'es', label: 'Español' },
+    { code: 'fr', label: 'Français' }
+  ];
 
   constructor() {
     // Update editor theme when app theme changes
@@ -153,7 +163,10 @@ export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit
       title: ['', [Validators.required, Validators.minLength(3)]],
       description: [''],
       tags: [''],
-      visibility: ['private', Validators.required]
+      visibility: ['private', Validators.required],
+      category: [''],
+      difficulty: [''],
+      language: ['']
     });
 
     this.materialForm.valueChanges
@@ -240,7 +253,10 @@ export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit
           title: material.title,
           description: material.description,
           tags: material.tags.join(', '),
-          visibility: material.visibility
+          visibility: material.visibility,
+          category: material.category || '',
+          difficulty: material.difficulty || '',
+          language: material.language || ''
         }, { emitEvent: false });
 
         this.loadCoAuthors(id);
@@ -440,7 +456,10 @@ export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit
         htmlContent: this.htmlContent(),
         contentSize: new Blob([this.htmlContent()]).size,
         tags: tagsArray,
-        metadata: { totalStudents: 0, totalViews: 0 }
+        metadata: { totalStudents: 0, totalViews: 0 },
+        category: formValue.category || undefined,
+        difficulty: formValue.difficulty || undefined,
+        language: formValue.language || undefined
       };
 
       if (formValue.visibility === 'unlisted') {
@@ -515,7 +534,10 @@ export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit
         description: formValue.description || '',
         tags: tagsArray,
         visibility: formValue.visibility,
-        htmlContent: this.htmlContent()
+        htmlContent: this.htmlContent(),
+        category: formValue.category || undefined,
+        difficulty: formValue.difficulty || undefined,
+        language: formValue.language || undefined
       };
 
       if (formValue.visibility === 'unlisted' && !this.material()?.joinCode) {

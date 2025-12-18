@@ -264,5 +264,68 @@ service cloud.firestore {
       allow update: if canEditMaterial(materialId) || (isOwner(userId) && request.resource.data.status == 'accepted');
       allow delete: if canEditMaterial(materialId) || isOwner(userId);
     }
+
+    // =============================================
+    // REVIEWS RULES (for marketplace)
+    // =============================================
+
+    // Helper function to check if user can access content for review
+    function canAccessContent(contentType, contentId) {
+      return contentType == 'quiz' ? (
+        get(/databases/$(database)/documents/quizzes/$(contentId)).data.visibility in ['public', 'unlisted']
+      ) : contentType == 'deck' ? (
+        get(/databases/$(database)/documents/flashcardDecks/$(contentId)).data.visibility in ['public', 'unlisted']
+      ) : contentType == 'material' ? (
+        get(/databases/$(database)/documents/learningMaterials/$(contentId)).data.visibility in ['public', 'unlisted']
+      ) : false;
+    }
+
+    // Helper function to check if user is content owner
+    function isContentOwner(contentType, contentId) {
+      return contentType == 'quiz' ? (
+        get(/databases/$(database)/documents/quizzes/$(contentId)).data.ownerId == request.auth.uid
+      ) : contentType == 'deck' ? (
+        get(/databases/$(database)/documents/flashcardDecks/$(contentId)).data.ownerId == request.auth.uid
+      ) : contentType == 'material' ? (
+        get(/databases/$(database)/documents/learningMaterials/$(contentId)).data.ownerId == request.auth.uid
+      ) : false;
+    }
+
+    // Reviews collection
+    match /reviews/{reviewId} {
+      // Anyone can read reviews for public/unlisted content
+      allow read: if canAccessContent(resource.data.contentType, resource.data.contentId);
+
+      // Authenticated users can create reviews for content they can access
+      // User must be the author and cannot review their own content
+      allow create: if isAuthenticated() &&
+                       request.resource.data.userId == request.auth.uid &&
+                       canAccessContent(request.resource.data.contentType, request.resource.data.contentId) &&
+                       !isContentOwner(request.resource.data.contentType, request.resource.data.contentId) &&
+                       request.resource.data.rating >= 1 &&
+                       request.resource.data.rating <= 5;
+
+      // Only review author can update their own review
+      allow update: if isAuthenticated() &&
+                       resource.data.userId == request.auth.uid &&
+                       request.resource.data.userId == request.auth.uid &&
+                       request.resource.data.rating >= 1 &&
+                       request.resource.data.rating <= 5;
+
+      // Review author or content owner can delete reviews
+      allow delete: if isAuthenticated() &&
+                       (resource.data.userId == request.auth.uid ||
+                        isContentOwner(resource.data.contentType, resource.data.contentId));
+    }
+
+    // =============================================
+    // CONFIG COLLECTION (for featured content, etc.)
+    // =============================================
+
+    // Config collection for app-wide settings (read-only for users)
+    match /config/{configId} {
+      allow read: if true;  // Anyone can read config (including featuredContent)
+      allow write: if false;  // Only admin SDK can write (server-side)
+    }
   }
 }

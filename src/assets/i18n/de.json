@@ -71,6 +71,7 @@
     "quizzes": "Quizzes",
     "flashcards": "Flashcards",
     "materials": "Material",
+    "discover": "Entdecken",
     "updates": "Updates",
     "settings": "Einstellungen",
     "signOut": "Abmelden",
@@ -1136,5 +1137,125 @@
 
   "toast": {
     "ariaLabel": "Benachrichtigungen"
+  },
+
+  "discover": {
+    "title": "Entdecken",
+    "subtitle": "Erkunde öffentliche Inhalte der Community",
+    "searchPlaceholder": "Quizzes, Decks, Materialien suchen...",
+    "noResults": "Keine Ergebnisse gefunden",
+    "noResultsHint": "Versuche andere Suchbegriffe oder Filter",
+    "noChartResults": "Keine Inhalte in dieser Kategorie",
+    "noContent": "Noch keine Inhalte vorhanden",
+    "searchResults": "Suchergebnisse",
+    "allContent": "Alle Inhalte",
+    "loading": "Inhalte werden geladen...",
+    "topCharts": "Top Charts",
+    "mostPopular": "Beliebteste",
+    "trending": "Im Trend",
+    "recentlyAdded": "Neu hinzugefügt",
+    "questions": "Fragen",
+    "cards": "Karten",
+    "kb": "KB",
+    "users": "Nutzer",
+    "viewDetails": "Details ansehen",
+    "forkedFrom": "Kopiert von {{title}}",
+    "featured": {
+      "title": "Empfohlen",
+      "subtitle": "Handverlesen von unserem Team"
+    },
+    "popular": {
+      "title": "Am beliebtesten",
+      "subtitle": "Allzeit-Favoriten"
+    },
+    "recent": {
+      "title": "Kürzlich hinzugefügt",
+      "subtitle": "Neue Inhalte"
+    },
+    "contentTypes": {
+      "all": "Alle",
+      "quiz": "Quiz",
+      "deck": "Deck",
+      "material": "Material",
+      "quizzes": "Quizzes",
+      "decks": "Flashcard-Decks",
+      "materials": "Lernunterlagen"
+    },
+    "categories": {
+      "all": "Alle Kategorien",
+      "math": "Mathematik",
+      "science": "Naturwissenschaften",
+      "languages": "Sprachen",
+      "history": "Geschichte",
+      "geography": "Geographie",
+      "technology": "Technologie",
+      "arts": "Kunst",
+      "business": "Wirtschaft",
+      "health": "Gesundheit",
+      "other": "Sonstiges"
+    },
+    "difficulties": {
+      "all": "Alle Stufen",
+      "beginner": "Anfänger",
+      "intermediate": "Fortgeschritten",
+      "advanced": "Experte"
+    },
+    "filters": {
+      "title": "Filter",
+      "category": "Kategorie",
+      "difficulty": "Schwierigkeit",
+      "language": "Sprache",
+      "clearAll": "Alle löschen"
+    },
+    "card": {
+      "by": "von",
+      "questions": "Fragen",
+      "cards": "Karten",
+      "forkedFrom": "Kopiert von",
+      "noRatings": "Noch keine Bewertungen"
+    },
+    "rating": {
+      "title": "Bewertungen & Rezensionen",
+      "average": "Durchschnittliche Bewertung",
+      "count": "{{count}} Bewertungen",
+      "noReviews": "Noch keine Rezensionen",
+      "beFirst": "Sei der Erste, der eine Rezension schreibt!",
+      "yourReview": "Deine Rezension",
+      "writeReview": "Rezension schreiben",
+      "editReview": "Rezension bearbeiten",
+      "deleteReview": "Rezension löschen",
+      "submitReview": "Rezension abschicken",
+      "updateReview": "Rezension aktualisieren",
+      "reviewPlaceholder": "Teile deine Erfahrung mit diesem Inhalt...",
+      "thankYou": "Danke für deine Rezension!",
+      "stars": {
+        "1": "Schlecht",
+        "2": "Ausreichend",
+        "3": "Gut",
+        "4": "Sehr gut",
+        "5": "Ausgezeichnet"
+      }
+    },
+    "fork": {
+      "button": "Kopieren",
+      "buttonTooltip": "Eigene Kopie erstellen",
+      "success": "Erfolgreich kopiert!",
+      "error": "Kopieren fehlgeschlagen",
+      "dialog": {
+        "title": "Inhalt kopieren",
+        "description": "Erstelle deine eigene Kopie, die du bearbeiten und anpassen kannst.",
+        "newTitle": "Neuer Titel",
+        "confirm": "Kopie erstellen",
+        "cancel": "Abbrechen"
+      }
+    },
+    "metadata": {
+      "category": "Kategorie",
+      "difficulty": "Schwierigkeit",
+      "language": "Sprache",
+      "selectCategory": "Kategorie wählen",
+      "selectDifficulty": "Schwierigkeit wählen",
+      "selectLanguage": "Sprache wählen"
+    }
   }
 }

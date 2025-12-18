@@ -141,6 +141,45 @@
               <option value="unlisted">{{ 'materials.editor.visibility.unlistedWithCode' | translate }}</option>
             </select>
           </div>
+
+          <div class="form-group">
+            <label>{{ 'discover.metadata.category' | translate }}</label>
+            <select
+              name="materialCategory"
+              [value]="material()?.category || ''"
+              (change)="materialForm.patchValue({category: $any($event.target).value || undefined}); unsavedChanges.set(true)">
+              <option value="">{{ 'discover.metadata.selectCategory' | translate }}</option>
+              <option *ngFor="let cat of categories" [value]="cat">
+                {{ 'discover.categories.' + cat | translate }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>{{ 'discover.metadata.difficulty' | translate }}</label>
+            <select
+              name="materialDifficulty"
+              [value]="material()?.difficulty || ''"
+              (change)="materialForm.patchValue({difficulty: $any($event.target).value || undefined}); unsavedChanges.set(true)">
+              <option value="">{{ 'discover.metadata.selectDifficulty' | translate }}</option>
+              <option *ngFor="let diff of difficulties" [value]="diff">
+                {{ 'discover.difficulties.' + diff | translate }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>{{ 'discover.metadata.language' | translate }}</label>
+            <select
+              name="materialLanguage"
+              [value]="material()?.language || ''"
+              (change)="materialForm.patchValue({language: $any($event.target).value || undefined}); unsavedChanges.set(true)">
+              <option value="">{{ 'discover.metadata.selectLanguage' | translate }}</option>
+              <option *ngFor="let lang of languages" [value]="lang.code">
+                {{ lang.label }}
+              </option>
+            </select>
+          </div>
         </div>
 
         <div class="coauthor-card">

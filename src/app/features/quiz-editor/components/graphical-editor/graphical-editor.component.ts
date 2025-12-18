@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { ToastService } from '../../../../core/services/toast.service';
-import { Quiz, Question, MultipleChoiceQuestion, OrderingQuestion, QuestionType, MultipleChoiceOption, OrderingItem, MatchingQuestion, MatchingChoice, MatchingPair } from '../../../../models';
+import { Quiz, Question, MultipleChoiceQuestion, OrderingQuestion, QuestionType, MultipleChoiceOption, OrderingItem, MatchingQuestion, MatchingChoice, MatchingPair, ContentCategory, DifficultyLevel } from '../../../../models';
 
 @Component({
   selector: 'app-graphical-editor',
@@ -25,6 +25,16 @@ export class GraphicalEditorComponent {
   selectedQuestionIndex = signal<number | null>(null);
   isUploadingImage = signal(false);
   uploadError = signal<string | null>(null);
+
+  // Metadata options for marketplace
+  categories: ContentCategory[] = ['math', 'science', 'languages', 'history', 'geography', 'technology', 'arts', 'business', 'health', 'other'];
+  difficulties: DifficultyLevel[] = ['beginner', 'intermediate', 'advanced'];
+  languages = [
+    { code: 'de', label: 'Deutsch' },
+    { code: 'en', label: 'English' },
+    { code: 'es', label: 'Español' },
+    { code: 'fr', label: 'Français' }
+  ];
 
 
   scrollTo(anchor: string): void {

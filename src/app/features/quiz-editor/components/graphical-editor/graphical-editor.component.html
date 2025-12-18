@@ -43,6 +43,45 @@
         </select>
       </div>
 
+      <div class="form-group">
+        <label>{{ 'discover.metadata.category' | translate }}</label>
+        <select
+          name="quizCategory"
+          [value]="quiz.category || ''"
+          (change)="updateQuizMetadata('category', $any($event.target).value || undefined)">
+          <option value="">{{ 'discover.metadata.selectCategory' | translate }}</option>
+          <option *ngFor="let cat of categories" [value]="cat">
+            {{ 'discover.categories.' + cat | translate }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>{{ 'discover.metadata.difficulty' | translate }}</label>
+        <select
+          name="quizDifficulty"
+          [value]="quiz.difficulty || ''"
+          (change)="updateQuizMetadata('difficulty', $any($event.target).value || undefined)">
+          <option value="">{{ 'discover.metadata.selectDifficulty' | translate }}</option>
+          <option *ngFor="let diff of difficulties" [value]="diff">
+            {{ 'discover.difficulties.' + diff | translate }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>{{ 'discover.metadata.language' | translate }}</label>
+        <select
+          name="quizLanguage"
+          [value]="quiz.language || ''"
+          (change)="updateQuizMetadata('language', $any($event.target).value || undefined)">
+          <option value="">{{ 'discover.metadata.selectLanguage' | translate }}</option>
+          <option *ngFor="let lang of languages" [value]="lang.code">
+            {{ lang.label }}
+          </option>
+        </select>
+      </div>
+
       <div class="coauthor-card">
         <div class="coauthor-header">
           <div>

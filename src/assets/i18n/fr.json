@@ -70,6 +70,7 @@
     "quizzes": "Quiz",
     "flashcards": "Flashcards",
     "materials": "Documents",
+    "discover": "Découvrir",
     "updates": "Mises à jour",
     "settings": "Paramètres",
     "signOut": "Déconnexion",
@@ -1112,5 +1113,112 @@
   },
   "toast": {
     "ariaLabel": "Notifications"
+  },
+
+  "discover": {
+    "title": "Découvrir",
+    "subtitle": "Explorez le contenu public de la communauté",
+    "searchPlaceholder": "Rechercher des quiz, decks, documents...",
+    "noResults": "Aucun résultat trouvé",
+    "noResultsHint": "Essayez d'autres mots-clés ou filtres",
+    "loading": "Chargement du contenu...",
+    "featured": {
+      "title": "En vedette",
+      "subtitle": "Sélectionnés par notre équipe"
+    },
+    "trending": {
+      "title": "Tendances",
+      "subtitle": "Populaires cette semaine"
+    },
+    "popular": {
+      "title": "Les plus populaires",
+      "subtitle": "Favoris de tous les temps"
+    },
+    "recent": {
+      "title": "Ajoutés récemment",
+      "subtitle": "Contenu récent"
+    },
+    "contentTypes": {
+      "all": "Tout",
+      "quizzes": "Quiz",
+      "decks": "Decks de flashcards",
+      "materials": "Documents d'apprentissage"
+    },
+    "categories": {
+      "all": "Toutes les catégories",
+      "math": "Mathématiques",
+      "science": "Sciences",
+      "languages": "Langues",
+      "history": "Histoire",
+      "geography": "Géographie",
+      "technology": "Technologie",
+      "arts": "Arts",
+      "business": "Commerce",
+      "health": "Santé",
+      "other": "Autre"
+    },
+    "difficulties": {
+      "all": "Tous les niveaux",
+      "beginner": "Débutant",
+      "intermediate": "Intermédiaire",
+      "advanced": "Avancé"
+    },
+    "filters": {
+      "title": "Filtres",
+      "category": "Catégorie",
+      "difficulty": "Difficulté",
+      "language": "Langue",
+      "clearAll": "Tout effacer"
+    },
+    "card": {
+      "by": "par",
+      "questions": "questions",
+      "cards": "cartes",
+      "forkedFrom": "Copié de",
+      "noRatings": "Pas encore d'évaluations"
+    },
+    "rating": {
+      "title": "Notes et avis",
+      "average": "Note moyenne",
+      "count": "{{count}} avis",
+      "noReviews": "Pas encore d'avis",
+      "beFirst": "Soyez le premier à donner votre avis !",
+      "yourReview": "Votre avis",
+      "writeReview": "Écrire un avis",
+      "editReview": "Modifier l'avis",
+      "deleteReview": "Supprimer l'avis",
+      "submitReview": "Envoyer l'avis",
+      "updateReview": "Mettre à jour l'avis",
+      "reviewPlaceholder": "Partagez votre expérience avec ce contenu...",
+      "thankYou": "Merci pour votre avis !",
+      "stars": {
+        "1": "Médiocre",
+        "2": "Passable",
+        "3": "Bon",
+        "4": "Très bon",
+        "5": "Excellent"
+      }
+    },
+    "fork": {
+      "button": "Copier",
+      "buttonTooltip": "Créer votre propre copie",
+      "success": "Copie réussie !",
+      "error": "Échec de la copie du contenu",
+      "dialog": {
+        "title": "Copier ce contenu",
+        "description": "Créez votre propre copie que vous pouvez modifier et personnaliser.",
+        "newTitle": "Nouveau titre",
+        "confirm": "Créer une copie",
+        "cancel": "Annuler"
+      }
+    },
+    "metadata": {
+      "category": "Catégorie",
+      "difficulty": "Difficulté",
+      "language": "Langue",
+      "selectCategory": "Sélectionner une catégorie",
+      "selectDifficulty": "Sélectionner une difficulté",
+      "selectLanguage": "Sélectionner une langue"
+    }
   }
 }

@@ -119,6 +119,45 @@
               <option value="unlisted">{{ 'quiz.visibility.unlisted' | translate }}</option>
             </select>
           </div>
+
+          <div class="form-group">
+            <label>{{ 'discover.metadata.category' | translate }}</label>
+            <select
+              name="deckCategory"
+              [value]="deck()?.category || ''"
+              (change)="updateDeckMetadata('category', $any($event.target).value || undefined)">
+              <option value="">{{ 'discover.metadata.selectCategory' | translate }}</option>
+              <option *ngFor="let cat of categories" [value]="cat">
+                {{ 'discover.categories.' + cat | translate }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>{{ 'discover.metadata.difficulty' | translate }}</label>
+            <select
+              name="deckDifficulty"
+              [value]="deck()?.difficulty || ''"
+              (change)="updateDeckMetadata('difficulty', $any($event.target).value || undefined)">
+              <option value="">{{ 'discover.metadata.selectDifficulty' | translate }}</option>
+              <option *ngFor="let diff of difficulties" [value]="diff">
+                {{ 'discover.difficulties.' + diff | translate }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>{{ 'discover.metadata.language' | translate }}</label>
+            <select
+              name="deckLanguage"
+              [value]="deck()?.language || ''"
+              (change)="updateDeckMetadata('language', $any($event.target).value || undefined)">
+              <option value="">{{ 'discover.metadata.selectLanguage' | translate }}</option>
+              <option *ngFor="let lang of languages" [value]="lang.code">
+                {{ lang.label }}
+              </option>
+            </select>
+          </div>
         </div>
 
         <div class="coauthor-card">
