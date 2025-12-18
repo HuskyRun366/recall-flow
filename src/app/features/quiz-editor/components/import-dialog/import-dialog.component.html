@@ -8,9 +8,9 @@
           <polyline points="17 8 12 3 7 8"/>
           <line x1="12" y1="3" x2="12" y2="15"/>
         </svg>
-        Quiz importieren
+        {{ 'importDialog.title' | translate }}
       </h2>
-      <button class="close-btn" (click)="cancel()" aria-label="Schließen">
+      <button class="close-btn" (click)="cancel()" [attr.aria-label]="'common.close' | translate">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18"/>
           <line x1="6" y1="6" x2="18" y2="18"/>
@@ -31,7 +31,7 @@
           @if (isProcessing()) {
             <div class="processing">
               <div class="spinner"></div>
-              <p>Datei wird verarbeitet...</p>
+              <p>{{ 'importDialog.processing' | translate }}</p>
             </div>
           } @else {
             <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -40,9 +40,9 @@
               <line x1="12" y1="3" x2="12" y2="15"/>
             </svg>
 
-            <h3>Datei hierher ziehen oder klicken</h3>
+            <h3>{{ 'importDialog.dropzone.title' | translate }}</h3>
             <p class="supported-formats">
-              Unterstützte Formate: CSV, Anki TXT, Anki APKG
+              {{ 'importDialog.dropzone.supportedFormats' | translate }}
             </p>
 
             <input
@@ -53,25 +53,25 @@
               hidden>
 
             <label for="fileInput" class="btn btn-primary">
-              Datei auswählen
+              {{ 'importDialog.dropzone.chooseFile' | translate }}
             </label>
           }
         </div>
 
         <!-- Format Examples -->
         <div class="format-info">
-          <h4>Formatbeispiele:</h4>
+          <h4>{{ 'importDialog.examples.title' | translate }}</h4>
 
           <div class="format-example">
             <div class="example-header">
-              <strong>CSV Format</strong>
+              <strong>{{ 'importDialog.examples.csv.title' | translate }}</strong>
               <button class="btn-link" (click)="downloadSampleCsv()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                   <polyline points="7 10 12 15 17 10"/>
                   <line x1="12" y1="15" x2="12" y2="3"/>
                 </svg>
-                Beispiel herunterladen
+                {{ 'importDialog.examples.downloadSample' | translate }}
               </button>
             </div>
             <code>"Frage","Richtige Antwort","Falsch 1","Falsch 2","Falsch 3"</code>
@@ -79,14 +79,14 @@
 
           <div class="format-example">
             <div class="example-header">
-              <strong>Anki TXT Format</strong>
+              <strong>{{ 'importDialog.examples.ankiTxt.title' | translate }}</strong>
               <button class="btn-link" (click)="downloadSampleAnki()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                   <polyline points="7 10 12 15 17 10"/>
                   <line x1="12" y1="15" x2="12" y2="3"/>
                 </svg>
-                Beispiel herunterladen
+                {{ 'importDialog.examples.downloadSample' | translate }}
               </button>
             </div>
             <code>Frage[TAB]Antwort</code>
@@ -94,13 +94,13 @@
 
           <div class="format-example">
             <div class="example-header">
-              <strong>Anki APKG Format</strong>
+              <strong>{{ 'importDialog.examples.ankiApkg.title' | translate }}</strong>
               <span class="info-text">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <circle cx="12" cy="12" r="10"/>
                   <path d="M12 16v-4M12 8h.01"/>
                 </svg>
-                Exportiere dein Anki-Deck als .apkg
+                {{ 'importDialog.examples.ankiApkg.hint' | translate }}
               </span>
             </div>
             <code>Vollständiges Anki-Paket (.apkg-Datei)</code>
@@ -119,12 +119,12 @@
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                 <polyline points="22 4 12 14.01 9 11.01"/>
               </svg>
-              <h3>{{ result.questions.length }} Fragen erfolgreich importiert</h3>
-              <p class="format-detected">Format erkannt: {{ result.format === 'anki-txt' ? 'Anki TXT' : result.format === 'anki-apkg' ? 'Anki APKG' : 'CSV' }}</p>
+              <h3>{{ (result.questions.length === 1 ? 'importDialog.result.successTitleOne' : 'importDialog.result.successTitleMany') | translate:{ count: result.questions.length } }}</h3>
+              <p class="format-detected">{{ (result.format === 'anki-txt' ? 'importDialog.result.formatDetected.ankiTxt' : result.format === 'anki-apkg' ? 'importDialog.result.formatDetected.ankiApkg' : 'importDialog.result.formatDetected.csv') | translate }}</p>
             </div>
 
             <div class="questions-preview">
-              <h4>Vorschau:</h4>
+              <h4>{{ 'importDialog.result.previewTitle' | translate }}</h4>
               <div class="preview-list">
                 @for (q of result.questions.slice(0, 5); track $index) {
                   <div class="preview-item">
@@ -137,7 +137,7 @@
                 }
                 @if (result.questions.length > 5) {
                   <p class="more-questions">
-                    ... und {{ result.questions.length - 5 }} weitere Fragen
+                    {{ (result.questions.length - 5 === 1 ? 'importDialog.result.moreOne' : 'importDialog.result.moreMany') | translate:{ count: (result.questions.length - 5) } }}
                   </p>
                 }
               </div>
@@ -145,13 +145,13 @@
 
             @if (result.errors.length > 0) {
               <div class="warnings">
-                <h4>Warnungen ({{ result.errors.length }}):</h4>
+                <h4>{{ 'importDialog.result.warningsTitle' | translate:{ count: result.errors.length } }}</h4>
                 <ul>
                   @for (error of result.errors.slice(0, 5); track $index) {
                     <li>{{ error }}</li>
                   }
                   @if (result.errors.length > 5) {
-                    <li>... und {{ result.errors.length - 5 }} weitere</li>
+                    <li>{{ 'importDialog.result.moreWarnings' | translate:{ count: (result.errors.length - 5) } }}</li>
                   }
                 </ul>
               </div>
@@ -163,7 +163,7 @@
                 <line x1="12" y1="8" x2="12" y2="12"/>
                 <line x1="12" y1="16" x2="12.01" y2="16"/>
               </svg>
-              <h3>Import fehlgeschlagen</h3>
+              <h3>{{ 'importDialog.result.failedTitle' | translate }}</h3>
               <ul>
                 @for (error of result.errors; track $index) {
                   <li>{{ error }}</li>
@@ -177,11 +177,11 @@
       <!-- Actions -->
       <div class="dialog-footer">
         <button class="btn btn-secondary" (click)="cancel()">
-          Abbrechen
+          {{ 'common.cancel' | translate }}
         </button>
         @if (result.questions.length > 0) {
           <button class="btn btn-primary" (click)="confirmImport()">
-            {{ result.questions.length }} Fragen importieren
+            {{ (result.questions.length === 1 ? 'importDialog.actions.importOne' : 'importDialog.actions.importMany') | translate:{ count: result.questions.length } }}
           </button>
         }
       </div>

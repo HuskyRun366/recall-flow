@@ -2,28 +2,42 @@
   <!-- Header -->
   <div class="editor-header">
     <div class="header-left">
-      <p class="eyebrow">Deck Editor{{ unsavedChanges() ? ' • Unsaved' : '' }}</p>
-      <h1>{{ deck()?.title || 'Default' }}{{ unsavedChanges() ? ' *' : '' }}</h1>
-      <p class="subtitle">{{ cards().length }} {{ cards().length === 1 ? 'Karte' : 'Karten' }}</p>
+      <p class="eyebrow">
+        {{ 'flashcard.editor.eyebrow' | translate }}
+        @if (unsavedChanges()) {
+          • {{ 'common.unsaved' | translate }}
+        }
+      </p>
+      <h1>
+        @if (deck()?.title) {
+          {{ deck()!.title }}
+        } @else {
+          {{ 'flashcard.editor.defaultTitle' | translate }}
+        }
+        @if (unsavedChanges()) {
+          *
+        }
+      </h1>
+      <p class="subtitle">{{ cards().length }} {{ (cards().length === 1 ? 'common.card' : 'common.cards') | translate }}</p>
     </div>
     <div class="header-right">
       <button
         class="btn btn-secondary"
         (click)="openImportDialog()"
         [disabled]="isLoading() || isSaving()">
-        📥 Import
+        📥 {{ 'common.import' | translate }}
       </button>
       <button
         class="btn btn-primary"
         (click)="saveDeck()"
         [disabled]="isLoading() || isSaving() || !unsavedChanges()">
-        {{ isSaving() ? 'Saving...' : 'Save' }}
+        {{ (isSaving() ? 'common.saving' : 'common.save') | translate }}
       </button>
       <button
         class="btn btn-secondary"
         (click)="goBack()"
         [disabled]="isSaving()">
-        Cancel
+        {{ 'common.cancel' | translate }}
       </button>
     </div>
   </div>
@@ -36,10 +50,10 @@
         <line x1="12" y1="8" x2="12" y2="12"/>
         <line x1="12" y1="16" x2="12.01" y2="16"/>
       </svg>
-      <h2>Fehler beim Laden</h2>
+      <h2>{{ 'errors.loadingFailed' | translate }}</h2>
       <p>{{ error() }}</p>
       <button class="btn btn-primary" (click)="retry()">
-        Erneut versuchen
+        {{ 'common.retry' | translate }}
       </button>
     </div>
   }
@@ -47,7 +61,7 @@
   <!-- Co-Author Errors -->
   @if (coAuthorErrors().length > 0) {
     <div class="error-message co-author-errors">
-      <strong>Mit-Autoren Probleme:</strong>
+      <strong>{{ 'quiz.editor.coAuthorIssues' | translate }}:</strong>
       <ul>
         @for (err of coAuthorErrors(); track err) {
           <li>{{ err }}</li>
@@ -60,7 +74,7 @@
   @if (isLoading()) {
     <div class="loading-container">
       <div class="spinner"></div>
-      <p>Loading deck...</p>
+      <p>{{ 'flashcard.editor.loading' | translate }}</p>
     </div>
   }
 
@@ -70,39 +84,39 @@
       <!-- Sidebar: Deck Settings -->
       <div class="sidebar">
         <div class="deck-settings-card">
-          <h3>Deck Einstellungen</h3>
+          <h3>{{ 'flashcard.editor.settingsTitle' | translate }}</h3>
 
           <div class="form-group">
-            <label>Title</label>
+            <label>{{ 'common.title' | translate }}</label>
             <input
               type="text"
               name="deckTitle"
               autocomplete="off"
               [(ngModel)]="deck()!.title"
               (ngModelChange)="updateDeckMetadata('title', $event)"
-              placeholder="Deck Title">
+              [placeholder]="'flashcard.editor.placeholders.title' | translate">
           </div>
 
           <div class="form-group">
-            <label>Beschreibung</label>
+            <label>{{ 'common.description' | translate }}</label>
             <textarea
               name="deckDescription"
               autocomplete="off"
               [(ngModel)]="deck()!.description"
               (ngModelChange)="updateDeckMetadata('description', $event)"
-              placeholder="Kurze Beschreibung..."
+              [placeholder]="'common.descriptionPlaceholder' | translate"
               rows="3"></textarea>
           </div>
 
           <div class="form-group">
-            <label>Sichtbarkeit</label>
+            <label>{{ 'common.visibility' | translate }}</label>
             <select
               name="deckVisibility"
               [value]="deck()?.visibility || 'private'"
               (change)="updateDeckMetadata('visibility', $any($event.target).value)">
-              <option value="private">Privat</option>
-              <option value="public">Öffentlich</option>
-              <option value="unlisted">Nicht gelistet</option>
+              <option value="private">{{ 'quiz.visibility.private' | translate }}</option>
+              <option value="public">{{ 'quiz.visibility.public' | translate }}</option>
+              <option value="unlisted">{{ 'quiz.visibility.unlisted' | translate }}</option>
             </select>
           </div>
         </div>
@@ -110,21 +124,21 @@
         <div class="coauthor-card">
           <div class="coauthor-header">
             <div>
-              <p class="eyebrow">Mit-Autoren</p>
-              <h4>Mitarbeitende hinzufügen</h4>
+              <p class="eyebrow">{{ 'common.coAuthors' | translate }}</p>
+              <h4>{{ 'common.addCollaborators' | translate }}</h4>
             </div>
-            <span class="pill">Optional</span>
+            <span class="pill">{{ 'common.optional' | translate }}</span>
           </div>
 
           <div class="coauthor-input">
-            <label for="deckCoAuthors">E-Mails (Komma oder Zeilen getrennt)</label>
+            <label for="deckCoAuthors">{{ 'common.coAuthorsHint' | translate }}</label>
             <textarea id="deckCoAuthors" name="deckCoAuthors"
               [value]="coAuthors().join(', ')"
               [disabled]="!isOwner()"
               (input)="onCoAuthorInput($any($event.target).value)"
               rows="2"
-              placeholder="anna@example.com, max@example.com"></textarea>
-            <small>Mit-Autoren dürfen bearbeiten, aber nicht löschen.</small>
+              [placeholder]="'common.coAuthorsPlaceholder' | translate"></textarea>
+            <small>{{ 'common.coAuthorsNote' | translate }}</small>
           </div>
 
           @if (coAuthors().length) {
@@ -142,15 +156,15 @@
         <!-- Cards Header -->
         <div class="cards-header">
           <div class="cards-title">
-            <h2>Flashcards</h2>
-            <span class="card-count">{{ cards().length }} {{ cards().length === 1 ? 'Karte' : 'Karten' }}</span>
+            <h2>{{ 'common.cards' | translate }}</h2>
+            <span class="card-count">{{ cards().length }} {{ (cards().length === 1 ? 'common.card' : 'common.cards') | translate }}</span>
           </div>
           <button class="btn btn-primary" (click)="addCard()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="12" y1="5" x2="12" y2="19"/>
               <line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
-            Neue Karte
+            {{ 'flashcard.editor.addCard' | translate }}
           </button>
         </div>
 
@@ -163,14 +177,14 @@
                 <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
               </svg>
             </div>
-            <h3>Noch keine Karten</h3>
-            <p>Erstelle deine erste Flashcard oder importiere bestehende Karten.</p>
+            <h3>{{ 'flashcard.noCardsTitle' | translate }}</h3>
+            <p>{{ 'flashcard.noCardsMessage' | translate }}</p>
             <div class="empty-actions">
               <button class="btn btn-primary" (click)="addCard()">
-                Erste Karte erstellen
+                {{ 'flashcard.editor.createFirstCard' | translate }}
               </button>
               <button class="btn btn-secondary" (click)="openImportDialog()">
-                Karten importieren
+                {{ 'flashcard.editor.importCards' | translate }}
               </button>
             </div>
           </div>
@@ -191,8 +205,14 @@
 
               <div class="flashcard-preview-content">
                 <div class="preview-side front">
-                  <span class="side-label">VORNE</span>
-                  <p>{{ card.front || 'Leer' }}</p>
+                  <span class="side-label">{{ 'flashcard.front' | translate | uppercase }}</span>
+                  <p>
+                    @if (card.front) {
+                      {{ card.front }}
+                    } @else {
+                      {{ 'common.empty' | translate }}
+                    }
+                  </p>
                 </div>
                 <div class="preview-divider">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -200,8 +220,14 @@
                   </svg>
                 </div>
                 <div class="preview-side back">
-                  <span class="side-label">HINTEN</span>
-                  <p>{{ card.back || 'Leer' }}</p>
+                  <span class="side-label">{{ 'flashcard.back' | translate | uppercase }}</span>
+                  <p>
+                    @if (card.back) {
+                      {{ card.back }}
+                    } @else {
+                      {{ 'common.empty' | translate }}
+                    }
+                  </p>
                 </div>
               </div>
 
@@ -209,7 +235,7 @@
                 <button
                   class="action-btn edit-btn"
                   (click)="selectCard(i); $event.stopPropagation()"
-                  title="Bearbeiten">
+                  [title]="'common.edit' | translate">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -219,7 +245,7 @@
                   class="action-btn delete-btn"
                   (click)="deleteCard(i); $event.stopPropagation()"
                   [disabled]="isSaving()"
-                  title="Löschen">
+                  [title]="'common.delete' | translate">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="3 6 5 6 21 6"/>
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
@@ -237,7 +263,7 @@
       <div class="editor-modal-overlay" (click)="selectedCardIndex.set(null)">
         <div class="editor-modal" (click)="$event.stopPropagation()">
           <div class="modal-header">
-            <h3>Karte #{{ selectedCardIndex()! + 1 }} bearbeiten</h3>
+            <h3>{{ 'flashcard.editor.editCardTitle' | translate:{ number: (selectedCardIndex()! + 1) } }}</h3>
             <button class="close-btn" (click)="selectedCardIndex.set(null)">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="18" y1="6" x2="6" y2="18"/>
@@ -252,14 +278,14 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="3" y="3" width="18" height="18" rx="2"/>
                 </svg>
-                Vorderseite (Frage)
+                {{ 'flashcard.editor.fields.frontLabel' | translate }}
               </label>
               <textarea
                 id="cardFront"
                 name="cardFront"
                 [ngModel]="cards()[selectedCardIndex()!].front"
                 (ngModelChange)="updateCardField(selectedCardIndex()!, 'front', $event)"
-                placeholder="Was möchtest du lernen?"
+                [placeholder]="'flashcard.editor.placeholders.front' | translate"
                 rows="5"></textarea>
             </div>
 
@@ -270,14 +296,14 @@
                   <line x1="9" y1="9" x2="15" y2="15"/>
                   <line x1="15" y1="9" x2="9" y2="15"/>
                 </svg>
-                Rückseite (Antwort)
+                {{ 'flashcard.editor.fields.backLabel' | translate }}
               </label>
               <textarea
                 id="cardBack"
                 name="cardBack"
                 [ngModel]="cards()[selectedCardIndex()!].back"
                 (ngModelChange)="updateCardField(selectedCardIndex()!, 'back', $event)"
-                placeholder="Die Antwort oder Erklärung..."
+                [placeholder]="'flashcard.editor.placeholders.back' | translate"
                 rows="5"></textarea>
             </div>
           </div>
@@ -286,13 +312,13 @@
             <button
               class="btn btn-secondary"
               (click)="selectedCardIndex.set(null)">
-              Schließen
+              {{ 'common.close' | translate }}
             </button>
             <button
               class="btn btn-danger"
               (click)="deleteCard(selectedCardIndex()!); selectedCardIndex.set(null)"
               [disabled]="isSaving()">
-              Löschen
+              {{ 'common.delete' | translate }}
             </button>
           </div>
         </div>
@@ -303,7 +329,7 @@
   <!-- Unsaved Changes Indicator -->
   <div class="unsaved-indicator" *ngIf="unsavedChanges()">
     <span class="dot"></span>
-    Ungespeicherte Änderungen
+    {{ 'common.unsavedChanges' | translate }}
   </div>
 
   <!-- Import Dialog -->

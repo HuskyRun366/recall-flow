@@ -4,12 +4,12 @@
       <div class="hero-left">
         <div class="avatar">{{ quiz()!.title.charAt(0).toUpperCase() }}</div>
         <div>
-          <p class="eyebrow">Quiz Detail</p>
+          <p class="eyebrow">{{ 'quiz.detail.eyebrow' | translate }}</p>
           <h1>{{ quiz()!.title }}</h1>
           <p class="subtitle" *ngIf="quiz()!.description">{{ quiz()!.description }}</p>
           <div class="badges">
             <span class="badge" [ngClass]="quiz()!.visibility">
-              {{ quiz()!.visibility === 'public' ? 'Öffentlich' : quiz()!.visibility === 'unlisted' ? 'Nicht gelistet' : 'Privat' }}
+              {{ quiz()!.visibility === 'public' ? ('quiz.visibility.public' | translate) : quiz()!.visibility === 'unlisted' ? ('quiz.visibility.unlisted' | translate) : ('quiz.visibility.private' | translate) }}
             </span>
           </div>
         </div>
@@ -19,31 +19,31 @@
           <button class="btn btn-secondary"
                   [disabled]="enrollState() !== 'idle' || isEnrolled()"
                   (click)="enroll()">
-            {{ enrollState() === 'loading' ? 'Wird hinzugefügt…' : (isEnrolled() ? 'Hinzugefügt' : 'Hinzufügen') }}
+            {{ enrollState() === 'loading' ? ('common.adding' | translate) : (isEnrolled() ? ('common.added' | translate) : ('common.add' | translate)) }}
           </button>
           <button class="btn btn-secondary"
                   *ngIf="isEnrolled()"
                   [disabled]="enrollState() === 'removing'"
                   (click)="unenroll()">
-            {{ enrollState() === 'removing' ? 'Entferne…' : 'Entfernen' }}
+            {{ enrollState() === 'removing' ? ('common.removing' | translate) : ('common.remove' | translate) }}
           </button>
           <button class="btn btn-primary"
                   [disabled]="!canPlay()"
                   (click)="startQuiz()">
-            Quiz starten
+            {{ 'quiz.startQuiz' | translate }}
           </button>
         </ng-container>
         <ng-template #directStart>
-          <button class="btn btn-primary" (click)="startQuiz()">Quiz starten</button>
+          <button class="btn btn-primary" (click)="startQuiz()">{{ 'quiz.startQuiz' | translate }}</button>
         </ng-template>
-        <button class="btn btn-secondary" *ngIf="canEdit()" (click)="editQuiz()">Bearbeiten</button>
-        <button class="btn btn-secondary" (click)="exportQuiz()" [title]="exportSuccess() ? 'Exportiert!' : 'Quiz exportieren'">
+        <button class="btn btn-secondary" *ngIf="canEdit()" (click)="editQuiz()">{{ 'common.edit' | translate }}</button>
+        <button class="btn btn-secondary" (click)="exportQuiz()" [title]="exportSuccess() ? ('quiz.exportedTooltip' | translate) : ('quiz.exportTooltip' | translate)">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
             <polyline points="7 10 12 15 17 10"/>
             <line x1="12" y1="15" x2="12" y2="3"/>
           </svg>
-          {{ exportSuccess() ? '✓ Exportiert' : 'Exportieren' }}
+          {{ exportSuccess() ? ('quiz.exported' | translate) : ('quiz.export' | translate) }}
         </button>
       </div>
     </div>
@@ -53,21 +53,21 @@
         icon: 'svg',
         iconContent: '<circle cx=\'12\' cy=\'12\' r=\'10\'/><path d=\'M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\'/><line x1=\'12\' y1=\'17\' x2=\'12.01\' y2=\'17\'/>',
         value: questions().length,
-        label: 'Fragen'
+        label: ('quiz.questions' | translate)
       }" />
 
       <app-stat-card [config]="{
         icon: 'svg',
         iconContent: '<rect x=\'3\' y=\'4\' width=\'18\' height=\'18\' rx=\'2\' ry=\'2\'/><line x1=\'16\' y1=\'2\' x2=\'16\' y2=\'6\'/><line x1=\'8\' y1=\'2\' x2=\'8\' y2=\'6\'/><line x1=\'3\' y1=\'10\' x2=\'21\' y2=\'10\'/>',
         value: (quiz()!.updatedAt | date:'mediumDate') || '',
-        label: 'Zuletzt aktualisiert'
+        label: ('common.lastUpdated' | translate)
       }" />
 
       <app-stat-card [config]="{
         icon: 'svg',
         iconContent: '<path d=\'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\'/><circle cx=\'12\' cy=\'7\' r=\'4\'/>',
-        value: quiz()!.ownerId === currentUser()?.uid ? 'Besitzer' : 'Zugriff',
-        label: (quiz()!.ownerId === currentUser()?.uid) ? '' : quiz()!.visibility
+        value: quiz()!.ownerId === currentUser()?.uid ? ('quiz.roles.owner' | translate) : ('common.access' | translate),
+        label: (quiz()!.ownerId === currentUser()?.uid) ? '' : (('quiz.visibility.' + quiz()!.visibility) | translate)
       }" />
 
       <div class="stat-card" *ngIf="quiz()!.joinCode">
@@ -79,18 +79,18 @@
         <div>
           <div class="stat-value">
             {{ quiz()!.joinCode }}
-            <button class="copy-btn" (click)="copyJoinCode()" [title]="copySuccess() ? 'Kopiert!' : 'Code kopieren'">
+            <button class="copy-btn" (click)="copyJoinCode()" [title]="copySuccess() ? ('common.copied' | translate) : ('common.copyCode' | translate)">
               {{ copySuccess() ? '✓' : '📋' }}
             </button>
           </div>
-          <div class="stat-label">Beitritts-Code</div>
+          <div class="stat-label">{{ 'join.codeLabel' | translate }}</div>
         </div>
       </div>
     </div>
 
     <div class="card questions-card">
       <div class="card-header">
-        <h2>Fragen ({{ questions().length }})</h2>
+        <h2>{{ 'quiz.questions' | translate }} ({{ questions().length }})</h2>
       </div>
       <div class="question-list">
         <div class="question-item" *ngFor="let q of questions(); let i = index">
@@ -98,13 +98,13 @@
             <div class="bubble">{{ i + 1 }}</div>
             <div>
             <div class="q-title">{{ q.questionText }}</div>
-            <div class="q-meta">{{ q.type === 'multiple-choice' ? 'Multiple Choice' : q.type === 'ordering' ? 'Ordering' : 'Matching' }}</div>
+            <div class="q-meta">{{ q.type === 'multiple-choice' ? ('quiz.questionTypes.multipleChoice' | translate) : q.type === 'ordering' ? ('quiz.questionTypes.ordering' | translate) : ('quiz.questionTypes.matching' | translate) }}</div>
           </div>
         </div>
         <div class="qi-right">
-          <span class="count" *ngIf="q.options && q.options!.length !== 0">Optionen: {{ q.options!.length }} </span>
-          <span class="count" *ngIf="q.orderItems && q.orderItems!.length !== 0">Items: {{ q.orderItems!.length }} </span>
-          <span class="count" *ngIf="q.matchingPairs && q.matchingPairs!.length !== 0">Paare: {{ q.matchingPairs!.length }} </span>
+          <span class="count" *ngIf="q.options && q.options!.length !== 0">{{ 'quiz.questionMeta.optionsCount' | translate:{ count: q.options!.length } }} </span>
+          <span class="count" *ngIf="q.orderItems && q.orderItems!.length !== 0">{{ 'quiz.questionMeta.itemsCount' | translate:{ count: q.orderItems!.length } }} </span>
+          <span class="count" *ngIf="q.matchingPairs && q.matchingPairs!.length !== 0">{{ 'quiz.questionMeta.pairsCount' | translate:{ count: q.matchingPairs!.length } }} </span>
         </div>
       </div>
       </div>
@@ -115,12 +115,12 @@
 <ng-template #loading>
   <div class="loading-state">
     <div class="spinner"></div>
-    <p>Wird geladen…</p>
+    <p>{{ 'common.loading' | translate }}</p>
   </div>
 </ng-template>
 
 <ng-template #errorBlock>
   <div class="error-state">
-    {{ error() || 'Fehler beim Laden' }}
+    {{ error() ? error() : ('errors.loadingFailed' | translate) }}
   </div>
 </ng-template>

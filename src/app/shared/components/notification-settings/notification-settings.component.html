@@ -8,8 +8,8 @@
       </svg>
     </div>
     <div class="notification-content">
-      <strong>Benachrichtigungen aktivieren</strong>
-      <p>Erhalte Updates zu deinen Quizzes</p>
+      <strong>{{ 'settings.page.notifications.card.title' | translate }}</strong>
+      <p>{{ 'settings.page.notifications.card.message' | translate }}</p>
     </div>
     <button
       class="btn btn-primary"
@@ -17,9 +17,9 @@
       (click)="enableNotifications()">
       @if (isEnabling()) {
         <div class="spinner-small"></div>
-        <span>Aktiviere...</span>
+        <span>{{ 'settings.page.notifications.enableLoading' | translate }}</span>
       } @else {
-        <span>Aktivieren</span>
+        <span>{{ 'settings.page.notifications.enable' | translate }}</span>
       }
     </button>
   </div>
@@ -34,7 +34,7 @@
         <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
       </svg>
     </div>
-    <span>Benachrichtigungen aktiviert</span>
-    <button class="btn-text" (click)="disableNotifications()">Deaktivieren</button>
+    <span>{{ 'settings.page.notifications.enabled.title' | translate }}</span>
+    <button class="btn-text" (click)="disableNotifications()">{{ 'settings.page.notifications.disable' | translate }}</button>
   </div>
 }

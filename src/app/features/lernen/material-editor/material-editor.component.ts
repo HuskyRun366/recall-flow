@@ -4,6 +4,7 @@ import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { TranslateModule } from '@ngx-translate/core';
 import { EditorView } from '@codemirror/view';
 import { EditorState, StateEffect } from '@codemirror/state';
 import { LearningMaterialService } from '../../../core/services/learning-material.service';
@@ -21,7 +22,7 @@ import DOMPurify from 'dompurify';
 @Component({
   selector: 'app-material-editor',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, RouterModule, TranslateModule, ReactiveFormsModule, FormsModule],
   templateUrl: './material-editor.component.html',
   styleUrls: ['./material-editor.component.scss']
 })

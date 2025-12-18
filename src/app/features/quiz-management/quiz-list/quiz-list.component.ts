@@ -2,6 +2,7 @@ import { Component, OnInit, signal, computed, inject, DestroyRef } from '@angula
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TranslateModule } from '@ngx-translate/core';
 import { FirestoreService } from '../../../core/services/firestore.service';
 import { ParticipantService } from '../../../core/services/participant.service';
 import { QuestionService } from '../../../core/services/question.service';
@@ -20,7 +21,7 @@ type TabType = 'owned' | 'co-authored' | 'public';
 @Component({
   selector: 'app-quiz-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, PullToRefreshDirective, SkeletonLoaderComponent, StatCardComponent],
+  imports: [CommonModule, RouterModule, TranslateModule, PullToRefreshDirective, SkeletonLoaderComponent, StatCardComponent],
   templateUrl: './quiz-list.component.html',
   styleUrls: ['./quiz-list.component.scss']
 })

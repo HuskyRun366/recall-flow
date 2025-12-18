@@ -1,13 +1,14 @@
 import { Component, Input, Output, EventEmitter, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
+import { TranslateModule } from '@ngx-translate/core';
 import { OrderingQuestion, OrderingItem } from '../../../../models';
 import { HapticService } from '../../../../core/services/haptic.service';
 
 @Component({
   selector: 'app-ordering-question',
   standalone: true,
-  imports: [CommonModule, DragDropModule],
+  imports: [CommonModule, DragDropModule, TranslateModule],
   templateUrl: './ordering-question.component.html',
   styleUrls: ['./ordering-question.component.scss']
 })

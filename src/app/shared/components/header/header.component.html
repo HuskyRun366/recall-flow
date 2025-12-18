@@ -22,15 +22,15 @@
           </div>
 
           @if (modeService.isQuizMode()) {
-            <a routerLink="/quiz/home" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Home</a>
-            <a routerLink="/quiz/quizzes" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Quizzes</a>
+            <a routerLink="/quiz/home" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">{{ 'nav.home' | translate }}</a>
+            <a routerLink="/quiz/quizzes" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">{{ 'nav.quizzes' | translate }}</a>
           } @else {
-            <a routerLink="/lernen/home" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Home</a>
-            <a routerLink="/lernen/decks" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Flashcards</a>
-            <a routerLink="/lernen/materials" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">Material</a>
+            <a routerLink="/lernen/home" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">{{ 'nav.home' | translate }}</a>
+            <a routerLink="/lernen/decks" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">{{ 'nav.flashcards' | translate }}</a>
+            <a routerLink="/lernen/materials" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">{{ 'nav.materials' | translate }}</a>
           }
           <a routerLink="/updates" routerLinkActive="active" (click)="mobileMenuOpen.set(false)" class="mobile-updates-link">
-            Updates
+            {{ 'nav.updates' | translate }}
             @if (hasNewUpdates()) {
               <span class="badge-dot-mobile"></span>
             }
@@ -53,7 +53,7 @@
 
       <!-- Updates Badge -->
       @if (isAuthenticated()) {
-        <a routerLink="/updates" class="updates-badge" [title]="hasNewUpdates() ? 'Neue Updates verfügbar' : 'Updates ansehen'">
+        <a routerLink="/updates" class="updates-badge" [title]="hasNewUpdates() ? ('nav.newUpdates' | translate) : ('nav.viewUpdates' | translate)">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke-width="2" stroke="currentColor">
             <path d="M21.9348 15.6583L18.6383 3.37924C18.2799 2.0442 16.6391 1.55235 15.603 2.46935L13.5253 4.30818C11.2132 6.35446 8.45556 7.83537 5.47068 8.63362C2.97216 9.30181 1.49142 11.8725 2.16089 14.3662C2.83037 16.8599 5.40053 18.3472 7.89906 17.679C10.8839 16.8807 14.014 16.787 17.0415 17.4054L19.762 17.961C21.1187 18.2381 22.2932 16.9933 21.9348 15.6583Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M7.71747 8L11.5 22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -64,12 +64,15 @@
         </a>
       }
 
+      <!-- Language Switcher -->
+      <app-language-switcher />
+
       @if (isAuthenticated()) {
         <button
           class="mobile-menu-btn"
           [class.open]="mobileMenuOpen()"
           (click)="toggleMobileMenu()"
-          aria-label="Toggle navigation menu"
+          [attr.aria-label]="'nav.toggleMenu' | translate"
           [attr.aria-expanded]="mobileMenuOpen()">
           <div class="staggered-lines">
             <span></span>
@@ -79,7 +82,7 @@
         </button>
       }
 
-      <button class="theme-toggle" (click)="toggleTheme()" aria-label="Toggle theme">
+      <button class="theme-toggle" (click)="toggleTheme()" [attr.aria-label]="'nav.toggleTheme' | translate">
         @if (isDarkMode()) {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"/>
@@ -133,7 +136,7 @@
                   stroke-linejoin="round"
                   stroke-width="32px" />
               </svg>
-              Einstellungen
+              {{ 'nav.settings' | translate }}
             </a>
             <div class="dropdown-divider"></div>
             <button class="dropdown-item" (click)="signOut()">
@@ -142,7 +145,7 @@
                 <polyline points="16 17 21 12 16 7"/>
                 <line x1="21" y1="12" x2="9" y2="12"/>
               </svg>
-              Sign Out
+              {{ 'nav.signOut' | translate }}
             </button>
           </div>
         </div>

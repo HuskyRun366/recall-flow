@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { Question } from '../../../../models';
 
 @Component({
   selector: 'app-flashcard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './flashcard.component.html',
   styleUrls: ['./flashcard.component.scss']
 })

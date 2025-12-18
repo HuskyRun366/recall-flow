@@ -1,12 +1,13 @@
 import { Component, Input, Output, EventEmitter, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { MultipleChoiceQuestion } from '../../../../models';
 import { HapticService } from '../../../../core/services/haptic.service';
 
 @Component({
   selector: 'app-multiple-choice',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './multiple-choice.component.html',
   styleUrls: ['./multiple-choice.component.scss']
 })

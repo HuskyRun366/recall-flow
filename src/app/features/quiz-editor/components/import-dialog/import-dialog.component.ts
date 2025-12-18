@@ -1,11 +1,12 @@
 import { Component, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { ImportService, ImportResult, ImportedQuestion } from '../../../../core/services/import.service';
 
 @Component({
   selector: 'app-import-dialog',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './import-dialog.component.html',
   styleUrls: ['./import-dialog.component.scss']
 })

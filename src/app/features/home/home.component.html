@@ -1,7 +1,7 @@
 <div class="home-container" appPullToRefresh (refresh)="retry()">
   <div class="home-header">
-    <h1>Meine Quizzes</h1>
-    <p class="subtitle">Lerne mit Spaced Repetition</p>
+    <h1>{{ 'quiz.myQuizzes' | translate }}</h1>
+    <p class="subtitle">{{ 'quiz.subtitle' | translate }}</p>
   </div>
 
   @if (isLoading()) {
@@ -17,9 +17,9 @@
         <line x1="12" y1="8" x2="12" y2="12"/>
         <line x1="12" y1="16" x2="12.01" y2="16"/>
       </svg>
-      <h2>Fehler beim Laden</h2>
+      <h2>{{ 'errors.loadingFailed' | translate }}</h2>
       <p>{{ error() }}</p>
-      <button class="btn btn-primary" (click)="retry()">Erneut versuchen</button>
+      <button class="btn btn-primary" (click)="retry()">{{ 'common.retry' | translate }}</button>
     </div>
   } @else {
     <div class="search-bar" *ngIf="quizzesWithProgress().length > 0">
@@ -33,15 +33,15 @@
           #homeSearch
           [value]="searchTerm()"
           (input)="onSearch(homeSearch.value)"
-          placeholder="Quizzes durchsuchen"
-          aria-label="Quizzes durchsuchen" />
+          [placeholder]="'quiz.searchQuizzes' | translate"
+          [attr.aria-label]="'quiz.searchQuizzes' | translate" />
         <button
           type="button"
           class="clear-btn"
           *ngIf="searchTerm()"
-          (click)="clearSearch()">Zurücksetzen</button>
+          (click)="clearSearch()">{{ 'common.back' | translate }}</button>
       </div>
-      <div class="result-count">{{ filteredQuizzes().length }} Ergebnis{{ filteredQuizzes().length === 1 ? '' : 'se' }}</div>
+      <div class="result-count">{{ filteredQuizzes().length }} {{ (filteredQuizzes().length === 1 ? 'quiz.result' : 'quiz.results') | translate }}</div>
     </div>
 
     <!-- Statistics Summary -->
@@ -50,21 +50,21 @@
         icon: 'svg',
         iconContent: '<path d=\'M9 11H3v9h6v-9Z M21 11h-6v9h6v-9Z M15 5H9v14h6V5Z\'/>',
         value: totalQuizzes(),
-        label: 'Quizzes'
+        label: ('quiz.quizzes' | translate)
       }" />
 
       <app-stat-card [config]="{
         icon: 'svg',
         iconContent: '<circle cx=\'12\' cy=\'12\' r=\'10\'/><path d=\'M12 6v6l4 2\'/>',
         value: totalQuestions(),
-        label: 'Fragen'
+        label: ('quiz.questions' | translate)
       }" />
 
       <app-stat-card [config]="{
         icon: 'svg',
         iconContent: '<path d=\'M22 11.08V12a10 10 0 1 1-5.93-9.14\'/><polyline points=\'22 4 12 14.01 9 11.01\'/>',
         value: overallProgress() + '%',
-        label: 'Fortschritt'
+        label: ('quiz.progress' | translate)
       }" />
     </div>
 
@@ -73,11 +73,11 @@
         <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <path d="M9 11H3v9h6v-9Z M21 11h-6v9h6v-9Z M15 5H9v14h6V5Z"/>
         </svg>
-        <h2>Keine Quizzes gefunden</h2>
-        <p>{{ searchTerm().trim() ? 'Kein Quiz passt zu deiner Suche.' : 'Erstelle dein erstes Quiz oder nimm an einem öffentlichen Quiz teil' }}</p>
+        <h2>{{ 'quiz.noQuizzesFound' | translate }}</h2>
+        <p>{{ searchTerm().trim() ? ('quiz.noMatchingQuiz' | translate) : ('quiz.createFirstQuiz' | translate) }}</p>
         <a routerLink="/quiz/editor/new" class="btn btn-primary">
           <span class="icon-plus" aria-hidden="true"></span>
-          Neues Quiz erstellen
+          {{ 'quiz.createQuiz' | translate }}
         </a>
       </div>
     } @else {
@@ -89,20 +89,20 @@
               <h3>{{ item.quiz.title }}</h3>
               <div class="badge-group">
                 @if (item.quiz.visibility === 'public') {
-                  <span class="badge badge-public">Öffentlich</span>
+                  <span class="badge badge-public">{{ 'quiz.visibility.public' | translate }}</span>
                 } @else if (item.quiz.visibility === 'unlisted') {
-                  <span class="badge badge-unlisted">Nicht gelistet</span>
+                  <span class="badge badge-unlisted">{{ 'quiz.visibility.unlisted' | translate }}</span>
                 } @else {
-                  <span class="badge badge-private">Privat</span>
+                  <span class="badge badge-private">{{ 'quiz.visibility.private' | translate }}</span>
                 }
                 @if (isPWA() && !item.isOfflineAvailable) {
-                  <span class="badge badge-download" title="Noch nicht heruntergeladen">
+                  <span class="badge badge-download" [title]="'quiz.download' | translate">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                       <polyline points="7 10 12 15 17 10"/>
                       <line x1="12" y1="15" x2="12" y2="3"/>
                     </svg>
-                    Download
+                    {{ 'quiz.download' | translate }}
                   </span>
                 }
               </div>
@@ -118,18 +118,18 @@
                   <circle cx="12" cy="12" r="10"/>
                   <path d="M12 6v6l4 2"/>
                 </svg>
-                {{ item.totalQuestions }} Fragen
+                {{ item.totalQuestions }} {{ 'quiz.questions' | translate }}
               </span>
             </div>
 
             <!-- Progress Bars -->
             <div class="progress-section">
-              <h4>Lernfortschritt</h4>
+              <h4>{{ 'quiz.learningProgress' | translate }}</h4>
 
               <div class="progress-row">
                 <div class="progress-label">
                   <span class="level-indicator level-0"></span>
-                  <span id="level-0-label-{{item.quiz.id}}">Nicht gelernt</span>
+                  <span id="level-0-label-{{item.quiz.id}}">{{ 'flashcard.levels.0' | translate }}</span>
                 </div>
                 <div class="progress-bar-wrapper">
                   <div class="progress-bar"
@@ -148,7 +148,7 @@
               <div class="progress-row">
                 <div class="progress-label">
                   <span class="level-indicator level-1"></span>
-                  <span id="level-1-label-{{item.quiz.id}}">Einmal gelernt</span>
+                  <span id="level-1-label-{{item.quiz.id}}">{{ 'flashcard.levels.1' | translate }}</span>
                 </div>
                 <div class="progress-bar-wrapper">
                   <div class="progress-bar"
@@ -167,7 +167,7 @@
               <div class="progress-row">
                 <div class="progress-label">
                   <span class="level-indicator level-2"></span>
-                  <span id="level-2-label-{{item.quiz.id}}">Zweimal gelernt</span>
+                  <span id="level-2-label-{{item.quiz.id}}">{{ 'flashcard.levels.2' | translate }}</span>
                 </div>
                 <div class="progress-bar-wrapper">
                   <div class="progress-bar"
@@ -186,7 +186,7 @@
               <div class="progress-row">
                 <div class="progress-label">
                   <span class="level-indicator level-3"></span>
-                  <span id="level-3-label-{{item.quiz.id}}">Perfekt gelernt</span>
+                  <span id="level-3-label-{{item.quiz.id}}">{{ 'flashcard.levels.3' | translate }}</span>
                 </div>
                 <div class="progress-bar-wrapper">
                   <div class="progress-bar"
@@ -209,7 +209,7 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polygon points="5 3 19 12 5 21 5 3"/>
                 </svg>
-                Quiz starten
+                {{ 'quiz.startQuiz' | translate }}
               </a>
 
               @if (canEdit(item.quiz)) {
@@ -218,7 +218,7 @@
                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                   </svg>
-                  Bearbeiten
+                  {{ 'common.edit' | translate }}
                 </a>
               }
             </div>
@@ -233,11 +233,11 @@
     <div class="fab-menu">
       <a class="fab-item" routerLink="/quiz/editor/new">
         <span class="icon-circle">➕</span>
-        <span class="label">Neues Quiz</span>
+        <span class="label">{{ 'quiz.newQuiz' | translate }}</span>
       </a>
       <a class="fab-item" routerLink="/quiz/ai-quiz-generator">
         <span class="icon-circle">🤖</span>
-        <span class="label">AI&nbsp;Quiz</span>
+        <span class="label">{{ 'quiz.aiQuiz' | translate }}</span>
       </a>
     </div>
 
@@ -245,7 +245,7 @@
             class="fab"
             (click)="toggleFab()"
             [attr.aria-expanded]="fabOpen()"
-            aria-label="Erstellen-Menü öffnen"
+            [attr.aria-label]="'quiz.openCreateMenu' | translate"
             aria-haspopup="menu">
       <span class="fab-lines" aria-hidden="true"></span>
     </button>

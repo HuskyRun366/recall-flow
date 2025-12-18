@@ -4,8 +4,8 @@
     <div class="header">
       <div class="header-content">
         <div class="icon">🤖</div>
-        <h1>Quiz mit KI generieren</h1>
-        <p class="subtitle">Laden Sie Bilder oder PDFs hoch und lassen Sie KI ein Quiz erstellen</p>
+        <h1>{{ 'aiGenerator.title' | translate }}</h1>
+        <p class="subtitle">{{ 'aiGenerator.subtitle' | translate }}</p>
       </div>
     </div>
 
@@ -30,23 +30,23 @@
           (dragleave)="onDragLeave($event)"
           (drop)="onDrop($event)">
           <div class="upload-icon">📁</div>
-          <h3>Dateien auswählen</h3>
-          <p>Bilder (JPG, PNG, GIF, WebP) oder PDFs</p>
-          <p class="limits">Max. {{ maxFiles }} Dateien, je {{ maxFileSizeMB }}MB</p>
-          <p class="drag-hint">Dateien hierher ziehen oder klicken zum Auswählen</p>
+          <h3>{{ 'aiGenerator.upload.title' | translate }}</h3>
+          <p>{{ 'aiGenerator.upload.supportedTypes' | translate }}</p>
+          <p class="limits">{{ 'aiGenerator.upload.limits' | translate:{ maxFiles: maxFiles, maxFileSizeMB: maxFileSizeMB } }}</p>
+          <p class="drag-hint">{{ 'aiGenerator.upload.dragHint' | translate }}</p>
           <button type="button" class="btn btn-primary" (click)="fileInput.click(); $event.stopPropagation()">
-            Durchsuchen
+            {{ 'aiGenerator.upload.browse' | translate }}
           </button>
         </div>
       </div>
 
       <!-- Configuration Section -->
       <div class="config-section" *ngIf="selectedFiles().length > 0">
-        <h3>Quiz-Konfiguration</h3>
+        <h3>{{ 'aiGenerator.config.title' | translate }}</h3>
 
         <!-- Teacher Style Selection -->
         <div class="config-item">
-          <label>Lehrer-Stil</label>
+          <label>{{ 'aiGenerator.config.teacherStyle' | translate }}</label>
           <div class="teacher-style-selector">
             <button
               *ngFor="let style of teacherStyles"
@@ -55,15 +55,15 @@
               [class.selected]="teacherStyle() === style.id"
               (click)="teacherStyle.set(style.id)">
               <span class="style-emoji">{{ style.emoji }}</span>
-              <span class="style-name">{{ style.name }}</span>
-              <span class="style-desc">{{ style.description }}</span>
+              <span class="style-name">{{ style.nameKey | translate }}</span>
+              <span class="style-desc">{{ style.descriptionKey | translate }}</span>
             </button>
           </div>
         </div>
 
         <!-- Question Count -->
         <div class="config-item">
-          <label>Anzahl der Fragen</label>
+          <label>{{ 'aiGenerator.config.questionCount' | translate }}</label>
           <div class="slider-container">
             <input
               type="range"
@@ -74,7 +74,7 @@
               class="question-slider">
             <div class="slider-labels">
               <span>3</span>
-              <span class="current-value">{{ questionCount() }} Fragen</span>
+              <span class="current-value">{{ questionCount() }} {{ 'quiz.questions' | translate }}</span>
               <span>30</span>
             </div>
           </div>
@@ -82,10 +82,10 @@
 
         <!-- Question Type Distribution -->
         <div class="config-item">
-          <label>Fragentyp-Verteilung</label>
+          <label>{{ 'aiGenerator.config.typeDistribution' | translate }}</label>
           <div class="type-sliders">
             <div class="type-slider-group">
-              <span class="type-label">Multiple Choice</span>
+              <span class="type-label">{{ 'quiz.questionTypes.multipleChoice' | translate }}</span>
               <div class="slider-container">
                 <input
                   type="range"
@@ -99,7 +99,7 @@
               </div>
             </div>
             <div class="type-slider-group">
-              <span class="type-label">Ordering</span>
+              <span class="type-label">{{ 'quiz.questionTypes.ordering' | translate }}</span>
               <div class="slider-container">
                 <input
                   type="range"
@@ -113,7 +113,7 @@
               </div>
             </div>
             <div class="type-slider-group">
-              <span class="type-label">Matching</span>
+              <span class="type-label">{{ 'quiz.questionTypes.matching' | translate }}</span>
               <div class="slider-container">
                 <input
                   type="range"
@@ -132,7 +132,7 @@
 
       <!-- Selected Files -->
       <div class="selected-files" *ngIf="selectedFiles().length > 0">
-        <h3>Ausgewählte Dateien ({{ selectedFiles().length }}/{{ maxFiles }})</h3>
+        <h3>{{ 'aiGenerator.selectedFiles.title' | translate:{ count: selectedFiles().length, maxFiles: maxFiles } }}</h3>
         <div class="file-list">
           <div class="file-item" *ngFor="let file of selectedFiles(); let i = index">
             <span class="file-icon">{{ file.type.includes('pdf') ? '📄' : '🖼️' }}</span>
@@ -140,28 +140,28 @@
               <span class="file-name">{{ file.name }}</span>
               <span class="file-size">{{ fileProcessingService.formatFileSize(file.size) }}</span>
             </div>
-            <button class="remove-btn" (click)="removeFile(i)" [disabled]="isGenerating()">×</button>
+            <button class="remove-btn" (click)="removeFile(i)" [disabled]="isGenerating()" [attr.aria-label]="'common.remove' | translate">×</button>
           </div>
         </div>
-        <div class="total-size">Gesamt: {{ getTotalSize() }}</div>
+        <div class="total-size">{{ 'aiGenerator.selectedFiles.totalSize' | translate:{ size: getTotalSize() } }}</div>
       </div>
 
       <!-- Error Display -->
       <div class="error-message" *ngIf="error()">
-        <strong>⚠️ Fehler:</strong> {{ error() }}
+        <strong>⚠️ {{ 'common.error' | translate }}:</strong> {{ error() | translate:errorParams() }}
         <button class="btn btn-secondary" (click)="retry()" *ngIf="retryCount() < maxRetries && retryCount() > 0">
-          Erneut versuchen ({{ retryCount() }}/{{ maxRetries }})
+          {{ 'aiGenerator.actions.retry' | translate:{ current: retryCount(), maxRetries: maxRetries } }}
         </button>
       </div>
 
       <!-- Actions -->
       <div class="actions">
-        <button class="btn btn-secondary" (click)="cancel()">Abbrechen</button>
+        <button class="btn btn-secondary" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
         <button
           class="btn btn-primary"
           (click)="generateQuiz()"
           [disabled]="selectedFiles().length === 0">
-          Quiz generieren
+          {{ 'aiGenerator.actions.generate' | translate }}
         </button>
       </div>
     </div>
@@ -169,8 +169,8 @@
     <!-- Loading State -->
     <div class="loading-section" *ngIf="isGenerating()">
       <div class="spinner"></div>
-      <h2>{{ generationProgress() }}</h2>
-      <p>Dies kann einige Sekunden dauern...</p>
+      <h2>{{ generationProgress() | translate }}</h2>
+      <p>{{ 'aiGenerator.loading.hint' | translate }}</p>
     </div>
   </div>
 </div>

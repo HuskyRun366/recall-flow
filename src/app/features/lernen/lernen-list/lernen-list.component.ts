@@ -2,6 +2,7 @@ import { Component, OnInit, signal, computed, inject, DestroyRef } from '@angula
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TranslateModule } from '@ngx-translate/core';
 import { FlashcardDeckService } from '../../../core/services/flashcard-deck.service';
 import { DeckParticipantService } from '../../../core/services/deck-participant.service';
 import { FlashcardService } from '../../../core/services/flashcard.service';
@@ -20,7 +21,7 @@ type TabType = 'owned' | 'co-authored' | 'public';
 @Component({
   selector: 'app-lernen-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, PullToRefreshDirective, SkeletonLoaderComponent, StatCardComponent, BadgeComponent, SearchBarComponent],
+  imports: [CommonModule, RouterModule, TranslateModule, PullToRefreshDirective, SkeletonLoaderComponent, StatCardComponent, BadgeComponent, SearchBarComponent],
   templateUrl: './lernen-list.component.html',
   styleUrls: ['./lernen-list.component.scss']
 })
@@ -60,11 +61,11 @@ export class LernenListComponent implements OnInit {
   searchPlaceholder = computed(() => {
     switch (this.activeTab()) {
       case 'owned':
-        return 'Eigene Decks durchsuchen';
+        return 'lernen.list.searchPlaceholder.owned';
       case 'co-authored':
-        return 'Mit-Autor Decks durchsuchen';
+        return 'lernen.list.searchPlaceholder.coAuthored';
       case 'public':
-        return 'Öffentliche Decks durchsuchen';
+        return 'lernen.list.searchPlaceholder.public';
     }
   });
 

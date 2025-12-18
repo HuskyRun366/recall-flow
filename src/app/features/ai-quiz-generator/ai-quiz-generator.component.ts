@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { GeminiService } from '../../core/services/gemini.service';
 import { FileProcessingService } from '../../core/services/file-processing.service';
 import { FirestoreService } from '../../core/services/firestore.service';
@@ -12,7 +13,7 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-ai-quiz-generator',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './ai-quiz-generator.component.html',
   styleUrls: ['./ai-quiz-generator.component.scss']
 })
@@ -29,6 +30,7 @@ export class AiQuizGeneratorComponent implements OnInit {
   isGenerating = signal(false);
   generationProgress = signal('');
   error = signal<string | null>(null);
+  errorParams = signal<Record<string, any>>({});
   retryCount = signal(0);
   maxRetries = 3;
   generatedToon = signal<string | null>(null);
@@ -44,26 +46,26 @@ export class AiQuizGeneratorComponent implements OnInit {
     {
       id: 'relaxed' as const,
       emoji: '😊',
-      name: 'Entspannt',
-      description: 'Einfache, grundlegende Fragen'
+      nameKey: 'aiGenerator.teacherStyles.relaxed.name',
+      descriptionKey: 'aiGenerator.teacherStyles.relaxed.description'
     },
     {
       id: 'balanced' as const,
       emoji: '⚖️',
-      name: 'Ausgewogen',
-      description: 'Ausgewogene Mischung'
+      nameKey: 'aiGenerator.teacherStyles.balanced.name',
+      descriptionKey: 'aiGenerator.teacherStyles.balanced.description'
     },
     {
       id: 'demanding' as const,
       emoji: '🎯',
-      name: 'Anspruchsvoll',
-      description: 'Detaillierte Fragen'
+      nameKey: 'aiGenerator.teacherStyles.demanding.name',
+      descriptionKey: 'aiGenerator.teacherStyles.demanding.description'
     },
     {
       id: 'strict' as const,
       emoji: '📐',
-      name: 'Streng',
-      description: 'Präzise, tiefgehend'
+      nameKey: 'aiGenerator.teacherStyles.strict.name',
+      descriptionKey: 'aiGenerator.teacherStyles.strict.description'
     }
   ];
 
@@ -75,7 +77,8 @@ export class AiQuizGeneratorComponent implements OnInit {
 
   ngOnInit(): void {
     if (!environment.gemini.enabled) {
-      this.error.set('AI-Generierung ist in dieser Umgebung nicht aktiviert.');
+      this.error.set('aiGenerator.errors.notEnabled');
+      this.errorParams.set({});
     }
   }
 
@@ -87,7 +90,8 @@ export class AiQuizGeneratorComponent implements OnInit {
 
     // Validate file count
     if (files.length > this.maxFiles) {
-      this.error.set(`Maximal ${this.maxFiles} Dateien erlaubt.`);
+      this.error.set('aiGenerator.errors.maxFiles');
+      this.errorParams.set({ maxFiles: this.maxFiles });
       return;
     }
 
@@ -95,13 +99,15 @@ export class AiQuizGeneratorComponent implements OnInit {
     for (const file of files) {
       const validationError = this.fileProcessingService.validateFile(file, this.maxFileSizeMB);
       if (validationError) {
-        this.error.set(validationError);
+        this.error.set(validationError.key);
+        this.errorParams.set(validationError.params || {});
         return;
       }
     }
 
     this.selectedFiles.set(files);
     this.error.set(null);
+    this.errorParams.set({});
   }
 
   removeFile(index: number): void {
@@ -133,7 +139,8 @@ export class AiQuizGeneratorComponent implements OnInit {
 
     // Validate file count
     if (files.length > this.maxFiles) {
-      this.error.set(`Maximal ${this.maxFiles} Dateien erlaubt.`);
+      this.error.set('aiGenerator.errors.maxFiles');
+      this.errorParams.set({ maxFiles: this.maxFiles });
       return;
     }
 
@@ -141,13 +148,15 @@ export class AiQuizGeneratorComponent implements OnInit {
     for (const file of files) {
       const validationError = this.fileProcessingService.validateFile(file, this.maxFileSizeMB);
       if (validationError) {
-        this.error.set(validationError);
+        this.error.set(validationError.key);
+        this.errorParams.set(validationError.params || {});
         return;
       }
     }
 
     this.selectedFiles.set(files);
     this.error.set(null);
+    this.errorParams.set({});
   }
 
   onMultipleChoicePercentChange(value: number): void {
@@ -211,26 +220,29 @@ export class AiQuizGeneratorComponent implements OnInit {
   async generateQuiz(): Promise<void> {
     const files = this.selectedFiles();
     if (files.length === 0) {
-      this.error.set('Bitte wählen Sie mindestens eine Datei aus.');
+      this.error.set('aiGenerator.errors.selectAtLeastOne');
+      this.errorParams.set({});
       return;
     }
 
     const userId = this.currentUser()?.uid;
     if (!userId) {
-      this.error.set('Sie müssen angemeldet sein.');
+      this.error.set('aiGenerator.errors.mustBeSignedIn');
+      this.errorParams.set({});
       return;
     }
 
     this.isGenerating.set(true);
     this.error.set(null);
-    this.generationProgress.set('Dateien werden verarbeitet...');
+    this.errorParams.set({});
+    this.generationProgress.set('aiGenerator.progress.processingFiles');
 
     try {
       // Step 1: Process files
       const processedFiles = await this.fileProcessingService.processFiles(files).toPromise();
       if (!processedFiles) throw new Error('File processing failed');
 
-      this.generationProgress.set('Quiz wird mit KI generiert...');
+      this.generationProgress.set('aiGenerator.progress.generating');
 
       // Distribute a portion of ordering questions to matching (40% of ordering share)
       const rawMc = this.multipleChoicePercent();
@@ -254,7 +266,7 @@ export class AiQuizGeneratorComponent implements OnInit {
       });
 
       this.generatedToon.set(toonContent);
-      this.generationProgress.set('TOON wird validiert...');
+      this.generationProgress.set('aiGenerator.progress.validatingToon');
 
       // Step 3: Parse TOON
       const parsed = ToonParser.parse(toonContent);
@@ -267,7 +279,7 @@ export class AiQuizGeneratorComponent implements OnInit {
         throw new Error('At least one question is required');
       }
 
-      this.generationProgress.set('Quiz wird gespeichert...');
+      this.generationProgress.set('aiGenerator.progress.savingQuiz');
 
       // Step 4: Create Quiz in Firestore
       const quizData = {
@@ -301,18 +313,32 @@ export class AiQuizGeneratorComponent implements OnInit {
       await this.questionService.createQuestionsBatch(questionsWithQuizId);
 
       // Step 6: Navigate to editor
-      this.generationProgress.set('Fertig! Quiz wird geöffnet...');
+      this.generationProgress.set('aiGenerator.progress.openingQuiz');
       await this.router.navigate(['/quiz', 'editor', quizId]);
 
     } catch (err: any) {
       console.error('Generation error:', err);
 
+      const message = err?.message as string | undefined;
+
       if (this.retryCount() < this.maxRetries) {
-        this.error.set(`Fehler: ${err.message || 'Unbekannter Fehler'}. Versuche es erneut...`);
+        if (message) {
+          this.error.set('aiGenerator.errors.generationFailedRetry');
+          this.errorParams.set({ message });
+        } else {
+          this.error.set('aiGenerator.errors.generationFailedRetryGeneric');
+          this.errorParams.set({});
+        }
         this.retryCount.update(c => c + 1);
         this.isGenerating.set(false);
       } else {
-        this.error.set(`Generierung fehlgeschlagen nach ${this.maxRetries} Versuchen: ${err.message || 'Unbekannter Fehler'}`);
+        if (message) {
+          this.error.set('aiGenerator.errors.generationFailed');
+          this.errorParams.set({ maxRetries: this.maxRetries, message });
+        } else {
+          this.error.set('aiGenerator.errors.generationFailedGeneric');
+          this.errorParams.set({ maxRetries: this.maxRetries });
+        }
         this.isGenerating.set(false);
       }
     }
@@ -320,6 +346,7 @@ export class AiQuizGeneratorComponent implements OnInit {
 
   retry(): void {
     this.error.set(null);
+    this.errorParams.set({});
     this.retryCount.set(0);
     this.generateQuiz();
   }

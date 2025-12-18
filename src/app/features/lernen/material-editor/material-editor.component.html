@@ -2,8 +2,22 @@
   <!-- Header -->
   <div class="editor-header">
     <div class="header-left">
-      <p class="eyebrow">Lernunterlagen Editor{{ unsavedChanges() ? ' • Ungespeichert' : '' }}</p>
-      <h1>{{ material()?.title || 'Neue Lernunterlage' }}{{ unsavedChanges() ? ' *' : '' }}</h1>
+      <p class="eyebrow">
+        {{ 'materials.editor.eyebrow' | translate }}
+        @if (unsavedChanges()) {
+          • {{ 'common.unsaved' | translate }}
+        }
+      </p>
+      <h1>
+        @if (material()?.title) {
+          {{ material()!.title }}
+        } @else {
+          {{ 'materials.newMaterial' | translate }}
+        }
+        @if (unsavedChanges()) {
+          *
+        }
+      </h1>
       <p class="subtitle">{{ formatBytes(htmlContent().length) }}</p>
     </div>
     <div class="header-right">
@@ -11,19 +25,19 @@
         class="btn btn-secondary"
         (click)="togglePreview()"
         [disabled]="isLoading() || !htmlContent()">
-        {{ showPreview() ? 'Editor' : 'Vorschau' }}
+        {{ (showPreview() ? 'materials.editor.view.editor' : 'materials.editor.view.preview') | translate }}
       </button>
       <button
         class="btn btn-primary"
         (click)="saveMaterial()"
         [disabled]="isLoading() || isSaving() || (!unsavedChanges() && !isNewMaterial())">
-        {{ isSaving() ? 'Speichern...' : 'Speichern' }}
+        {{ (isSaving() ? 'common.saving' : 'common.save') | translate }}
       </button>
       <button
         class="btn btn-secondary"
         (click)="goBack()"
         [disabled]="isSaving()">
-        Abbrechen
+        {{ 'common.cancel' | translate }}
       </button>
     </div>
   </div>
@@ -36,10 +50,10 @@
         <line x1="12" y1="8" x2="12" y2="12"/>
         <line x1="12" y1="16" x2="12.01" y2="16"/>
       </svg>
-      <h2>Fehler</h2>
+      <h2>{{ 'common.error' | translate }}</h2>
       <p>{{ error() }}</p>
       <button class="btn btn-primary" (click)="retry()">
-        Erneut versuchen
+        {{ 'common.retry' | translate }}
       </button>
     </div>
   }
@@ -58,7 +72,7 @@
   <!-- Co-Author Errors -->
   @if (coAuthorErrors().length > 0) {
     <div class="error-message co-author-errors">
-      <strong>Mit-Autoren Probleme:</strong>
+      <strong>{{ 'quiz.editor.coAuthorIssues' | translate }}:</strong>
       <ul>
         @for (err of coAuthorErrors(); track err) {
           <li>{{ err }}</li>
@@ -71,7 +85,7 @@
   @if (isLoading()) {
     <div class="loading-container">
       <div class="spinner"></div>
-      <p>Lade Unterlage...</p>
+      <p>{{ 'materials.editor.loading' | translate }}</p>
     </div>
   }
 
@@ -81,50 +95,50 @@
       <!-- Sidebar: Settings -->
       <div class="sidebar">
         <div class="settings-card">
-          <h3>Einstellungen</h3>
+          <h3>{{ 'common.settings' | translate }}</h3>
 
           <div class="form-group">
-            <label>Titel</label>
+            <label>{{ 'common.title' | translate }}</label>
             <input
               type="text"
               name="materialTitle"
               autocomplete="off"
               [(ngModel)]="material()!.title"
               (ngModelChange)="materialForm.patchValue({title: $event}); unsavedChanges.set(true)"
-              placeholder="Titel der Unterlage">
+              [placeholder]="'materials.editor.placeholders.title' | translate">
           </div>
 
           <div class="form-group">
-            <label>Beschreibung</label>
+            <label>{{ 'common.description' | translate }}</label>
             <textarea
               name="materialDescription"
               autocomplete="off"
               [(ngModel)]="material()!.description"
               (ngModelChange)="materialForm.patchValue({description: $event}); unsavedChanges.set(true)"
-              placeholder="Kurze Beschreibung..."
+              [placeholder]="'common.descriptionPlaceholder' | translate"
               rows="3"></textarea>
           </div>
 
           <div class="form-group">
-            <label>Tags (kommagetrennt)</label>
+            <label>{{ 'common.tags' | translate }}</label>
             <input
               type="text"
               name="materialTags"
               autocomplete="off"
               [value]="(material()?.tags || []).join(', ')"
               (input)="materialForm.patchValue({tags: $any($event.target).value}); unsavedChanges.set(true)"
-              placeholder="mathe, physik, formeln">
+              [placeholder]="'common.tagsPlaceholder' | translate">
           </div>
 
           <div class="form-group">
-            <label>Sichtbarkeit</label>
+            <label>{{ 'common.visibility' | translate }}</label>
             <select
               name="materialVisibility"
               [value]="material()?.visibility || 'private'"
               (change)="materialForm.patchValue({visibility: $any($event.target).value}); unsavedChanges.set(true)">
-              <option value="private">Privat</option>
-              <option value="public">Öffentlich</option>
-              <option value="unlisted">Nicht gelistet (mit Code)</option>
+              <option value="private">{{ 'quiz.visibility.private' | translate }}</option>
+              <option value="public">{{ 'quiz.visibility.public' | translate }}</option>
+              <option value="unlisted">{{ 'materials.editor.visibility.unlistedWithCode' | translate }}</option>
             </select>
           </div>
         </div>
@@ -132,21 +146,21 @@
         <div class="coauthor-card">
           <div class="coauthor-header">
             <div>
-              <p class="eyebrow">Mit-Autoren</p>
-              <h4>Mitarbeitende hinzufügen</h4>
+              <p class="eyebrow">{{ 'common.coAuthors' | translate }}</p>
+              <h4>{{ 'common.addCollaborators' | translate }}</h4>
             </div>
-            <span class="pill">Optional</span>
+            <span class="pill">{{ 'common.optional' | translate }}</span>
           </div>
 
           <div class="coauthor-input">
-            <label for="materialCoAuthors">E-Mails (Komma oder Zeilen getrennt)</label>
+            <label for="materialCoAuthors">{{ 'common.coAuthorsHint' | translate }}</label>
             <textarea id="materialCoAuthors" name="materialCoAuthors"
               [value]="coAuthors().join(', ')"
               [disabled]="!isOwner()"
               (input)="onCoAuthorInput($any($event.target).value)"
               rows="2"
-              placeholder="anna@example.com, max@example.com"></textarea>
-            <small>Mit-Autoren dürfen bearbeiten, aber nicht löschen.</small>
+              [placeholder]="'common.coAuthorsPlaceholder' | translate"></textarea>
+            <small>{{ 'common.coAuthorsNote' | translate }}</small>
           </div>
 
           @if (coAuthors().length) {
@@ -168,7 +182,7 @@
               <polyline points="3 6 5 6 21 6"/>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
             </svg>
-            Unterlage löschen
+            {{ 'materials.deleteMaterial' | translate }}
           </button>
         }
       </div>
@@ -202,9 +216,9 @@
                     <line x1="12" y1="3" x2="12" y2="15"/>
                   </svg>
                 </div>
-                <h3>HTML-Datei hierher ziehen</h3>
-                <p>oder klicken zum Auswählen</p>
-                <span class="file-hint">.html oder .htm, max. 500KB</span>
+                <h3>{{ 'materials.editor.upload.dropTitle' | translate }}</h3>
+                <p>{{ 'materials.editor.upload.dropSubtitle' | translate }}</p>
+                <span class="file-hint">{{ 'materials.editor.upload.hint' | translate }}</span>
               </div>
             } @else {
               <div class="upload-content has-file">
@@ -214,12 +228,18 @@
                     <polyline points="14 2 14 8 20 8"/>
                   </svg>
                   <div>
-                    <span class="file-name">{{ fileName() || 'HTML-Inhalt' }}</span>
+                    <span class="file-name">
+                      @if (fileName()) {
+                        {{ fileName() }}
+                      } @else {
+                        {{ 'materials.editor.upload.defaultFileName' | translate }}
+                      }
+                    </span>
                     <span class="file-size">{{ formatBytes(htmlContent().length) }}</span>
                   </div>
                 </div>
                 <button class="btn btn-secondary btn-small" (click)="$event.stopPropagation()">
-                  Andere Datei wählen
+                  {{ 'materials.editor.upload.chooseAnother' | translate }}
                 </button>
               </div>
             }
@@ -228,8 +248,8 @@
           <!-- HTML Editor with CodeMirror -->
           <div class="html-editor">
             <div class="editor-toolbar">
-              <span class="toolbar-label">HTML-Inhalt</span>
-              <span class="char-count">{{ htmlContent().length.toLocaleString() }} Zeichen</span>
+              <span class="toolbar-label">{{ 'materials.editor.htmlContentLabel' | translate }}</span>
+              <span class="char-count">{{ htmlContent().length.toLocaleString() }} {{ 'materials.editor.characters' | translate }}</span>
             </div>
             <div #editorContainer class="codemirror-container"></div>
           </div>
@@ -237,9 +257,9 @@
           <!-- Preview -->
           <div class="preview-container">
             <div class="preview-header">
-              <h3>Vorschau</h3>
+              <h3>{{ 'materials.editor.preview.title' | translate }}</h3>
               <button class="btn btn-secondary btn-small" (click)="togglePreview()">
-                Zurück zum Editor
+                {{ 'materials.editor.preview.backToEditor' | translate }}
               </button>
             </div>
             @if (sanitizedPreview()) {
@@ -247,11 +267,11 @@
                 class="preview-frame"
                 [srcdoc]="sanitizedPreview()"
                 sandbox="allow-scripts allow-forms allow-modals allow-popups"
-                title="Vorschau der Lernunterlage">
+                [title]="'materials.editor.preview.iframeTitle' | translate">
               </iframe>
             } @else {
               <div class="preview-empty">
-                <p>Kein Inhalt zum Anzeigen</p>
+                <p>{{ 'materials.editor.preview.empty' | translate }}</p>
               </div>
             }
           </div>
@@ -263,6 +283,6 @@
   <!-- Unsaved Changes Indicator -->
   <div class="unsaved-indicator" *ngIf="unsavedChanges()">
     <span class="dot"></span>
-    Ungespeicherte Änderungen
+    {{ 'common.unsavedChanges' | translate }}
   </div>
 </div>

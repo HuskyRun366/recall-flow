@@ -2,10 +2,15 @@
   <!-- Header -->
   <div class="editor-header">
     <div class="header-left">
-      <p class="eyebrow">Quiz Editor{{ unsavedChanges() ? ' • Unsaved' : '' }}</p>
-      <h1>{{ quiz()?.title || 'New Quiz' }}{{ unsavedChanges() ? ' *' : '' }}</h1>
+      <p class="eyebrow">
+        {{ 'quiz.editor.eyebrow' | translate }}
+        @if (unsavedChanges()) {
+          <span> • {{ 'common.unsaved' | translate }}</span>
+        }
+      </p>
+      <h1>{{ quiz()?.title || ('quiz.newQuiz' | translate) }}{{ unsavedChanges() ? ' *' : '' }}</h1>
       <p class="subtitle">
-        {{ editorMode() === 'toon' ? 'Bearbeite Fragen, Optionen und Reihenfolgen im TOON Format.' : 'Baue Fragen, Optionen und Reihenfolgen im visuellen Editor.' }}
+        {{ editorMode() === 'toon' ? ('quiz.editor.subtitle.toon' | translate) : ('quiz.editor.subtitle.graphical' | translate) }}
       </p>
     </div>
     <div class="header-right">
@@ -13,25 +18,25 @@
         class="btn btn-secondary ghost"
         routerLink="/quiz/ai-quiz-generator"
         [class.disabled]="isLoading() || isSaving()">
-        🤖 Use AI
+        🤖 {{ 'quiz.editor.useAi' | translate }}
       </a>
       <button
         class="btn btn-secondary"
         (click)="toggleEditorMode()"
         [disabled]="isLoading() || isSaving()">
-        {{ editorMode() === 'toon' ? 'Grafischer Editor' : 'TOON Editor' }}
+        {{ editorMode() === 'toon' ? ('quiz.editor.switchToGraphical' | translate) : ('quiz.editor.switchToToon' | translate) }}
       </button>
       <button
         class="btn btn-primary"
         (click)="saveQuiz()"
         [disabled]="isLoading() || isSaving() || !unsavedChanges()">
-        {{ isSaving() ? 'Saving...' : 'Save' }}
+        {{ isSaving() ? ('common.saving' | translate) : ('common.save' | translate) }}
       </button>
       <button
         class="btn btn-secondary"
         (click)="cancel()"
         [disabled]="isSaving()">
-        Cancel
+        {{ 'common.cancel' | translate }}
       </button>
     </div>
   </div>
@@ -44,17 +49,17 @@
         <line x1="12" y1="8" x2="12" y2="12"/>
         <line x1="12" y1="16" x2="12.01" y2="16"/>
       </svg>
-      <h2>Fehler beim Laden</h2>
+      <h2>{{ 'errors.loadingFailed' | translate }}</h2>
       <p>{{ error() }}</p>
       <button class="btn btn-primary" (click)="retry()">
-        Erneut versuchen
+        {{ 'common.retry' | translate }}
       </button>
     </div>
   }
 
   <!-- Co-Author Errors -->
   <div class="error-message co-author-errors" *ngIf="coAuthorErrors().length > 0">
-    <strong>Co-Author Issues:</strong>
+    <strong>{{ 'quiz.editor.coAuthorIssues' | translate }}</strong>
     <ul>
       <li *ngFor="let err of coAuthorErrors()">{{ err }}</li>
     </ul>
@@ -63,7 +68,7 @@
   <!-- Loading State -->
   <div class="loading-container" *ngIf="isLoading()">
     <div class="spinner"></div>
-    <p>Loading quiz...</p>
+    <p>{{ 'quiz.editor.loading' | translate }}</p>
   </div>
 
   <!-- Editor Content -->
@@ -91,6 +96,6 @@
   <!-- Unsaved Changes Indicator -->
   <div class="unsaved-indicator" *ngIf="unsavedChanges()">
     <span class="dot"></span>
-    Unsaved changes
+    {{ 'common.unsavedChanges' | translate }}
   </div>
 </div>

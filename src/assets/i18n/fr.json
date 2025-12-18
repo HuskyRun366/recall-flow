@@ -1,0 +1,1053 @@
+{
+  "common": {
+    "appName": "RecallFlow",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "create": "Créer",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "close": "Fermer",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "all": "Tout",
+    "none": "Aucun",
+    "yes": "Oui",
+    "no": "Non",
+    "retry": "Réessayer",
+    "viewAll": "Voir tout",
+    "title": "Titre",
+    "description": "Description",
+    "descriptionPlaceholder": "Courte description...",
+    "visibility": "Visibilité",
+    "settings": "Paramètres",
+    "import": "Importer",
+    "moveUp": "Déplacer vers le haut",
+    "moveDown": "Déplacer vers le bas",
+    "tags": "Tags (séparés par des virgules)",
+    "tagsPlaceholder": "maths, physique, formules",
+    "empty": "Vide",
+    "access": "Accès",
+    "coAuthors": "Co-auteurs",
+    "coAuthorsHint": "E-mails (séparés par des virgules ou des retours à la ligne)",
+    "coAuthorsPlaceholder": "anna@example.com, max@example.com",
+    "coAuthorsNote": "Les co-auteurs peuvent modifier, mais pas supprimer.",
+    "addCollaborators": "Ajouter des collaborateurs",
+    "addedOn": "Ajouté le",
+    "unsaved": "Non enregistré",
+    "unsavedChanges": "Modifications non enregistrées",
+    "gotIt": "Compris",
+    "cards": "cartes",
+    "card": "carte",
+    "overview": "Vue d'ensemble",
+    "reset": "Réinitialiser",
+    "result": "Résultat",
+    "results": "Résultats",
+    "lastUpdated": "Dernière mise à jour",
+    "updated": "Mis à jour",
+    "details": "Détails",
+    "add": "Ajouter",
+    "added": "Ajouté",
+    "remove": "Retirer",
+    "adding": "Ajout...",
+    "removing": "Retrait...",
+    "copyCode": "Copier le code",
+    "copied": "Copié !",
+    "skipToContent": "Aller au contenu principal",
+    "backToHome": "Retour à l'accueil",
+    "backToOverview": "Retour à la vue d'ensemble",
+    "exit": "Quitter",
+    "finish": "Terminer",
+    "optional": "Optionnel"
+  },
+  "nav": {
+    "home": "Accueil",
+    "quizzes": "Quiz",
+    "flashcards": "Flashcards",
+    "materials": "Documents",
+    "updates": "Mises à jour",
+    "settings": "Paramètres",
+    "signOut": "Déconnexion",
+    "toggleMenu": "Basculer le menu",
+    "toggleTheme": "Changer de thème",
+    "newUpdates": "Nouvelles mises à jour disponibles",
+    "viewUpdates": "Voir les mises à jour"
+  },
+  "auth": {
+    "signIn": "Connexion",
+    "signOut": "Déconnexion",
+    "signInWithGoogle": "Se connecter avec Google",
+    "signingIn": "Connexion en cours...",
+    "subtitle": "Maîtrisez vos connaissances avec la répétition espacée",
+    "termsIntro": "En vous connectant, vous acceptez nos",
+    "termsOfService": "Conditions d'utilisation",
+    "and": "et",
+    "privacyPolicy": "Politique de confidentialité"
+  },
+  "quiz": {
+    "title": "Quiz",
+    "quizzes": "Quiz",
+    "myQuizzes": "Mes Quiz",
+    "createQuiz": "Créer un quiz",
+    "newQuiz": "Nouveau quiz",
+    "aiQuiz": "Quiz IA",
+    "editQuiz": "Modifier le quiz",
+    "deleteQuiz": "Supprimer le quiz",
+    "startQuiz": "Commencer le quiz",
+    "questions": "Questions",
+    "question": "Question",
+    "answer": "Réponse",
+    "participants": "Participants",
+    "progress": "Progression",
+    "learningProgress": "Progression d'apprentissage",
+    "score": "Score",
+    "correct": "Correct",
+    "incorrect": "Incorrect",
+    "completed": "Terminé",
+    "noQuizzesFound": "Aucun quiz trouvé",
+    "noMatchingQuiz": "Aucun quiz ne correspond à votre recherche.",
+    "createFirstQuiz": "Créez votre premier quiz ou rejoignez un quiz public",
+    "searchQuizzes": "Rechercher des quiz",
+    "results": "Résultats",
+    "result": "Résultat",
+    "download": "Télécharger",
+    "export": "Exporter",
+    "exportTooltip": "Exporter le quiz en fichier texte",
+    "exported": "Exporté",
+    "exportedTooltip": "Export terminé",
+    "subtitle": "Apprenez avec la répétition espacée",
+    "openCreateMenu": "Ouvrir le menu de création",
+    "visibility": {
+      "public": "Public",
+      "private": "Privé",
+      "unlisted": "Non répertorié"
+    },
+    "roles": {
+      "owner": "Propriétaire",
+      "coAuthor": "Co-auteur",
+      "participant": "Participant"
+    },
+    "questionTypes": {
+      "multipleChoice": "Choix multiple",
+      "ordering": "Ordre",
+      "matching": "Appariement"
+    },
+    "questionMeta": {
+      "optionsCount": "{{count}} options",
+      "itemsCount": "{{count}} éléments",
+      "pairsCount": "{{count}} paires"
+    },
+    "list": {
+      "categoriesAria": "Catégories de quiz",
+      "searchAria": "Rechercher des quiz",
+      "searchPlaceholder": {
+        "owned": "Rechercher mes quiz",
+        "coAuthored": "Rechercher des quiz en co-auteur",
+        "public": "Rechercher des quiz publics"
+      },
+      "pill": {
+        "owned": "Mes quiz",
+        "coAuthored": "Co-écrits",
+        "public": "Quiz publics"
+      },
+      "empty": {
+        "owned": {
+          "search": "Aucun quiz ne correspond à votre recherche.",
+          "none": "Vous n'avez encore créé aucun quiz."
+        },
+        "coAuthored": {
+          "search": "Aucun quiz en co-auteur ne correspond à votre recherche.",
+          "none": "Vous n'avez encore aucun quiz en co-auteur."
+        },
+        "public": {
+          "search": "Aucun quiz public ne correspond à votre recherche.",
+          "none": "Aucun quiz public disponible."
+        }
+      }
+    },
+    "detail": {
+      "eyebrow": "Quiz"
+    },
+    "editor": {
+      "eyebrow": "Éditeur de quiz",
+      "subtitle": {
+        "toon": "Mode TOON",
+        "graphical": "Mode graphique"
+      },
+      "useAi": "Utiliser l'IA",
+      "switchToGraphical": "Passer à l'éditeur graphique",
+      "switchToToon": "Passer à l'éditeur TOON",
+      "loading": "Chargement du quiz...",
+      "coAuthorIssues": "Problèmes de co-auteurs",
+      "graphical": {
+        "settingsTitle": "Paramètres du quiz",
+        "settingsSubtitle": "Bases et aperçu des questions",
+        "questionsTitle": "Questions",
+        "addMultipleChoice": "Ajouter un choix multiple",
+        "addOrdering": "Ajouter une question d'ordre",
+        "addMatching": "Ajouter un appariement",
+        "empty": {
+          "title": "Aucune question pour l'instant",
+          "hint": "Cliquez sur + MC, + Order ou + Match pour ajouter des questions"
+        },
+        "noSelection": {
+          "title": "Sélectionnez une question à modifier",
+          "hint": "Ou créez une nouvelle question avec les boutons +"
+        },
+        "breadcrumb": "Quiz · Question {{number}}",
+        "questionTitle": "Question {{number}}",
+        "newQuestion": "Nouvelle question",
+        "placeholders": {
+          "title": "Titre du quiz",
+          "description": "Description du quiz",
+          "questionText": "Saisissez votre question"
+        },
+        "fields": {
+          "questionText": "Texte de la question"
+        },
+        "multipleChoice": {
+          "optionsTitle": "Options",
+          "addOption": "+ Ajouter une option",
+          "optionLabel": "Option {{number}}",
+          "placeholders": {
+            "optionText": "Texte de l'option"
+          },
+          "correctAnswer": "Bonne réponse"
+        },
+        "ordering": {
+          "itemsTitle": "Éléments (ordre correct)",
+          "addItem": "+ Ajouter un élément",
+          "placeholders": {
+            "itemText": "Texte de l'élément"
+          }
+        },
+        "matching": {
+          "choicesTitle": "Choix (liste déroulante)",
+          "addChoice": "+ Choix",
+          "choiceLabel": "Choix",
+          "placeholders": {
+            "choiceText": "Texte du choix",
+            "leftText": "Texte gauche"
+          },
+          "pairsTitle": "Paires (gauche · choix correct)",
+          "addPair": "+ Paire",
+          "leftTextLabel": "Texte gauche",
+          "correctChoiceLabel": "Valeur correcte (liste déroulante)",
+          "deletePairTitle": "Supprimer la paire"
+        }
+      }
+    }
+  },
+  "lernen": {
+    "title": "Apprendre",
+    "myFlashcards": "Mes Flashcards",
+    "welcomeBack": "Bienvenue ! Prêt à apprendre ?",
+    "flashcardDecks": "Decks de Flashcards",
+    "manageDecks": "Créer et gérer les flashcards",
+    "learningMaterials": "Documents d'apprentissage",
+    "viewMaterials": "Voir les documents HTML interactifs",
+    "learningProgress": "Progression d'apprentissage",
+    "recentlyEdited": "Récemment modifié",
+    "noDecksFound": "Aucun deck trouvé",
+    "createFirstDeck": "Créez votre premier deck et commencez à apprendre",
+    "newDeck": "Nouveau deck",
+    "newMaterial": "Nouveau document",
+    "openCreateMenu": "Ouvrir le menu de création",
+    "deckDetail": {
+      "eyebrow": "Deck"
+    },
+    "list": {
+      "subtitle": "Gérez vos decks et apprenez efficacement",
+      "categoriesAria": "Catégories de decks",
+      "searchAria": "Rechercher des decks",
+      "searchPlaceholder": {
+        "owned": "Rechercher mes decks",
+        "coAuthored": "Rechercher des decks en co-auteur",
+        "public": "Rechercher des decks publics"
+      },
+      "pill": {
+        "owned": "Mes decks",
+        "coAuthored": "Co-écrits",
+        "public": "Decks publics"
+      },
+      "empty": {
+        "owned": {
+          "search": "Aucun deck ne correspond à votre recherche.",
+          "none": "Vous n'avez encore créé aucun deck."
+        },
+        "coAuthored": {
+          "search": "Aucun deck en co-auteur ne correspond à votre recherche.",
+          "none": "Vous n'avez encore aucun deck en co-auteur."
+        },
+        "public": {
+          "search": "Aucun deck public ne correspond à votre recherche.",
+          "none": "Aucun deck public disponible."
+        }
+      }
+    },
+    "page": {
+      "searchPlaceholder": "Rechercher des decks",
+      "searchAria": "Rechercher des decks",
+      "noMatchingDeck": "Aucun deck ne correspond à votre recherche.",
+      "toLearn": "À apprendre"
+    }
+  },
+  "flashcard": {
+    "deck": "Deck",
+    "decks": "Decks",
+    "createDeck": "Créer un deck",
+    "editDeck": "Modifier le deck",
+    "deleteDeck": "Supprimer le deck",
+    "startSession": "Commencer la session",
+    "flipCard": "Retourner la carte",
+    "known": "Connu",
+    "unknown": "Inconnu",
+    "front": "Recto",
+    "back": "Verso",
+    "level": "Niveau",
+    "tapToFlip": "Touchez pour retourner",
+    "practiceAgain": "Revoir",
+    "again": "Encore",
+    "addCards": "Ajouter des cartes",
+    "noCardsTitle": "Aucune carte pour l'instant",
+    "noCardsMessage": "Créez votre première flashcard ou importez des cartes existantes.",
+    "export": "Exporter",
+    "exportTooltip": "Exporter le deck en fichier texte",
+    "exported": "Exporté",
+    "exportedTooltip": "Export terminé",
+    "levels": {
+      "0": "Non appris",
+      "1": "Appris une fois",
+      "2": "Appris deux fois",
+      "3": "Parfaitement appris"
+    },
+    "editor": {
+      "eyebrow": "Éditeur de deck",
+      "defaultTitle": "Nouveau deck",
+      "loading": "Chargement du deck...",
+      "settingsTitle": "Paramètres du deck",
+      "placeholders": {
+        "title": "Titre du deck",
+        "front": "Que voulez-vous apprendre ?",
+        "back": "La réponse ou l'explication..."
+      },
+      "fields": {
+        "frontLabel": "Recto (question)",
+        "backLabel": "Verso (réponse)"
+      },
+      "addCard": "Nouvelle carte",
+      "createFirstCard": "Créer la première carte",
+      "importCards": "Importer des cartes",
+      "editCardTitle": "Modifier la carte n°{{number}}"
+    }
+  },
+  "session": {
+    "loading": "Chargement des flashcards...",
+    "error": "Erreur",
+    "backToDecks": "Retour aux decks",
+    "complete": "Session terminée !",
+    "known": "Connu",
+    "unknown": "Inconnu",
+    "totalCards": "Total des cartes",
+    "successRate": "Taux de réussite",
+    "studyAgain": "Étudier à nouveau",
+    "cardOf": "Carte {{current}} sur {{total}}",
+    "percentComplete": "{{percent}}% terminé",
+    "remaining": "restantes",
+    "shortcuts": {
+      "title": "Raccourcis clavier",
+      "flip": "pour retourner",
+      "known": "pour connu",
+      "unknown": "pour inconnu"
+    }
+  },
+  "materials": {
+    "title": "Documents d'apprentissage",
+    "newMaterial": "Nouveau document",
+    "editMaterial": "Modifier le document",
+    "deleteMaterial": "Supprimer le document",
+    "viewMaterial": "Voir le document",
+    "uploadHtml": "Télécharger un fichier HTML",
+    "noMaterials": "Aucun document trouvé",
+    "list": {
+      "subtitle": "Gérez vos documents HTML interactifs",
+      "categoriesAria": "Catégories de documents",
+      "searchAria": "Rechercher des documents",
+      "searchPlaceholder": {
+        "owned": "Rechercher mes documents",
+        "coAuthored": "Rechercher des documents en co-auteur",
+        "public": "Rechercher des documents publics"
+      },
+      "pill": {
+        "owned": "Mes documents",
+        "coAuthored": "Co-écrits",
+        "public": "Documents publics"
+      },
+      "empty": {
+        "owned": {
+          "search": "Aucun document ne correspond à votre recherche.",
+          "none": "Vous n'avez encore créé aucun document."
+        },
+        "coAuthored": {
+          "search": "Aucun document en co-auteur ne correspond à votre recherche.",
+          "none": "Vous n'avez encore aucun document en co-auteur."
+        },
+        "public": {
+          "search": "Aucun document public ne correspond à votre recherche.",
+          "none": "Aucun document public disponible."
+        }
+      },
+      "copyCodeTitle": "Copier le code ({{code}})",
+      "totalSize": "Taille totale",
+      "size": "Taille"
+    },
+    "viewer": {
+      "fullscreen": "Plein écran",
+      "exitFullscreen": "Quitter le plein écran",
+      "exitFullscreenAria": "Quitter le plein écran",
+      "iframeTitle": "Document d'apprentissage"
+    },
+    "editor": {
+      "eyebrow": "Éditeur de document",
+      "loading": "Chargement du document...",
+      "view": {
+        "editor": "Éditeur",
+        "preview": "Aperçu"
+      },
+      "placeholders": {
+        "title": "Titre du document"
+      },
+      "visibility": {
+        "unlistedWithCode": "Non répertorié (avec code)"
+      },
+      "upload": {
+        "dropTitle": "Déposez un fichier HTML ici",
+        "dropSubtitle": "ou cliquez pour choisir",
+        "hint": ".html ou .htm, max 500 Ko",
+        "defaultFileName": "Contenu HTML",
+        "chooseAnother": "Choisir un autre fichier"
+      },
+      "htmlContentLabel": "Contenu HTML",
+      "characters": "caractères",
+      "preview": {
+        "title": "Aperçu",
+        "backToEditor": "Retour à l'éditeur",
+        "iframeTitle": "Aperçu du document",
+        "empty": "Aucun contenu à afficher"
+      }
+    }
+  },
+  "stats": {
+    "totalDecks": "Total des decks",
+    "totalCards": "Total des cartes",
+    "progress": "Progression",
+    "mastered": "Maîtrisé",
+    "learning": "En cours",
+    "notStarted": "Non commencé"
+  },
+  "errors": {
+    "loadingFailed": "Échec du chargement",
+    "saveFailed": "Échec de l'enregistrement",
+    "deleteFailed": "Échec de la suppression",
+    "notFound": "Non trouvé",
+    "unauthorized": "Non autorisé",
+    "networkError": "Erreur réseau"
+  },
+  "confirmations": {
+    "deleteQuiz": "Êtes-vous sûr de vouloir supprimer ce quiz ?",
+    "deleteDeck": "Êtes-vous sûr de vouloir supprimer ce deck ?",
+    "deleteMaterial": "Êtes-vous sûr de vouloir supprimer ce document ?",
+    "unsavedChanges": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir partir ?"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langue",
+    "theme": "Thème",
+    "darkMode": "Mode sombre",
+    "lightMode": "Mode clair",
+    "notifications": "Notifications",
+    "account": "Compte",
+    "profile": "Profil",
+    "page": {
+      "title": "Paramètres",
+      "subtitle": "Gérez les notifications et l'accès hors ligne",
+      "pwaNotice": {
+        "title": "Astuce : installer comme application",
+        "message": "Pour les téléchargements hors ligne et les notifications push, installez RecallFlow en PWA."
+      },
+      "notifications": {
+        "title": "Notifications",
+        "subtitle": "Mises à jour push sur vos quiz",
+        "pwaOnly": "Les notifications sont disponibles uniquement dans l'application installée (PWA).",
+        "blocked": {
+          "title": "Notifications bloquées",
+          "message": "Vous avez désactivé les notifications dans votre navigateur. Veuillez les activer dans les paramètres du navigateur."
+        },
+        "enabled": {
+          "title": "Notifications activées",
+          "message": "Vous recevrez des mises à jour sur vos quiz."
+        },
+        "disabled": {
+          "title": "Notifications désactivées",
+          "message": "Activez les notifications pour recevoir des mises à jour."
+        },
+        "enable": "Activer",
+        "enableLoading": "Activation...",
+        "disable": "Désactiver",
+        "disableLoading": "Désactivation...",
+        "card": {
+          "title": "Activer les notifications",
+          "message": "Recevez des mises à jour sur vos quiz"
+        }
+      },
+      "offline": {
+        "title": "Hors ligne",
+        "subtitle": "Télécharger les quiz pour une utilisation hors ligne",
+        "pwaOnly": "Le téléchargement hors ligne est disponible uniquement dans l'application installée (PWA).",
+        "downloadedLabel": "téléchargé",
+        "downloading": "Téléchargement {{current}} sur {{total}}...",
+        "offlineHint": "Vous êtes hors ligne. Connectez-vous à Internet pour télécharger du contenu.",
+        "downloadAll": "Tout télécharger",
+        "info": "Le contenu téléchargé est disponible hors ligne sur cet appareil.",
+        "status": {
+          "offline": "Hors ligne",
+          "online": "En ligne"
+        }
+      }
+    }
+  },
+  "languages": {
+    "de": "Deutsch",
+    "en": "English",
+    "fr": "Français",
+    "es": "Español"
+  },
+  "tabs": {
+    "owned": "Mes",
+    "coAuthored": "Co-écrits",
+    "public": "Public"
+  },
+  "access": {
+    "enrollmentRequired": "Inscription requise",
+    "directStart": "Démarrage direct",
+    "directAvailable": "Disponible directement"
+  },
+  "join": {
+    "joinWithCode": "Rejoindre avec un code",
+    "join": "Rejoindre",
+    "joining": "Rejoindre...",
+    "codePlaceholder": "Saisir le code",
+    "codeLabel": "Code",
+    "shareCode": "Partager le code",
+    "quiz": {
+      "title": "Rejoindre un quiz",
+      "subtitle": "Entrez un code pour rejoindre un quiz.",
+      "ariaLabel": "Code du quiz"
+    },
+    "deck": {
+      "title": "Rejoindre un deck",
+      "subtitle": "Entrez un code pour rejoindre un deck.",
+      "ariaLabel": "Code du deck"
+    },
+    "material": {
+      "title": "Ouvrir un document",
+      "subtitle": "Entrez un code pour ouvrir un document d'apprentissage.",
+      "ariaLabel": "Code du document"
+    }
+  },
+  "updates": {
+    "title": "Mises à jour",
+    "subtitle": "Changelog et actualités",
+    "footer": "D'autres mises à jour arrivent bientôt.",
+    "types": {
+      "feature": "Fonctionnalité",
+      "bugfix": "Correctif",
+      "improvement": "Amélioration",
+      "breaking": "Changement majeur"
+    }
+  },
+  "quizSession": {
+    "loading": "Chargement du quiz...",
+    "completeTitle": "Quiz terminé !",
+    "perfectAllCorrect": "Parfait ! Toutes les réponses étaient correctes.",
+    "reviewMode": "Mode révision",
+    "sessionTitle": "Session de quiz",
+    "swipeHint": "Glissez pour naviguer",
+    "questionNumber": "Question {{number}}",
+    "nav": {
+      "of": "{{current}} sur {{total}}"
+    },
+    "stats": {
+      "totalQuestions": "Total des questions",
+      "wrong": "Faux"
+    },
+    "actions": {
+      "submitAnswer": "Valider la réponse",
+      "nextQuestion": "Question suivante",
+      "reviewWrong": "Revoir les réponses incorrectes ({{count}})"
+    },
+    "flashcardMode": {
+      "flashcard": "Flashcard",
+      "normal": "Normal",
+      "switchToFlashcard": "Passer en mode flashcard",
+      "switchToNormal": "Passer en mode quiz"
+    },
+    "multipleChoice": {
+      "correctAnswers": "Bonnes réponses"
+    },
+    "ordering": {
+      "instruction": "Mettez les éléments dans le bon ordre",
+      "perfect": "Parfait !",
+      "notQuite": "Pas tout à fait",
+      "correctOrder": "Ordre correct",
+      "reviewCorrectOrder": "Revoir l'ordre correct"
+    },
+    "matching": {
+      "pleaseSelect": "Veuillez sélectionner une option pour chaque paire.",
+      "correctMatching": "Appariement correct"
+    },
+    "result": {
+      "correct": "Correct!",
+      "incorrect": "Incorrect",
+      "greatJob": "Bravo ! Vous êtes maintenant au niveau {{level}}.",
+      "reviewCorrect": "Revoyez la bonne réponse et réessayez."
+    }
+  },
+  "importDialog": {
+    "title": "Importer un quiz",
+    "processing": "Traitement du fichier...",
+    "dropzone": {
+      "title": "Déposez un fichier ici ou cliquez",
+      "supportedFormats": "Formats pris en charge : CSV, Anki TXT, Anki APKG",
+      "chooseFile": "Choisir un fichier"
+    },
+    "examples": {
+      "title": "Exemples de format :",
+      "downloadSample": "Télécharger un exemple",
+      "csv": {
+        "title": "Format CSV"
+      },
+      "ankiTxt": {
+        "title": "Format Anki TXT"
+      },
+      "ankiApkg": {
+        "title": "Format Anki APKG",
+        "hint": "Exportez votre deck Anki en .apkg"
+      }
+    },
+    "result": {
+      "successTitleOne": "{{count}} question importée avec succès",
+      "successTitleMany": "{{count}} questions importées avec succès",
+      "formatDetected": {
+        "csv": "Format détecté : CSV",
+        "ankiTxt": "Format détecté : Anki TXT",
+        "ankiApkg": "Format détecté : Anki APKG"
+      },
+      "previewTitle": "Aperçu :",
+      "moreOne": "... et {{count}} question de plus",
+      "moreMany": "... et {{count}} questions de plus",
+      "warningsTitle": "Avertissements ({{count}}) :",
+      "moreWarnings": "... et {{count}} de plus",
+      "failedTitle": "Import échoué"
+    },
+    "actions": {
+      "importOne": "Importer {{count}} question",
+      "importMany": "Importer {{count}} questions"
+    }
+  },
+  "toonEditor": {
+    "title": "Éditeur TOON",
+    "subtitle": "Token Oriented Object Notation",
+    "toolbar": {
+      "format": "Formater",
+      "foldAll": "Tout replier",
+      "unfoldAll": "Tout déplier",
+      "insertExample": "Insérer un exemple"
+    },
+    "parseError": "Erreur d'analyse",
+    "about": {
+      "ariaLabel": "Qu'est-ce que TOON ?",
+      "title": "Format TOON",
+      "p1Html": "<strong><a href=\"https://github.com/toon-format/toon\" target=\"_blank\" rel=\"noopener noreferrer\">TOON</a></strong> (Token Oriented Object Notation) décrit un quiz en sections claires : <code>quiz</code> (métadonnées), <code>questions</code>, <code>options</code> et <code>orderItems</code>.",
+      "p2": "Pourquoi ? Édition facile et rapide dans l'éditeur, excellente lisibilité, coût en tokens plus faible et meilleure précision pour les LLM.",
+      "list": {
+        "structure": "Structure claire : questions + réponses + ordre",
+        "batch": "Parfait pour les imports/exports en lot"
+      },
+      "tip": "Astuce : validez l'autocomplétion avec Tab ou Entrée, utilisez le repliage pour les blocs."
+    }
+  },
+  "aiGenerator": {
+    "title": "Générer un quiz avec l'IA",
+    "subtitle": "Téléversez des images ou des PDF et laissez l'IA créer un quiz",
+    "upload": {
+      "title": "Sélectionner des fichiers",
+      "supportedTypes": "Images (JPG, PNG, GIF, WebP) ou PDF",
+      "limits": "Max. {{maxFiles}} fichiers, {{maxFileSizeMB}}Mo chacun",
+      "dragHint": "Glissez des fichiers ici ou cliquez pour sélectionner",
+      "browse": "Parcourir"
+    },
+    "config": {
+      "title": "Configuration du quiz",
+      "teacherStyle": "Style d'enseignant",
+      "questionCount": "Nombre de questions",
+      "typeDistribution": "Répartition des types de questions"
+    },
+    "teacherStyles": {
+      "relaxed": {
+        "name": "Détendu",
+        "description": "Questions simples, basiques"
+      },
+      "balanced": {
+        "name": "Équilibré",
+        "description": "Un mélange équilibré"
+      },
+      "demanding": {
+        "name": "Exigeant",
+        "description": "Questions détaillées"
+      },
+      "strict": {
+        "name": "Strict",
+        "description": "Précis, approfondi"
+      }
+    },
+    "selectedFiles": {
+      "title": "Fichiers sélectionnés ({{count}}/{{maxFiles}})",
+      "totalSize": "Total : {{size}}"
+    },
+    "actions": {
+      "generate": "Générer le quiz",
+      "retry": "Réessayer ({{current}}/{{maxRetries}})"
+    },
+    "progress": {
+      "processingFiles": "Traitement des fichiers...",
+      "generating": "Génération du quiz avec l'IA...",
+      "validatingToon": "Validation du TOON...",
+      "savingQuiz": "Enregistrement du quiz...",
+      "openingQuiz": "Terminé ! Ouverture du quiz..."
+    },
+    "loading": {
+      "hint": "Cela peut prendre quelques secondes..."
+    },
+    "errors": {
+      "notEnabled": "La génération IA n'est pas activée dans cet environnement.",
+      "maxFiles": "Maximum {{maxFiles}} fichiers autorisés.",
+      "selectAtLeastOne": "Veuillez sélectionner au moins un fichier.",
+      "mustBeSignedIn": "Vous devez être connecté.",
+      "generationFailedRetry": "Erreur : {{message}}. Veuillez réessayer.",
+      "generationFailedRetryGeneric": "Erreur. Veuillez réessayer.",
+      "generationFailed": "La génération a échoué après {{maxRetries}} tentatives : {{message}}",
+      "generationFailedGeneric": "La génération a échoué après {{maxRetries}} tentatives."
+    }
+  },
+  "legal": {
+    "backToApp": "Zurück zur App",
+    "lastUpdated": "Stand",
+    "labels": {
+      "email": "E-Mail",
+      "name": "Name"
+    },
+    "privacy": {
+      "title": "Datenschutzerklärung",
+      "s1": {
+        "title": "1. Verantwortlicher",
+        "p1": "Verantwortlich für die Datenverarbeitung auf dieser Website ist:"
+      },
+      "s2": {
+        "title": "2. Allgemeines zur Datenverarbeitung",
+        "s21": {
+          "title": "2.1 Umfang der Verarbeitung personenbezogener Daten",
+          "p1": "Wir verarbeiten personenbezogene Daten unserer Nutzer grundsätzlich nur, soweit dies zur Bereitstellung einer funktionsfähigen Website sowie unserer Inhalte und Leistungen erforderlich ist. Die Verarbeitung personenbezogener Daten unserer Nutzer erfolgt regelmäßig nur nach Einwilligung des Nutzers."
+        },
+        "s22": {
+          "title": "2.2 Rechtsgrundlage für die Verarbeitung personenbezogener Daten",
+          "p1": "Soweit wir für Verarbeitungsvorgänge personenbezogener Daten eine Einwilligung der betroffenen Person einholen, dient Art. 6 Abs. 1 lit. a EU-Datenschutzgrundverordnung (DSGVO) als Rechtsgrundlage.",
+          "p2": "Bei der Verarbeitung von personenbezogenen Daten, die zur Erfüllung eines Vertrages erforderlich ist, dient Art. 6 Abs. 1 lit. b DSGVO als Rechtsgrundlage.",
+          "p3": "Soweit eine Verarbeitung personenbezogener Daten zur Erfüllung einer rechtlichen Verpflichtung erforderlich ist, dient Art. 6 Abs. 1 lit. c DSGVO als Rechtsgrundlage.",
+          "p4": "Für den Fall, dass lebenswichtige Interessen der betroffenen Person oder einer anderen natürlichen Person eine Verarbeitung personenbezogener Daten erforderlich machen, dient Art. 6 Abs. 1 lit. d DSGVO als Rechtsgrundlage.",
+          "p5": "Ist die Verarbeitung zur Wahrung eines berechtigten Interesses unseres Unternehmens oder eines Dritten erforderlich und überwiegen die Interessen, Grundrechte und Grundfreiheiten des Betroffenen das erstgenannte Interesse nicht, so dient Art. 6 Abs. 1 lit. f DSGVO als Rechtsgrundlage für die Verarbeitung."
+        }
+      },
+      "s3": {
+        "title": "3. Datenerfassung auf dieser Website",
+        "s31": {
+          "title": "3.1 Google Authentication",
+          "p1": "Diese Website verwendet Google Authentication für die Benutzeranmeldung. Dabei werden folgende Daten erfasst:",
+          "list": {
+            "email": "E-Mail-Adresse",
+            "displayName": "Anzeigename (Display Name)",
+            "profileImageOptional": "Profilbild (optional)",
+            "googleUserId": "Google User ID"
+          },
+          "p2": "Die Verarbeitung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO zur Erfüllung des Nutzungsvertrags."
+        },
+        "s32": {
+          "title": "3.2 Firebase Services",
+          "p1": "Wir nutzen Firebase (ein Dienst von Google LLC) für folgende Zwecke:",
+          "list": {
+            "auth": "Verwaltung der Benutzeranmeldung",
+            "firestore": "Speicherung von Quiz-Daten, Benutzerinformationen und Lernfortschritten",
+            "hosting": "Bereitstellung der Webanwendung"
+          },
+          "p2": "Firebase verarbeitet Daten in Rechenzentren weltweit. Google LLC ist unter dem EU-US Data Privacy Framework zertifiziert.",
+          "p3": "Weitere Informationen finden Sie in der Datenschutzerklärung von Google:"
+        },
+        "s33": {
+          "title": "3.3 Google Gemini AI",
+          "p1": "Für die automatische Quiz-Generierung verwenden wir Google Gemini AI. Dabei werden hochgeladene Dokumente (PDFs, Bilder) temporär an Google übermittelt, um Quiz-Fragen zu generieren. Die Dokumente werden nach der Verarbeitung nicht dauerhaft gespeichert.",
+          "p2": "Die Nutzung erfolgt auf Grundlage Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO) durch die aktive Verwendung der Quiz-Generierungs-Funktion."
+        }
+      },
+      "s4": {
+        "title": "4. Welche Daten wir speichern",
+        "s41": {
+          "title": "4.1 Benutzerdaten",
+          "list": {
+            "userId": "Google User ID (eindeutige Kennung)",
+            "email": "E-Mail-Adresse",
+            "displayName": "Anzeigename",
+            "profileImageUrl": "Profilbild-URL (falls vorhanden)",
+            "registrationDate": "Registrierungsdatum"
+          }
+        },
+        "s42": {
+          "title": "4.2 Quiz-Daten",
+          "list": {
+            "createdQuizzes": "Von Ihnen erstellte Quizze (Titel, Beschreibung, Fragen)",
+            "permissions": "Quiz-Berechtigungen (Eigentümer, Co-Autoren, Teilnehmer)",
+            "settings": "Quiz-Einstellungen (Sichtbarkeit, Join-Code)"
+          }
+        },
+        "s43": {
+          "title": "4.3 Lernfortschritt",
+          "list": {
+            "answers": "Ihre Antworten auf Quiz-Fragen",
+            "progress": "Lernfortschritt (Progress Level 0-3)",
+            "timestamps": "Zeitstempel der letzten Aktivitäten"
+          }
+        }
+      },
+      "s5": {
+        "title": "5. Datenspeicherung und -löschung",
+        "p1": "Ihre Daten werden solange gespeichert, wie Sie Ihr Benutzerkonto aktiv nutzen. Sie können Ihr Konto jederzeit löschen, wodurch alle Ihre personenbezogenen Daten entfernt werden.",
+        "p2": "Von Ihnen erstellte Quizze werden nach Kontolöschung anonymisiert aufbewahrt, sofern andere Nutzer darauf zugreifen (z.B. Co-Autoren oder Teilnehmer)."
+      },
+      "s6": {
+        "title": "6. Ihre Rechte",
+        "p1": "Sie haben folgende Rechte bezüglich Ihrer personenbezogenen Daten:",
+        "list": {
+          "access": {
+            "title": "Auskunftsrecht (Art. 15 DSGVO)",
+            "desc": "Sie haben das Recht, Auskunft über Ihre gespeicherten Daten zu erhalten."
+          },
+          "rectification": {
+            "title": "Berichtigungsrecht (Art. 16 DSGVO)",
+            "desc": "Sie können die Berichtigung unrichtiger Daten verlangen."
+          },
+          "erasure": {
+            "title": "Löschungsrecht (Art. 17 DSGVO)",
+            "desc": "Sie können die Löschung Ihrer Daten verlangen."
+          },
+          "restriction": {
+            "title": "Einschränkung der Verarbeitung (Art. 18 DSGVO)",
+            "desc": "Sie können die Einschränkung der Verarbeitung verlangen."
+          },
+          "portability": {
+            "title": "Datenübertragbarkeit (Art. 20 DSGVO)",
+            "desc": "Sie können Ihre Daten in einem strukturierten Format erhalten."
+          },
+          "objection": {
+            "title": "Widerspruchsrecht (Art. 21 DSGVO)",
+            "desc": "Sie können der Verarbeitung Ihrer Daten widersprechen."
+          },
+          "withdrawal": {
+            "title": "Widerrufsrecht",
+            "desc": "Sie können erteilte Einwilligungen jederzeit widerrufen."
+          }
+        },
+        "p2": "Zur Ausübung Ihrer Rechte kontaktieren Sie uns bitte unter:"
+      },
+      "s7": {
+        "title": "7. Beschwerderecht bei Aufsichtsbehörde",
+        "p1": "Sie haben das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren.",
+        "p2": "Die für uns zuständige Aufsichtsbehörde ist:",
+        "authority": {
+          "name": "Österreichische Datenschutzbehörde",
+          "address": "Barichgasse 40-42, 1030 Wien"
+        }
+      },
+      "s8": {
+        "title": "8. Cookies und lokale Speicherung",
+        "p1": "Diese Website verwendet keine Tracking-Cookies. Firebase Authentication und Ihre Theme-Präferenz werden im lokalen Browser-Speicher (localStorage) gespeichert, um die Funktionalität der App zu gewährleisten."
+      },
+      "s9": {
+        "title": "9. SSL/TLS-Verschlüsselung",
+        "p1": "Diese Website nutzt aus Sicherheitsgründen und zum Schutz der Übertragung vertraulicher Inhalte eine SSL/TLS-Verschlüsselung. Eine verschlüsselte Verbindung erkennen Sie daran, dass die Adresszeile des Browsers von \"http://\" auf \"https://\" wechselt."
+      },
+      "s10": {
+        "title": "10. Änderungen dieser Datenschutzerklärung",
+        "p1": "Wir behalten uns vor, diese Datenschutzerklärung anzupassen, damit sie stets den aktuellen rechtlichen Anforderungen entspricht oder um Änderungen unserer Leistungen in der Datenschutzerklärung umzusetzen. Für Ihren erneuten Besuch gilt dann die neue Datenschutzerklärung."
+      },
+      "s11": {
+        "title": "11. Kontakt",
+        "p1": "Bei Fragen zum Datenschutz oder zur Ausübung Ihrer Rechte kontaktieren Sie uns bitte unter:"
+      }
+    },
+    "terms": {
+      "title": "Allgemeine Geschäftsbedingungen (AGB)",
+      "s1": {
+        "title": "1. Geltungsbereich",
+        "p1": "Diese Allgemeinen Geschäftsbedingungen (nachfolgend \"AGB\") gelten für die Nutzung der Webanwendung \"RecallFlow\" (nachfolgend \"Dienst\" oder \"App\") durch Sie als Nutzer. Anbieter des Dienstes ist:"
+      },
+      "s2": {
+        "title": "2. Vertragsschluss und Nutzungsberechtigung",
+        "s21": {
+          "title": "2.1 Registrierung",
+          "p1": "Durch die Anmeldung über Google Authentication erklären Sie sich mit diesen AGB und der Datenschutzerklärung einverstanden. Mit der Registrierung kommt ein Nutzungsvertrag zwischen Ihnen und dem Anbieter zustande."
+        },
+        "s22": {
+          "title": "2.2 Mindestalter",
+          "p1": "Die Nutzung des Dienstes ist erst ab Vollendung des 16. Lebensjahres gestattet. Jüngere Nutzer benötigen die Zustimmung ihrer Erziehungsberechtigten."
+        },
+        "s23": {
+          "title": "2.3 Nutzungskonto",
+          "p1": "Sie sind verpflichtet, Ihre Zugangsdaten vertraulich zu behandeln und nicht an Dritte weiterzugeben. Sie haften für alle Aktivitäten, die unter Ihrem Konto durchgeführt werden."
+        }
+      },
+      "s3": {
+        "title": "3. Leistungsumfang",
+        "p1": "RecallFlow bietet folgende Hauptfunktionen:",
+        "list": {
+          "createManageQuizzes": "Erstellung und Verwaltung von Quizzen",
+          "aiQuizGeneration": "KI-gestützte Quiz-Generierung aus Dokumenten (PDF, Bilder)",
+          "spacedRepetition": "Spaced Repetition Learning System zur Lernoptimierung",
+          "collaboration": "Zusammenarbeit (Co-Autoren-Funktion)",
+          "joinOthers": "Teilnahme an Quizzen anderer Nutzer",
+          "progressTracking": "Fortschrittsverfolgung"
+        },
+        "p2": "Der Anbieter behält sich vor, den Funktionsumfang jederzeit zu erweitern, zu ändern oder einzuschränken. Ein Anspruch auf bestimmte Funktionen besteht nicht."
+      },
+      "s4": {
+        "title": "4. Nutzungsbedingungen",
+        "s41": {
+          "title": "4.1 Erlaubte Nutzung",
+          "p1": "Sie verpflichten sich:",
+          "list": {
+            "legalUse": "Den Dienst nur für rechtmäßige Zwecke zu nutzen",
+            "noIllegalContent": "Keine rechtswidrigen, beleidigenden oder verleumderischen Inhalte zu erstellen",
+            "respectRights": "Die Rechte Dritter (insbesondere Urheberrechte) zu respektieren",
+            "noViolations": "Keine Inhalte zu verbreiten, die gegen geltendes Recht verstoßen",
+            "noAbuse": "Den Dienst nicht zu manipulieren oder zu missbrauchen"
+          }
+        },
+        "s42": {
+          "title": "4.2 Verbotene Nutzung",
+          "p1": "Folgende Handlungen sind ausdrücklich untersagt:",
+          "list": {
+            "malware": "Verbreitung von Malware, Viren oder schädlicher Software",
+            "bots": "Automatisierte Zugriffe (Bots, Scraper) ohne ausdrückliche Erlaubnis",
+            "overload": "Überlastung der Server durch exzessive Anfragen",
+            "reverseEngineering": "Reverse Engineering oder Dekompilierung der Software",
+            "bypassSecurity": "Umgehung von Sicherheitsmechanismen",
+            "harassment": "Erstellung von Inhalten, die Dritte belästigen, bedrohen oder diskriminieren"
+          }
+        }
+      },
+      "s5": {
+        "title": "5. Urheberrechte und Inhalte",
+        "s51": {
+          "title": "5.1 Ihre Inhalte",
+          "p1": "Sie behalten alle Rechte an den von Ihnen erstellten Quizzen und hochgeladenen Inhalten. Durch das Hochladen räumen Sie dem Anbieter jedoch das nicht-exklusive, weltweite Recht ein, diese Inhalte zu speichern und im Rahmen der Dienstleistung zu verarbeiten."
+        },
+        "s52": {
+          "title": "5.2 Verantwortlichkeit für Inhalte",
+          "p1": "Sie sind allein verantwortlich für die von Ihnen erstellten und hochgeladenen Inhalte. Der Anbieter übernimmt keine Haftung für Nutzerinhalte. Sie versichern, dass Sie über alle notwendigen Rechte an den hochgeladenen Inhalten verfügen."
+        },
+        "s53": {
+          "title": "5.3 Inhalte des Anbieters",
+          "p1": "Alle Inhalte der App (Software, Design, Texte, Grafiken) sind urheberrechtlich geschützt und Eigentum des Anbieters oder seiner Lizenzgeber. Eine Nutzung außerhalb der Bestimmungen dieser AGB ist untersagt."
+        }
+      },
+      "s6": {
+        "title": "6. KI-Generierung (Google Gemini)",
+        "p1": "Bei Nutzung der KI-gestützten Quiz-Generierung werden Ihre hochgeladenen Dokumente an Google Gemini AI übermittelt. Die Qualität und Richtigkeit der generierten Quizze kann nicht garantiert werden. Sie sind selbst dafür verantwortlich, die generierten Inhalte zu überprüfen und ggf. anzupassen.",
+        "p2": "Der Anbieter haftet nicht für Fehler oder Ungenauigkeiten in KI-generierten Inhalten."
+      },
+      "s7": {
+        "title": "7. Verfügbarkeit und Support",
+        "p1": "Der Anbieter bemüht sich um eine hohe Verfügbarkeit des Dienstes. Ein Anspruch auf jederzeitige Verfügbarkeit besteht jedoch nicht. Insbesondere können Wartungsarbeiten, technische Störungen oder höhere Gewalt zu vorübergehenden Unterbrechungen führen.",
+        "p2": "Ein Anspruch auf Support besteht nicht. Der Anbieter kann jedoch nach eigenem Ermessen Hilfestellung bei technischen Problemen anbieten."
+      },
+      "s8": {
+        "title": "8. Haftung",
+        "s81": {
+          "title": "8.1 Haftungsbeschränkung",
+          "p1": "Der Anbieter haftet unbeschränkt bei Vorsatz und grober Fahrlässigkeit, für die Verletzung von Leben, Körper und Gesundheit sowie nach den Vorschriften des Produkthaftungsgesetzes.",
+          "p2": "Bei leicht fahrlässiger Verletzung wesentlicher Vertragspflichten ist die Haftung auf den vertragstypischen, vorhersehbaren Schaden begrenzt. Im Übrigen ist die Haftung ausgeschlossen."
+        },
+        "s82": {
+          "title": "8.2 Freistellung",
+          "p1": "Sie verpflichten sich, den Anbieter von allen Ansprüchen Dritter freizustellen, die aufgrund Ihrer Inhalte oder Ihrer Nutzung des Dienstes gegen den Anbieter erhoben werden. Dies umfasst auch die Kosten einer angemessenen Rechtsverteidigung."
+        }
+      },
+      "s9": {
+        "title": "9. Sperrung und Kündigung",
+        "s91": {
+          "title": "9.1 Kündigung durch den Nutzer",
+          "p1": "Sie können Ihr Nutzerkonto jederzeit ohne Angabe von Gründen löschen. Bei Löschung werden Ihre personenbezogenen Daten gemäß der Datenschutzerklärung entfernt."
+        },
+        "s92": {
+          "title": "9.2 Sperrung durch den Anbieter",
+          "p1": "Der Anbieter kann Ihr Nutzerkonto bei Verstoß gegen diese AGB sperren oder löschen.",
+          "p2": "Dies gilt insbesondere bei:",
+          "list": {
+            "illegalContent": "Veröffentlichung rechtswidriger Inhalte",
+            "abuse": "Missbrauch des Dienstes",
+            "violations": "Verstoß gegen die Nutzungsbedingungen",
+            "securityRisk": "Gefährdung der Sicherheit anderer Nutzer"
+          },
+          "p3": "Bei schwerwiegenden Verstößen kann eine sofortige Sperrung ohne Vorankündigung erfolgen."
+        }
+      },
+      "s10": {
+        "title": "10. Änderungen der AGB",
+        "p1": "Der Anbieter behält sich vor, diese AGB jederzeit zu ändern. Änderungen werden Ihnen per E-Mail oder beim nächsten Login mitgeteilt. Widersprechen Sie den geänderten AGB nicht innerhalb von 4 Wochen nach Mitteilung, gelten die Änderungen als angenommen.",
+        "p2": "Bei Widerspruch endet das Vertragsverhältnis zum Zeitpunkt des Inkrafttretens der neuen AGB."
+      },
+      "s11": {
+        "title": "11. Schlussbestimmungen",
+        "s111": {
+          "title": "11.1 Anwendbares Recht",
+          "p1": "Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts."
+        },
+        "s112": {
+          "title": "11.2 Gerichtsstand",
+          "p1": "Gerichtsstand für alle Streitigkeiten aus und im Zusammenhang mit diesem Vertrag ist Mödling, sofern Sie Kaufmann, juristische Person des öffentlichen Rechts oder öffentlich-rechtliches Sondervermögen sind."
+        },
+        "s113": {
+          "title": "11.3 Salvatorische Klausel",
+          "p1": "Sollten einzelne Bestimmungen dieser AGB unwirksam sein oder werden, berührt dies die Wirksamkeit der übrigen Bestimmungen nicht. Die unwirksame Bestimmung wird durch eine wirksame Bestimmung ersetzt, die dem wirtschaftlichen Zweck der unwirksamen Bestimmung am nächsten kommt."
+        }
+      },
+      "s12": {
+        "title": "12. Kontakt",
+        "p1": "Bei Fragen zu diesen AGB kontaktieren Sie uns bitte unter:"
+      }
+    }
+  },
+  "fileValidation": {
+    "invalidType": "Type de fichier invalide : {{type}}. Autorisé : {{allowed}}",
+    "tooLarge": "Fichier trop volumineux : {{size}}. Maximum : {{max}}"
+  },
+  "mode": {
+    "ariaLabel": "Mode de l'application"
+  },
+  "toast": {
+    "ariaLabel": "Notifications"
+  }
+}

@@ -8,6 +8,11 @@ export interface ProcessedFile {
   size: number;
 }
 
+export interface FileValidationError {
+  key: string;
+  params?: Record<string, any>;
+}
+
 @Injectable({ providedIn: 'root' })
 export class FileProcessingService {
 
@@ -45,18 +50,30 @@ export class FileProcessingService {
     });
   }
 
-  validateFile(file: File, maxSizeMB: number): string | null {
+  validateFile(file: File, maxSizeMB: number): FileValidationError | null {
     const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     const validPdfTypes = ['application/pdf'];
     const validTypes = [...validImageTypes, ...validPdfTypes];
 
     if (!validTypes.includes(file.type)) {
-      return `Ungültiger Dateityp: ${file.type}. Erlaubt: JPG, PNG, GIF, WebP, PDF`;
+      return {
+        key: 'fileValidation.invalidType',
+        params: {
+          type: file.type || 'unknown',
+          allowed: 'JPG, PNG, GIF, WebP, PDF'
+        }
+      };
     }
 
     const fileSizeMB = file.size / (1024 * 1024);
     if (fileSizeMB > maxSizeMB) {
-      return `Datei zu groß: ${fileSizeMB.toFixed(1)}MB. Maximum: ${maxSizeMB}MB`;
+      return {
+        key: 'fileValidation.tooLarge',
+        params: {
+          size: `${fileSizeMB.toFixed(1)}MB`,
+          max: `${maxSizeMB}MB`
+        }
+      };
     }
 
     return null;

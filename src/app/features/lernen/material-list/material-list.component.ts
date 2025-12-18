@@ -2,6 +2,7 @@ import { Component, OnInit, signal, computed, inject, DestroyRef } from '@angula
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TranslateModule } from '@ngx-translate/core';
 import { LearningMaterialService } from '../../../core/services/learning-material.service';
 import { MaterialParticipantService } from '../../../core/services/material-participant.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -18,7 +19,7 @@ type TabType = 'owned' | 'co-authored' | 'public';
 @Component({
   selector: 'app-material-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, PullToRefreshDirective, SkeletonLoaderComponent, StatCardComponent, BadgeComponent, SearchBarComponent],
+  imports: [CommonModule, RouterModule, TranslateModule, PullToRefreshDirective, SkeletonLoaderComponent, StatCardComponent, BadgeComponent, SearchBarComponent],
   templateUrl: './material-list.component.html',
   styleUrls: ['./material-list.component.scss']
 })
@@ -56,11 +57,11 @@ export class MaterialListComponent implements OnInit {
   searchPlaceholder = computed(() => {
     switch (this.activeTab()) {
       case 'owned':
-        return 'Eigene Unterlagen durchsuchen';
+        return 'materials.list.searchPlaceholder.owned';
       case 'co-authored':
-        return 'Mit-Autor Unterlagen durchsuchen';
+        return 'materials.list.searchPlaceholder.coAuthored';
       case 'public':
-        return 'Öffentliche Unterlagen durchsuchen';
+        return 'materials.list.searchPlaceholder.public';
     }
   });
 

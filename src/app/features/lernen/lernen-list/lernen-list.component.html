@@ -1,27 +1,27 @@
 <div class="deck-list-page" appPullToRefresh (refresh)="onRefresh()">
   <div class="page-header">
     <div class="title-block">
-      <p class="eyebrow">Übersicht</p>
-      <h1>Meine Lernkarten</h1>
-      <p class="subtitle">Spaced Repetition für langfristigen Erfolg</p>
+      <p class="eyebrow">{{ 'common.overview' | translate }}</p>
+      <h1>{{ 'lernen.myFlashcards' | translate }}</h1>
+      <p class="subtitle">{{ 'lernen.list.subtitle' | translate }}</p>
     </div>
 
     <div class="header-actions">
       <button class="btn btn-secondary" type="button" (click)="createNewDeck()">
-        Neues Deck erstellen
+        {{ 'flashcard.createDeck' | translate }}
       </button>
     </div>
   </div>
 
   <div class="toolbar-row">
-    <div class="tab-group" role="tablist" aria-label="Deck-Kategorien">
+    <div class="tab-group" role="tablist" [attr.aria-label]="'lernen.list.categoriesAria' | translate">
       <button
         class="tab-btn"
         role="tab"
         [class.active]="activeTab() === 'owned'"
         [attr.aria-selected]="activeTab() === 'owned'"
         (click)="setActiveTab('owned')">
-        Eigene
+        {{ 'tabs.owned' | translate }}
         <span class="count">{{ ownedDecks().length }}</span>
       </button>
       <button
@@ -30,7 +30,7 @@
         [class.active]="activeTab() === 'co-authored'"
         [attr.aria-selected]="activeTab() === 'co-authored'"
         (click)="setActiveTab('co-authored')">
-        Mit-Autor
+        {{ 'tabs.coAuthored' | translate }}
         <span class="count">{{ coAuthoredDecks().length }}</span>
       </button>
       <button
@@ -39,37 +39,37 @@
         [class.active]="activeTab() === 'public'"
         [attr.aria-selected]="activeTab() === 'public'"
         (click)="setActiveTab('public')">
-        Öffentlich
+        {{ 'tabs.public' | translate }}
         <span class="count">{{ publicDecks().length }}</span>
       </button>
     </div>
 
     <div class="toolbar-pill">
-      <span class="pill">{{ activeTab() === 'owned' ? 'Eigene Decks' : activeTab() === 'co-authored' ? 'Mit-Autor' : 'Öffentliche Decks' }}</span>
+      <span class="pill">{{ (activeTab() === 'owned' ? 'lernen.list.pill.owned' : activeTab() === 'co-authored' ? 'lernen.list.pill.coAuthored' : 'lernen.list.pill.public') | translate }}</span>
     </div>
 
     <!-- Join by Code (CSS-only modal toggle) -->
     <div class="join-wrapper">
       <input type="checkbox" id="join-toggle" class="join-toggle" />
-      <label for="join-toggle" class="btn btn-secondary join-btn">Mit Code beitreten</label>
+      <label for="join-toggle" class="btn btn-secondary join-btn">{{ 'join.joinWithCode' | translate }}</label>
 
       <div class="join-modal">
         <div class="join-card">
-          <h3>Deck per Code beitreten</h3>
-          <p>Gib den Deck-Code ein, um beizutreten.</p>
+          <h3>{{ 'join.deck.title' | translate }}</h3>
+          <p>{{ 'join.deck.subtitle' | translate }}</p>
           <input type="text"
-                 placeholder="ABCD-1234"
+                 [placeholder]="'join.codePlaceholder' | translate"
                  class="join-input"
-                 aria-label="Deck-Beitritts-Code"
+                 [attr.aria-label]="'join.deck.ariaLabel' | translate"
                  [value]="joinCode()"
                  (input)="joinCode.set($any($event.target).value)" />
           <div class="join-error" *ngIf="joinError()">{{ joinError() }}</div>
           <div class="join-actions">
-            <label for="join-toggle" class="btn btn-secondary">Abbrechen</label>
+            <label for="join-toggle" class="btn btn-secondary">{{ 'common.cancel' | translate }}</label>
             <button class="btn btn-primary" type="button"
                     [disabled]="joinBusy()"
                     (click)="joinByCode()">
-              {{ joinBusy() ? 'Beitreten...' : 'Beitreten' }}
+              {{ joinBusy() ? ('join.joining' | translate) : ('join.join' | translate) }}
             </button>
           </div>
         </div>
@@ -82,21 +82,21 @@
       icon: 'svg',
       iconContent: '<rect x=\'2\' y=\'7\' width=\'20\' height=\'14\' rx=\'2\'/><path d=\'M2 11h20\'/>',
       value: displayedDeckCount(),
-      label: 'Decks'
+      label: ('flashcard.decks' | translate)
     }" />
 
     <app-stat-card [config]="{
       icon: 'svg',
       iconContent: '<path d=\'M9 11H3v9h6v-9Z M21 11h-6v9h6v-9Z M15 5H9v14h6V5Z\'/>',
       value: displayedCardCount(),
-      label: 'Karten'
+      label: ('common.cards' | translate)
     }" />
 
     <app-stat-card [config]="{
       icon: 'svg',
       iconContent: '<path d=\'M22 11.08V12a10 10 0 1 1-5.93-9.14\'/><polyline points=\'22 4 12 14.01 9 11.01\'/>',
       value: latestUpdatedDate() ? formatDate(latestUpdatedDate()!) : '—',
-      label: 'Zuletzt aktualisiert'
+      label: ('common.lastUpdated' | translate)
     }" />
   </div>
 
@@ -104,8 +104,8 @@
     <app-search-bar
       [searchTerm]="currentSearchTerm()"
       [resultCount]="displayedDecks().length"
-      [placeholder]="searchPlaceholder()"
-      [ariaLabel]="'Decks durchsuchen'"
+      [placeholder]="searchPlaceholder() | translate"
+      [ariaLabel]="'lernen.list.searchAria' | translate"
       (searchChange)="onSearch($event)"
       (clear)="clearSearch()" />
   }
@@ -123,7 +123,7 @@
         <line x1="12" y1="8" x2="12" y2="12" />
         <line x1="12" y1="16" x2="12.01" y2="16" />
       </svg>
-      <h2>Fehler beim Laden</h2>
+      <h2>{{ 'errors.loadingFailed' | translate }}</h2>
       <p>{{ error() }}</p>
     </div>
   } @else {
@@ -134,15 +134,15 @@
             <rect x="2" y="7" width="20" height="14" rx="2"/>
             <path d="M2 11h20"/>
           </svg>
-          <h2>Keine Decks gefunden</h2>
+          <h2>{{ 'lernen.noDecksFound' | translate }}</h2>
           <p *ngIf="activeTab() === 'owned'">
-            {{ currentSearchTerm().trim() ? 'Kein eigenes Deck passt zu deiner Suche.' : 'Du hast noch keine Decks erstellt. Lege mit "Neues Deck erstellen" los.' }}
+            {{ (currentSearchTerm().trim() ? 'lernen.list.empty.owned.search' : 'lernen.list.empty.owned.none') | translate }}
           </p>
           <p *ngIf="activeTab() === 'co-authored'">
-            {{ currentSearchTerm().trim() ? 'Kein Mit-Autor Deck passt zu deiner Suche.' : 'Du wurdest noch bei keinem Deck als Mit-Autor hinzugefügt.' }}
+            {{ (currentSearchTerm().trim() ? 'lernen.list.empty.coAuthored.search' : 'lernen.list.empty.coAuthored.none') | translate }}
           </p>
           <p *ngIf="activeTab() === 'public'">
-            {{ publicSearchTerm().trim() ? 'Kein öffentliches Deck passt zu deiner Suche.' : 'Es gibt noch keine öffentlichen Decks.' }}
+            {{ (publicSearchTerm().trim() ? 'lernen.list.empty.public.search' : 'lernen.list.empty.public.none') | translate }}
           </p>
         </div>
       } @else {
@@ -158,7 +158,7 @@
                   <h3>{{ deck.title }}</h3>
                   <app-badge [config]="{
                     variant: deck.visibility === 'public' ? 'public' : deck.visibility === 'unlisted' ? 'unlisted' : 'private',
-                    label: deck.visibility === 'public' ? 'Öffentlich' : deck.visibility === 'unlisted' ? 'Nicht gelistet' : 'Privat'
+                    label: deck.visibility === 'public' ? ('quiz.visibility.public' | translate) : deck.visibility === 'unlisted' ? ('quiz.visibility.unlisted' | translate) : ('quiz.visibility.private' | translate)
                   }" />
                 </div>
 
@@ -176,7 +176,7 @@
                   </svg>
                 </div>
                 <div class="meta-copy">
-                  <span class="meta-label">Karten</span>
+                  <span class="meta-label">{{ 'common.cards' | translate }}</span>
                   <span class="meta-value">{{ deck.cardCount }}</span>
                 </div>
               </div>
@@ -189,7 +189,7 @@
                   </svg>
                 </div>
                 <div class="meta-copy">
-                  <span class="meta-label">Aktualisiert</span>
+                  <span class="meta-label">{{ 'common.updated' | translate }}</span>
                   <span class="meta-value">{{ formatDate(deck.updatedAt) }}</span>
                 </div>
               </div>
@@ -202,16 +202,16 @@
                   </svg>
                 </div>
                 <div class="meta-copy">
-                  <span class="meta-label">Zugriff</span>
+                  <span class="meta-label">{{ 'common.access' | translate }}</span>
                   <span class="meta-value">
                     @if (requiresEnrollment(deck)) {
-                      Anmeldung nötig
+                      {{ 'access.enrollmentRequired' | translate }}
                     } @else if (isOwner(deck)) {
-                      Besitzer
+                      {{ 'quiz.roles.owner' | translate }}
                     } @else if (isCoAuthor(deck)) {
-                      Mit-Autor
+                      {{ 'quiz.roles.coAuthor' | translate }}
                     } @else {
-                      Direkt startbar
+                      {{ 'access.directStart' | translate }}
                     }
                   </span>
                 </div>
@@ -225,9 +225,9 @@
                   [disabled]="isEnrollmentBusy(deck.id)"
                   (click)="enrollInDeck(deck)">
                   @if (isEnrolling(deck.id)) {
-                    Wird hinzugefügt...
+                    {{ 'common.adding' | translate }}
                   } @else {
-                    Hinzufügen
+                    {{ 'common.add' | translate }}
                   }
                 </button>
               }
@@ -238,9 +238,9 @@
                   [disabled]="isEnrollmentBusy(deck.id)"
                   (click)="unenrollFromDeck(deck)">
                   @if (isUnenrolling(deck.id)) {
-                    Entferne...
+                    {{ 'common.removing' | translate }}
                   } @else {
-                    Entfernen
+                    {{ 'common.remove' | translate }}
                   }
                 </button>
               }
@@ -249,22 +249,22 @@
                 class="btn btn-primary btn-small"
                 [disabled]="(requiresEnrollment(deck) && !isEnrolled(deck.id)) || isEnrollmentBusy(deck.id)"
                 (click)="startStudy(deck)">
-                Lernen
+                {{ 'flashcard.startSession' | translate }}
               </button>
 
               <button class="btn btn-secondary btn-small" (click)="viewDetails(deck.id)">
-                Details
+                {{ 'common.details' | translate }}
               </button>
 
               @if (canEdit(deck)) {
                 <button class="btn btn-secondary btn-small" (click)="editDeck(deck.id)">
-                  Bearbeiten
+                  {{ 'common.edit' | translate }}
                 </button>
               }
 
               @if (isOwner(deck)) {
                 <button class="btn btn-danger btn-small" (click)="deleteDeck(deck)">
-                  Löschen
+                  {{ 'common.delete' | translate }}
                 </button>
               }
             </div>
@@ -278,11 +278,11 @@
     <div class="fab-menu">
       <a class="fab-item" (click)="$event.preventDefault(); createNewDeck(); toggleFab()">
         <span class="icon-circle">➕</span>
-        <span class="label">Neues Deck</span>
+        <span class="label">{{ 'lernen.newDeck' | translate }}</span>
       </a>
       <a class="fab-item" routerLink="/lernen/material-editor/new" (click)="toggleFab()">
         <span class="icon-circle">📄</span>
-        <span class="label">Neue Unterlage</span>
+        <span class="label">{{ 'lernen.newMaterial' | translate }}</span>
       </a>
     </div>
 
@@ -290,7 +290,7 @@
             type="button"
             (click)="toggleFab()"
             [attr.aria-expanded]="fabOpen()"
-            aria-label="Erstellen-Menü öffnen"
+            [attr.aria-label]="'lernen.openCreateMenu' | translate"
             aria-haspopup="menu">
       <span class="fab-lines" aria-hidden="true"></span>
     </button>

@@ -1,27 +1,27 @@
 <div class="quiz-list-page" appPullToRefresh (refresh)="onRefresh()">
   <div class="page-header">
     <div class="title-block">
-      <p class="eyebrow">Übersicht</p>
-      <h1>Meine Quizzes</h1>
-      <p class="subtitle">Lerne mit Spaced Repetition</p>
+      <p class="eyebrow">{{ 'common.overview' | translate }}</p>
+      <h1>{{ 'quiz.myQuizzes' | translate }}</h1>
+      <p class="subtitle">{{ 'quiz.subtitle' | translate }}</p>
     </div>
 
     <div class="header-actions">
       <button class="btn btn-secondary" type="button" (click)="createNewQuiz()">
-        Neues Quiz erstellen
+        {{ 'quiz.createQuiz' | translate }}
       </button>
     </div>
   </div>
 
   <div class="toolbar-row">
-    <div class="tab-group" role="tablist" aria-label="Quiz-Kategorien">
+    <div class="tab-group" role="tablist" [attr.aria-label]="'quiz.list.categoriesAria' | translate">
       <button
         class="tab-btn"
         role="tab"
         [class.active]="activeTab() === 'owned'"
         [attr.aria-selected]="activeTab() === 'owned'"
         (click)="setActiveTab('owned')">
-        Eigene
+        {{ 'tabs.owned' | translate }}
         <span class="count">{{ ownedQuizzes().length }}</span>
       </button>
       <button
@@ -30,7 +30,7 @@
         [class.active]="activeTab() === 'co-authored'"
         [attr.aria-selected]="activeTab() === 'co-authored'"
         (click)="setActiveTab('co-authored')">
-        Mit-Autor
+        {{ 'tabs.coAuthored' | translate }}
         <span class="count">{{ coAuthoredQuizzes().length }}</span>
       </button>
       <button
@@ -39,37 +39,37 @@
         [class.active]="activeTab() === 'public'"
         [attr.aria-selected]="activeTab() === 'public'"
         (click)="setActiveTab('public')">
-        Öffentlich
+        {{ 'tabs.public' | translate }}
         <span class="count">{{ publicQuizzes().length }}</span>
       </button>
     </div>
 
     <div class="toolbar-pill">
-      <span class="pill">{{ activeTab() === 'owned' ? 'Eigene Quizzes' : activeTab() === 'co-authored' ? 'Mit-Autor' : 'Öffentliche Quizzes' }}</span>
+      <span class="pill">{{ (activeTab() === 'owned' ? 'quiz.list.pill.owned' : activeTab() === 'co-authored' ? 'quiz.list.pill.coAuthored' : 'quiz.list.pill.public') | translate }}</span>
     </div>
 
-    <!-- Join by Code (CSS-only modal toggle) -->
+      <!-- Join by Code (CSS-only modal toggle) -->
     <div class="join-wrapper">
       <input type="checkbox" id="join-toggle" class="join-toggle" />
-      <label for="join-toggle" class="btn btn-secondary join-btn">Mit Code beitreten</label>
+      <label for="join-toggle" class="btn btn-secondary join-btn">{{ 'join.joinWithCode' | translate }}</label>
 
       <div class="join-modal">
         <div class="join-card">
-          <h3>Quiz per Code beitreten</h3>
-          <p>Gib den Quiz-Code ein, um beizutreten.</p>
+          <h3>{{ 'join.quiz.title' | translate }}</h3>
+          <p>{{ 'join.quiz.subtitle' | translate }}</p>
           <input type="text"
-                 placeholder="ABCD-1234"
+                 [placeholder]="'join.codePlaceholder' | translate"
                  class="join-input"
-                 aria-label="Quiz-Beitritts-Code"
+                 [attr.aria-label]="'join.quiz.ariaLabel' | translate"
                  [value]="joinCode()"
                  (input)="joinCode.set($any($event.target).value)" />
           <div class="join-error" *ngIf="joinError()">{{ joinError() }}</div>
           <div class="join-actions">
-            <label for="join-toggle" class="btn btn-secondary">Abbrechen</label>
+            <label for="join-toggle" class="btn btn-secondary">{{ 'common.cancel' | translate }}</label>
             <button class="btn btn-primary" type="button"
                     [disabled]="joinBusy()"
                     (click)="joinByCode()">
-              {{ joinBusy() ? 'Beitreten...' : 'Beitreten' }}
+              {{ joinBusy() ? ('join.joining' | translate) : ('join.join' | translate) }}
             </button>
           </div>
         </div>
@@ -82,21 +82,21 @@
       icon: 'svg',
       iconContent: '<path d=\'M9 11H3v9h6v-9Z M21 11h-6v9h6v-9Z M15 5H9v14h6V5Z\'/>',
       value: displayedQuizCount(),
-      label: 'Quizzes'
+      label: ('quiz.quizzes' | translate)
     }" />
 
     <app-stat-card [config]="{
       icon: 'svg',
       iconContent: '<circle cx=\'12\' cy=\'12\' r=\'10\'/><path d=\'M12 6v6l4 2\'/>',
       value: displayedQuestionCount(),
-      label: 'Fragen'
+      label: ('quiz.questions' | translate)
     }" />
 
     <app-stat-card [config]="{
       icon: 'svg',
       iconContent: '<path d=\'M22 11.08V12a10 10 0 1 1-5.93-9.14\'/><polyline points=\'22 4 12 14.01 9 11.01\'/>',
       value: latestUpdatedDate() ? formatDate(latestUpdatedDate()!) : '—',
-      label: 'Zuletzt aktualisiert'
+      label: ('common.lastUpdated' | translate)
     }" />
   </div>
 
@@ -112,18 +112,18 @@
           #quizSearch
           [value]="currentSearchTerm()"
           (input)="onSearch(quizSearch.value)"
-          [placeholder]="activeTab() === 'owned' ? 'Eigene Quizzes durchsuchen' : activeTab() === 'co-authored' ? 'Mit-Autor Quizzes durchsuchen' : 'Öffentliche Quizzes durchsuchen'"
-          aria-label="Quizzes durchsuchen" />
+          [placeholder]="(activeTab() === 'owned' ? 'quiz.list.searchPlaceholder.owned' : activeTab() === 'co-authored' ? 'quiz.list.searchPlaceholder.coAuthored' : 'quiz.list.searchPlaceholder.public') | translate"
+          [attr.aria-label]="'quiz.list.searchAria' | translate" />
         <button
           type="button"
           class="clear-btn"
           *ngIf="currentSearchTerm()"
           (click)="clearSearch()">
-          Zurücksetzen
+          {{ 'common.reset' | translate }}
         </button>
       </div>
       <div class="result-count">
-        {{ displayedQuizzes().length }} Ergebnis{{ displayedQuizzes().length === 1 ? '' : 'se' }}
+        {{ displayedQuizzes().length }} {{ (displayedQuizzes().length === 1 ? 'common.result' : 'common.results') | translate }}
       </div>
     </div>
   }
@@ -141,7 +141,7 @@
         <line x1="12" y1="8" x2="12" y2="12" />
         <line x1="12" y1="16" x2="12.01" y2="16" />
       </svg>
-      <h2>Fehler beim Laden</h2>
+      <h2>{{ 'errors.loadingFailed' | translate }}</h2>
       <p>{{ error() }}</p>
     </div>
   } @else {
@@ -151,15 +151,15 @@
           <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M9 11H3v9h6v-9Z M21 11h-6v9h6v-9Z M15 5H9v14h6V5Z" />
           </svg>
-          <h2>Keine Quizzes gefunden</h2>
+          <h2>{{ 'quiz.noQuizzesFound' | translate }}</h2>
           <p *ngIf="activeTab() === 'owned'">
-            {{ currentSearchTerm().trim() ? 'Kein eigenes Quiz passt zu deiner Suche.' : 'Du hast noch keine Quizzes erstellt. Lege mit "Neues Quiz erstellen" los.' }}
+            {{ (currentSearchTerm().trim() ? 'quiz.list.empty.owned.search' : 'quiz.list.empty.owned.none') | translate }}
           </p>
           <p *ngIf="activeTab() === 'co-authored'">
-            {{ currentSearchTerm().trim() ? 'Kein Mit-Autor Quiz passt zu deiner Suche.' : 'Du wurdest noch bei keinem Quiz als Mit-Autor hinzugefügt.' }}
+            {{ (currentSearchTerm().trim() ? 'quiz.list.empty.coAuthored.search' : 'quiz.list.empty.coAuthored.none') | translate }}
           </p>
           <p *ngIf="activeTab() === 'public'">
-            {{ publicSearchTerm().trim() ? 'Kein öffentliches Quiz passt zu deiner Suche.' : 'Es gibt noch keine öffentlichen Quizzes.' }}
+            {{ (publicSearchTerm().trim() ? 'quiz.list.empty.public.search' : 'quiz.list.empty.public.none') | translate }}
           </p>
         </div>
       } @else {
@@ -181,11 +181,11 @@
                       'badge-private': quiz.visibility !== 'public' && quiz.visibility !== 'unlisted'
                     }">
                     @if (quiz.visibility === 'public') {
-                      Öffentlich
+                      {{ 'quiz.visibility.public' | translate }}
                     } @else if (quiz.visibility === 'unlisted') {
-                      Nicht gelistet
+                      {{ 'quiz.visibility.unlisted' | translate }}
                     } @else {
-                      Privat
+                      {{ 'quiz.visibility.private' | translate }}
                     }
                   </span>
                 </div>
@@ -204,7 +204,7 @@
                   </svg>
                 </div>
                 <div class="meta-copy">
-                  <span class="meta-label">Fragen</span>
+                  <span class="meta-label">{{ 'quiz.questions' | translate }}</span>
                   <span class="meta-value">{{ quiz.questionCount }}</span>
                 </div>
               </div>
@@ -217,7 +217,7 @@
                   </svg>
                 </div>
                 <div class="meta-copy">
-                  <span class="meta-label">Aktualisiert</span>
+                  <span class="meta-label">{{ 'common.updated' | translate }}</span>
                   <span class="meta-value">{{ formatDate(quiz.updatedAt) }}</span>
                 </div>
               </div>
@@ -230,16 +230,16 @@
                   </svg>
                 </div>
                 <div class="meta-copy">
-                  <span class="meta-label">Zugriff</span>
+                  <span class="meta-label">{{ 'common.access' | translate }}</span>
                   <span class="meta-value">
                     @if (requiresEnrollment(quiz)) {
-                      Anmeldung nötig
+                      {{ 'access.enrollmentRequired' | translate }}
                     } @else if (isOwner(quiz)) {
-                      Besitzer
+                      {{ 'quiz.roles.owner' | translate }}
                     } @else if (isCoAuthor(quiz)) {
-                      Mit-Autor
+                      {{ 'quiz.roles.coAuthor' | translate }}
                     } @else {
-                      Direkt startbar
+                      {{ 'access.directStart' | translate }}
                     }
                   </span>
                 </div>
@@ -253,9 +253,9 @@
                   [disabled]="isEnrollmentBusy(quiz.id)"
                   (click)="enrollInQuiz(quiz)">
                   @if (isEnrolling(quiz.id)) {
-                    Wird hinzugefügt...
+                    {{ 'common.adding' | translate }}
                   } @else {
-                    Hinzufügen
+                    {{ 'common.add' | translate }}
                   }
                 </button>
               }
@@ -266,9 +266,9 @@
                   [disabled]="isEnrollmentBusy(quiz.id)"
                   (click)="unenrollFromQuiz(quiz)">
                   @if (isUnenrolling(quiz.id)) {
-                    Entferne...
+                    {{ 'common.removing' | translate }}
                   } @else {
-                    Entfernen
+                    {{ 'common.remove' | translate }}
                   }
                 </button>
               }
@@ -277,22 +277,22 @@
                 class="btn btn-primary btn-small"
                 [disabled]="(requiresEnrollment(quiz) && !isEnrolled(quiz.id)) || isEnrollmentBusy(quiz.id)"
                 (click)="startQuiz(quiz)">
-                Quiz starten
+                {{ 'quiz.startQuiz' | translate }}
               </button>
 
               <button class="btn btn-secondary btn-small" (click)="viewDetails(quiz.id)">
-                Details
+                {{ 'common.details' | translate }}
               </button>
 
               @if (canEdit(quiz)) {
                 <button class="btn btn-secondary btn-small" (click)="editQuiz(quiz.id)">
-                  Bearbeiten
+                  {{ 'common.edit' | translate }}
                 </button>
               }
 
               @if (isOwner(quiz)) {
                 <button class="btn btn-danger btn-small" (click)="deleteQuiz(quiz)">
-                  Löschen
+                  {{ 'common.delete' | translate }}
                 </button>
               }
             </div>
@@ -306,11 +306,11 @@
     <div class="fab-menu">
       <a class="fab-item" (click)="$event.preventDefault(); createNewQuiz(); toggleFab()">
         <span class="icon-circle">➕</span>
-        <span class="label">Neues Quiz</span>
+        <span class="label">{{ 'quiz.newQuiz' | translate }}</span>
       </a>
       <a class="fab-item" routerLink="/quiz/ai-quiz-generator" (click)="toggleFab()">
         <span class="icon-circle">🤖</span>
-        <span class="label">AI Quiz</span>
+        <span class="label">{{ 'quiz.aiQuiz' | translate }}</span>
       </a>
     </div>
 
@@ -318,7 +318,7 @@
             type="button"
             (click)="toggleFab()"
             [attr.aria-expanded]="fabOpen()"
-            aria-label="Erstellen-Menü öffnen"
+            [attr.aria-label]="'quiz.openCreateMenu' | translate"
             aria-haspopup="menu">
       <span class="fab-lines" aria-hidden="true"></span>
     </button>

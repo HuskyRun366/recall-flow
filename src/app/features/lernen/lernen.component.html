@@ -1,14 +1,14 @@
 <div class="lernen-page">
   <div class="page-header">
     <div class="title-block">
-      <p class="eyebrow">Übersicht</p>
-      <h1>Meine Lernkarten</h1>
-      <p class="subtitle">Lerne mit Spaced Repetition</p>
+      <p class="eyebrow">{{ 'common.overview' | translate }}</p>
+      <h1>{{ 'lernen.myFlashcards' | translate }}</h1>
+      <p class="subtitle">{{ 'quiz.subtitle' | translate }}</p>
     </div>
 
     <div class="header-actions">
       <a routerLink="/lernen/deck-editor/new" class="btn btn-secondary">
-        Neues Deck erstellen
+        {{ 'flashcard.createDeck' | translate }}
       </a>
     </div>
   </div>
@@ -18,21 +18,21 @@
       icon: 'svg',
       iconContent: '<rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><path d=\'M3 9h18\'/>',
       value: totalDecks(),
-      label: 'Decks'
+      label: ('flashcard.decks' | translate)
     }" />
 
     <app-stat-card [config]="{
       icon: 'svg',
       iconContent: '<rect x=\'2\' y=\'7\' width=\'20\' height=\'14\' rx=\'2\'/><path d=\'M2 11h20\'/>',
       value: totalCards(),
-      label: 'Karten'
+      label: ('common.cards' | translate)
     }" />
 
     <app-stat-card [config]="{
       icon: 'svg',
       iconContent: '<path d=\'M22 11.08V12a10 10 0 1 1-5.93-9.14\'/><polyline points=\'22 4 12 14.01 9 11.01\'/>',
       value: overallProgress() + '%',
-      label: 'Fortschritt'
+      label: ('stats.progress' | translate)
     }" />
   </div>
 
@@ -48,15 +48,15 @@
           #deckSearch
           [value]="searchTerm()"
           (input)="searchTerm.set(deckSearch.value)"
-          placeholder="Decks durchsuchen"
-          aria-label="Decks durchsuchen" />
+          [placeholder]="'lernen.page.searchPlaceholder' | translate"
+          [attr.aria-label]="'lernen.page.searchAria' | translate" />
         <button
           type="button"
           class="clear-btn"
           *ngIf="searchTerm()"
-          (click)="searchTerm.set('')">Zurücksetzen</button>
+          (click)="searchTerm.set('')">{{ 'common.reset' | translate }}</button>
       </div>
-      <div class="result-count">{{ filteredDecks().length }} Ergebnis{{ filteredDecks().length === 1 ? '' : 'se' }}</div>
+      <div class="result-count">{{ filteredDecks().length }} {{ (filteredDecks().length === 1 ? 'common.result' : 'common.results') | translate }}</div>
     </div>
   }
 
@@ -73,9 +73,9 @@
         <line x1="12" y1="8" x2="12" y2="12"/>
         <line x1="12" y1="16" x2="12.01" y2="16"/>
       </svg>
-      <h2>Fehler beim Laden</h2>
+      <h2>{{ 'errors.loadingFailed' | translate }}</h2>
       <p>{{ error() }}</p>
-      <button class="btn btn-primary" (click)="retry()">Erneut versuchen</button>
+      <button class="btn btn-primary" (click)="retry()">{{ 'common.retry' | translate }}</button>
     </div>
   } @else {
     <div class="deck-grid">
@@ -85,9 +85,9 @@
             <rect x="2" y="7" width="20" height="14" rx="2"/>
             <path d="M2 11h20"/>
           </svg>
-          <h2>Keine Decks gefunden</h2>
+          <h2>{{ 'lernen.noDecksFound' | translate }}</h2>
           <p>
-            {{ searchTerm().trim() ? 'Kein Deck passt zu deiner Suche.' : 'Du hast noch keine Decks erstellt. Lege mit "Neues Deck erstellen" los.' }}
+            {{ (searchTerm().trim() ? 'lernen.page.noMatchingDeck' : 'lernen.createFirstDeck') | translate }}
           </p>
         </div>
       } @else {
@@ -109,11 +109,11 @@
                       'badge-private': deckWithProgress.deck.visibility !== 'public' && deckWithProgress.deck.visibility !== 'unlisted'
                     }">
                     @if (deckWithProgress.deck.visibility === 'public') {
-                      Öffentlich
+                      {{ 'quiz.visibility.public' | translate }}
                     } @else if (deckWithProgress.deck.visibility === 'unlisted') {
-                      Nicht gelistet
+                      {{ 'quiz.visibility.unlisted' | translate }}
                     } @else {
-                      Privat
+                      {{ 'quiz.visibility.private' | translate }}
                     }
                   </span>
                 </div>
@@ -133,7 +133,7 @@
                   </svg>
                 </div>
                 <div class="meta-copy">
-                  <span class="meta-label">Karten</span>
+                  <span class="meta-label">{{ 'common.cards' | translate }}</span>
                   <span class="meta-value">{{ deckWithProgress.totalCards }}</span>
                 </div>
               </div>
@@ -146,7 +146,7 @@
                   </svg>
                 </div>
                 <div class="meta-copy">
-                  <span class="meta-label">Fortschritt</span>
+                  <span class="meta-label">{{ 'stats.progress' | translate }}</span>
                   <span class="meta-value">{{ deckWithProgress.progress.completionRate }}%</span>
                 </div>
               </div>
@@ -160,7 +160,7 @@
                   </svg>
                 </div>
                 <div class="meta-copy">
-                  <span class="meta-label">Zu lernen</span>
+                  <span class="meta-label">{{ 'lernen.page.toLearn' | translate }}</span>
                   <span class="meta-value">{{ deckWithProgress.progress.level0Count }}</span>
                 </div>
               </div>
@@ -170,20 +170,20 @@
               <button
                 class="btn btn-primary btn-small"
                 [routerLink]="['/lernen/deck', deckWithProgress.deck.id, 'study']">
-                Deck lernen
+                {{ 'flashcard.startSession' | translate }}
               </button>
 
               @if (deckWithProgress.userCanEdit) {
                 <button
                   class="btn btn-secondary btn-small"
                   [routerLink]="['/lernen/deck-editor', deckWithProgress.deck.id]">
-                  Bearbeiten
+                  {{ 'common.edit' | translate }}
                 </button>
                 <button
                   class="btn btn-danger btn-small"
                   (click)="deleteDeck(deckWithProgress.deck.id, deckWithProgress.deck.title)"
-                  title="Deck löschen">
-                  Löschen
+                  [title]="'flashcard.deleteDeck' | translate">
+                  {{ 'common.delete' | translate }}
                 </button>
               }
             </div>
@@ -197,7 +197,7 @@
     <div class="fab-menu">
       <a class="fab-item" routerLink="/lernen/deck-editor/new" (click)="toggleFab()">
         <span class="icon-circle">➕</span>
-        <span class="label">Neues Deck</span>
+        <span class="label">{{ 'lernen.newDeck' | translate }}</span>
       </a>
     </div>
 
@@ -205,7 +205,7 @@
             type="button"
             (click)="toggleFab()"
             [attr.aria-expanded]="fabOpen()"
-            aria-label="Erstellen-Menü öffnen"
+            [attr.aria-label]="'lernen.openCreateMenu' | translate"
             aria-haspopup="menu">
       <span class="fab-lines" aria-hidden="true"></span>
     </button>

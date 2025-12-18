@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, computed, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FlashcardDeckService } from '../../core/services/flashcard-deck.service';
 import { FlashcardService } from '../../core/services/flashcard.service';
@@ -23,7 +24,7 @@ interface DeckWithProgress {
 @Component({
   selector: 'app-lernen',
   standalone: true,
-  imports: [CommonModule, RouterModule, SkeletonLoaderComponent, StatCardComponent],
+  imports: [CommonModule, RouterModule, TranslateModule, SkeletonLoaderComponent, StatCardComponent],
   templateUrl: './lernen.component.html',
   styleUrls: ['./lernen.component.scss']
 })

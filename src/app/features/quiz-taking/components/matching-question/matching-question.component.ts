@@ -1,12 +1,13 @@
 import { Component, Input, Output, EventEmitter, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { MatchingQuestion } from '../../../../models';
 import { HapticService } from '../../../../core/services/haptic.service';
 
 @Component({
   selector: 'app-matching-question',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './matching-question.component.html',
   styleUrls: ['./matching-question.component.scss']
 })

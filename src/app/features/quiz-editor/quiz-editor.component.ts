@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, inject, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { FirestoreService } from '../../core/services/firestore.service';
 import { QuestionService } from '../../core/services/question.service';
 import { ParticipantService } from '../../core/services/participant.service';
@@ -14,7 +15,7 @@ import { GraphicalEditorComponent } from './components/graphical-editor/graphica
 @Component({
   selector: 'app-quiz-editor',
   standalone: true,
-  imports: [CommonModule, RouterModule, ToonEditorComponent, GraphicalEditorComponent],
+  imports: [CommonModule, RouterModule, TranslateModule, ToonEditorComponent, GraphicalEditorComponent],
   templateUrl: './quiz-editor.component.html',
   styleUrls: ['./quiz-editor.component.scss']
 })

@@ -1,27 +1,27 @@
 <div class="material-list-page" appPullToRefresh (refresh)="onRefresh()">
   <div class="page-header">
     <div class="title-block">
-      <p class="eyebrow">Übersicht</p>
-      <h1>Lernunterlagen</h1>
-      <p class="subtitle">Interaktive HTML-Dokumente für dein Studium</p>
+      <p class="eyebrow">{{ 'common.overview' | translate }}</p>
+      <h1>{{ 'materials.title' | translate }}</h1>
+      <p class="subtitle">{{ 'materials.list.subtitle' | translate }}</p>
     </div>
 
     <div class="header-actions">
       <button class="btn btn-secondary" type="button" (click)="createNewMaterial()">
-        Neue Unterlage erstellen
+        {{ 'materials.newMaterial' | translate }}
       </button>
     </div>
   </div>
 
   <div class="toolbar-row">
-    <div class="tab-group" role="tablist" aria-label="Unterlagen-Kategorien">
+    <div class="tab-group" role="tablist" [attr.aria-label]="'materials.list.categoriesAria' | translate">
       <button
         class="tab-btn"
         role="tab"
         [class.active]="activeTab() === 'owned'"
         [attr.aria-selected]="activeTab() === 'owned'"
         (click)="setActiveTab('owned')">
-        Eigene
+        {{ 'tabs.owned' | translate }}
         <span class="count">{{ ownedMaterials().length }}</span>
       </button>
       <button
@@ -30,7 +30,7 @@
         [class.active]="activeTab() === 'co-authored'"
         [attr.aria-selected]="activeTab() === 'co-authored'"
         (click)="setActiveTab('co-authored')">
-        Mit-Autor
+        {{ 'tabs.coAuthored' | translate }}
         <span class="count">{{ coAuthoredMaterials().length }}</span>
       </button>
       <button
@@ -39,37 +39,37 @@
         [class.active]="activeTab() === 'public'"
         [attr.aria-selected]="activeTab() === 'public'"
         (click)="setActiveTab('public')">
-        Öffentlich
+        {{ 'tabs.public' | translate }}
         <span class="count">{{ publicMaterials().length }}</span>
       </button>
     </div>
 
     <div class="toolbar-pill">
-      <span class="pill">{{ activeTab() === 'owned' ? 'Eigene Unterlagen' : activeTab() === 'co-authored' ? 'Mit-Autor' : 'Öffentliche Unterlagen' }}</span>
+      <span class="pill">{{ (activeTab() === 'owned' ? 'materials.list.pill.owned' : activeTab() === 'co-authored' ? 'materials.list.pill.coAuthored' : 'materials.list.pill.public') | translate }}</span>
     </div>
 
     <!-- Join by Code Modal -->
     <div class="join-wrapper">
       <input type="checkbox" id="join-toggle" class="join-toggle" />
-      <label for="join-toggle" class="btn btn-secondary join-btn">Mit Code beitreten</label>
+      <label for="join-toggle" class="btn btn-secondary join-btn">{{ 'join.joinWithCode' | translate }}</label>
 
       <div class="join-modal">
         <div class="join-card">
-          <h3>Unterlage per Code beitreten</h3>
-          <p>Gib den Unterlagen-Code ein, um beizutreten.</p>
+          <h3>{{ 'join.material.title' | translate }}</h3>
+          <p>{{ 'join.material.subtitle' | translate }}</p>
           <input type="text"
-                 placeholder="ABCD-1234"
+                 [placeholder]="'join.codePlaceholder' | translate"
                  class="join-input"
-                 aria-label="Beitritts-Code"
+                 [attr.aria-label]="'join.material.ariaLabel' | translate"
                  [value]="joinCode()"
                  (input)="joinCode.set($any($event.target).value)" />
           <div class="join-error" *ngIf="joinError()">{{ joinError() }}</div>
           <div class="join-actions">
-            <label for="join-toggle" class="btn btn-secondary">Abbrechen</label>
+            <label for="join-toggle" class="btn btn-secondary">{{ 'common.cancel' | translate }}</label>
             <button class="btn btn-primary" type="button"
                     [disabled]="joinBusy()"
                     (click)="joinByCode()">
-              {{ joinBusy() ? 'Beitreten...' : 'Beitreten' }}
+              {{ joinBusy() ? ('join.joining' | translate) : ('join.join' | translate) }}
             </button>
           </div>
         </div>
@@ -82,21 +82,21 @@
       icon: 'svg',
       iconContent: '<path d=\'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\'/><polyline points=\'14 2 14 8 20 8\'/>',
       value: displayedMaterialCount(),
-      label: 'Unterlagen'
+      label: ('nav.materials' | translate)
     }" />
 
     <app-stat-card [config]="{
       icon: 'svg',
       iconContent: '<path d=\'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\'/><polyline points=\'17 8 12 3 7 8\'/><line x1=\'12\' y1=\'3\' x2=\'12\' y2=\'15\'/>',
       value: totalContentSize(),
-      label: 'Gesamtgröße'
+      label: ('materials.list.totalSize' | translate)
     }" />
 
     <app-stat-card [config]="{
       icon: 'svg',
       iconContent: '<path d=\'M22 11.08V12a10 10 0 1 1-5.93-9.14\'/><polyline points=\'22 4 12 14.01 9 11.01\'/>',
       value: latestUpdatedDate() ? formatDate(latestUpdatedDate()!) : '—',
-      label: 'Zuletzt aktualisiert'
+      label: ('common.lastUpdated' | translate)
     }" />
   </div>
 
@@ -104,8 +104,8 @@
     <app-search-bar
       [searchTerm]="currentSearchTerm()"
       [resultCount]="displayedMaterials().length"
-      [placeholder]="searchPlaceholder()"
-      [ariaLabel]="'Unterlagen durchsuchen'"
+      [placeholder]="searchPlaceholder() | translate"
+      [ariaLabel]="'materials.list.searchAria' | translate"
       (searchChange)="onSearch($event)"
       (clear)="clearSearch()" />
   }
@@ -123,7 +123,7 @@
         <line x1="12" y1="8" x2="12" y2="12" />
         <line x1="12" y1="16" x2="12.01" y2="16" />
       </svg>
-      <h2>Fehler beim Laden</h2>
+      <h2>{{ 'errors.loadingFailed' | translate }}</h2>
       <p>{{ error() }}</p>
     </div>
   } @else {
@@ -134,15 +134,15 @@
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
             <polyline points="14 2 14 8 20 8"/>
           </svg>
-          <h2>Keine Unterlagen gefunden</h2>
+          <h2>{{ 'materials.noMaterials' | translate }}</h2>
           <p *ngIf="activeTab() === 'owned'">
-            {{ currentSearchTerm().trim() ? 'Keine eigene Unterlage passt zu deiner Suche.' : 'Du hast noch keine Unterlagen erstellt. Lege mit "Neue Unterlage erstellen" los.' }}
+            {{ (currentSearchTerm().trim() ? 'materials.list.empty.owned.search' : 'materials.list.empty.owned.none') | translate }}
           </p>
           <p *ngIf="activeTab() === 'co-authored'">
-            {{ currentSearchTerm().trim() ? 'Keine Mit-Autor Unterlage passt zu deiner Suche.' : 'Du wurdest noch bei keiner Unterlage als Mit-Autor hinzugefügt.' }}
+            {{ (currentSearchTerm().trim() ? 'materials.list.empty.coAuthored.search' : 'materials.list.empty.coAuthored.none') | translate }}
           </p>
           <p *ngIf="activeTab() === 'public'">
-            {{ publicSearchTerm().trim() ? 'Keine öffentliche Unterlage passt zu deiner Suche.' : 'Es gibt noch keine öffentlichen Unterlagen.' }}
+            {{ (publicSearchTerm().trim() ? 'materials.list.empty.public.search' : 'materials.list.empty.public.none') | translate }}
           </p>
         </div>
       } @else {
@@ -162,13 +162,13 @@
                   <div class="badge-row">
                     <app-badge [config]="{
                       variant: material.visibility === 'public' ? 'public' : material.visibility === 'unlisted' ? 'unlisted' : 'private',
-                      label: material.visibility === 'public' ? 'Öffentlich' : material.visibility === 'unlisted' ? 'Nicht gelistet' : 'Privat'
+                      label: material.visibility === 'public' ? ('quiz.visibility.public' | translate) : material.visibility === 'unlisted' ? ('quiz.visibility.unlisted' | translate) : ('quiz.visibility.private' | translate)
                     }" />
                     @if (material.visibility === 'unlisted' && material.joinCode && (isOwner(material) || isCoAuthor(material))) {
                       <button
                         class="btn-icon copy-code-btn"
                         (click)="copyJoinCode(material); $event.stopPropagation()"
-                        [title]="'Code kopieren: ' + material.joinCode">
+                        [title]="'materials.list.copyCodeTitle' | translate:{ code: material.joinCode }">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                           <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                           <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
@@ -194,7 +194,7 @@
                   </svg>
                 </div>
                 <div class="meta-copy">
-                  <span class="meta-label">Größe</span>
+                  <span class="meta-label">{{ 'materials.list.size' | translate }}</span>
                   <span class="meta-value">{{ formatBytes(material.contentSize) }}</span>
                 </div>
               </div>
@@ -207,7 +207,7 @@
                   </svg>
                 </div>
                 <div class="meta-copy">
-                  <span class="meta-label">Aktualisiert</span>
+                  <span class="meta-label">{{ 'common.updated' | translate }}</span>
                   <span class="meta-value">{{ formatDate(material.updatedAt) }}</span>
                 </div>
               </div>
@@ -220,16 +220,16 @@
                   </svg>
                 </div>
                 <div class="meta-copy">
-                  <span class="meta-label">Zugriff</span>
+                  <span class="meta-label">{{ 'common.access' | translate }}</span>
                   <span class="meta-value">
                     @if (requiresEnrollment(material)) {
-                      Anmeldung nötig
+                      {{ 'access.enrollmentRequired' | translate }}
                     } @else if (isOwner(material)) {
-                      Besitzer
+                      {{ 'quiz.roles.owner' | translate }}
                     } @else if (isCoAuthor(material)) {
-                      Mit-Autor
+                      {{ 'quiz.roles.coAuthor' | translate }}
                     } @else {
-                      Direkt verfügbar
+                      {{ 'access.directAvailable' | translate }}
                     }
                   </span>
                 </div>
@@ -243,9 +243,9 @@
                   [disabled]="isEnrollmentBusy(material.id)"
                   (click)="enrollInMaterial(material)">
                   @if (isEnrolling(material.id)) {
-                    Wird hinzugefügt...
+                    {{ 'common.adding' | translate }}
                   } @else {
-                    Hinzufügen
+                    {{ 'common.add' | translate }}
                   }
                 </button>
               }
@@ -256,9 +256,9 @@
                   [disabled]="isEnrollmentBusy(material.id)"
                   (click)="unenrollFromMaterial(material)">
                   @if (isUnenrolling(material.id)) {
-                    Entferne...
+                    {{ 'common.removing' | translate }}
                   } @else {
-                    Entfernen
+                    {{ 'common.remove' | translate }}
                   }
                 </button>
               }
@@ -267,18 +267,18 @@
                 class="btn btn-primary btn-small"
                 [disabled]="(requiresEnrollment(material) && !isEnrolled(material.id)) || isEnrollmentBusy(material.id)"
                 (click)="viewMaterial(material.id)">
-                Anzeigen
+                {{ 'materials.viewMaterial' | translate }}
               </button>
 
               @if (canEdit(material)) {
                 <button class="btn btn-secondary btn-small" (click)="editMaterial(material.id)">
-                  Bearbeiten
+                  {{ 'common.edit' | translate }}
                 </button>
               }
 
               @if (isOwner(material)) {
                 <button class="btn btn-danger btn-small" (click)="deleteMaterial(material)">
-                  Löschen
+                  {{ 'common.delete' | translate }}
                 </button>
               }
             </div>
@@ -292,11 +292,11 @@
     <div class="fab-menu">
       <a class="fab-item" (click)="$event.preventDefault(); createNewMaterial(); toggleFab()">
         <span class="icon-circle">+</span>
-        <span class="label">Neue Unterlage</span>
+        <span class="label">{{ 'materials.newMaterial' | translate }}</span>
       </a>
       <a class="fab-item" routerLink="/lernen/deck-editor/new" (click)="toggleFab()">
         <span class="icon-circle">🗂️</span>
-        <span class="label">Neues Deck</span>
+        <span class="label">{{ 'lernen.newDeck' | translate }}</span>
       </a>
     </div>
 
@@ -304,7 +304,7 @@
             type="button"
             (click)="toggleFab()"
             [attr.aria-expanded]="fabOpen()"
-            aria-label="Erstellen-Menü öffnen"
+            [attr.aria-label]="'lernen.openCreateMenu' | translate"
             aria-haspopup="menu">
       <span class="fab-lines" aria-hidden="true"></span>
     </button>

@@ -2,6 +2,7 @@ import { Component, inject, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { trigger, transition, style, animate, query, group } from '@angular/animations';
+import { TranslateModule } from '@ngx-translate/core';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { ToastComponent } from './shared/components/toast/toast.component';
 import { PwaInstallPromptComponent } from './shared/components/pwa-install-prompt/pwa-install-prompt.component';
@@ -24,6 +25,7 @@ const ROUTE_SLIDE_DISTANCE_PX = 24;
   imports: [
     CommonModule,
     RouterOutlet,
+    TranslateModule,
     HeaderComponent,
     ToastComponent,
     PwaInstallPromptComponent,

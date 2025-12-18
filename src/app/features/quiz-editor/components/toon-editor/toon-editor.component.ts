@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, AfterViewInit, ElementRef, ViewChild, signal, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { EditorView } from '@codemirror/view';
 import { EditorState, StateEffect } from '@codemirror/state';
 import { foldAll, unfoldAll } from '@codemirror/language';
@@ -12,7 +13,7 @@ import { ToonParser } from '../../../../shared/utils/toon-parser';
 @Component({
   selector: 'app-toon-editor',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './toon-editor.component.html',
   styleUrls: ['./toon-editor.component.scss']
 })

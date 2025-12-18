@@ -1,4 +1,4 @@
-<div class="mode-switch" role="tablist" aria-label="App Mode">
+<div class="mode-switch" role="tablist" [attr.aria-label]="'mode.ariaLabel' | translate">
   <button
     role="tab"
     class="mode-option"
@@ -11,7 +11,7 @@
       <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
       <line x1="12" y1="17" x2="12.01" y2="17"/>
     </svg>
-    Quiz
+    {{ 'quiz.title' | translate }}
   </button>
   <button
     role="tab"
@@ -24,7 +24,7 @@
       <rect x="2" y="7" width="20" height="14" rx="2"/>
       <path d="M2 11h20"/>
     </svg>
-    Lernen
+    {{ 'lernen.title' | translate }}
   </button>
   <div class="slider" [class.lernen]="isLernenMode()"></div>
 </div>

@@ -3,13 +3,13 @@
     <!-- Front Side (Question) -->
     <div class="flashcard-face flashcard-front">
       <div class="face-content">
-        <div class="card-label">Frage</div>
+        <div class="card-label">{{ 'quiz.question' | translate }}</div>
         <div class="question-text">{{ question.questionText }}</div>
         <div class="tap-hint">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 19V5M5 12l7-7 7 7"/>
           </svg>
-          Tippen zum Umdrehen
+          {{ 'flashcard.tapToFlip' | translate }}
         </div>
       </div>
     </div>
@@ -17,7 +17,7 @@
     <!-- Back Side (Answer) -->
     <div class="flashcard-face flashcard-back">
       <div class="face-content">
-        <div class="card-label">Antwort</div>
+        <div class="card-label">{{ 'quiz.answer' | translate }}</div>
         <div class="answer-text">{{ getCorrectAnswer() }}</div>
       </div>
     </div>
@@ -33,7 +33,7 @@
           <line x1="18" y1="6" x2="6" y2="18"/>
           <line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
-        Nochmal üben
+        {{ 'flashcard.practiceAgain' | translate }}
       </button>
 
       <button
@@ -42,7 +42,7 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="20 6 9 17 4 12"/>
         </svg>
-        Gewusst
+        {{ 'flashcard.known' | translate }}
       </button>
     </div>
   }
@@ -54,13 +54,13 @@
           <line x1="18" y1="6" x2="6" y2="18"/>
           <line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
-        <span>Nochmal</span>
+        <span>{{ 'flashcard.again' | translate }}</span>
       </div>
       <div class="indicator indicator-right">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="20 6 9 17 4 12"/>
         </svg>
-        <span>Gewusst</span>
+        <span>{{ 'flashcard.known' | translate }}</span>
       </div>
     </div>
   }

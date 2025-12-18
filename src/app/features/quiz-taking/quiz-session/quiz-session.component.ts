@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TranslateModule } from '@ngx-translate/core';
 import { FirestoreService } from '../../../core/services/firestore.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { ProgressService } from '../../../core/services/progress.service';
@@ -30,6 +31,7 @@ interface QuestionWithProgress {
   standalone: true,
   imports: [
     CommonModule,
+    TranslateModule,
     StatCardComponent,
     MultipleChoiceComponent,
     OrderingQuestionComponent,

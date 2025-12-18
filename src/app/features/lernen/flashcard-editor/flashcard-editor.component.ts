@@ -4,6 +4,7 @@ import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray, FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { TranslateModule } from '@ngx-translate/core';
 import { FlashcardDeckService } from '../../../core/services/flashcard-deck.service';
 import { FlashcardService } from '../../../core/services/flashcard.service';
 import { FlashcardProgressService } from '../../../core/services/flashcard-progress.service';
@@ -29,7 +30,7 @@ interface CardFormData {
 @Component({
   selector: 'app-flashcard-editor',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, FormsModule, DragDropModule, ImportDialogComponent],
+  imports: [CommonModule, RouterModule, TranslateModule, ReactiveFormsModule, FormsModule, DragDropModule, ImportDialogComponent],
   templateUrl: './flashcard-editor.component.html',
   styleUrls: ['./flashcard-editor.component.scss']
 })

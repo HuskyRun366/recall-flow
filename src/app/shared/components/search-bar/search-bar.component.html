@@ -15,13 +15,13 @@
         type="button"
         class="clear-btn"
         (click)="onClear()">
-        Zurücksetzen
+        {{ 'common.reset' | translate }}
       </button>
     }
   </div>
   @if (showResultCount()) {
     <div class="result-count">
-      {{ resultCount() }} Ergebnis{{ resultCount() === 1 ? '' : 'se' }}
+      {{ resultCount() }} {{ (resultCount() === 1 ? 'common.result' : 'common.results') | translate }}
     </div>
   }
 </div>

@@ -25,7 +25,7 @@
           [disabled]="disabled || submitted()"
           [value]="selections().get(pair.id) || ''"
           (change)="selectChoice(pair.id, $any($event.target).value)">
-          <option value="" disabled>Bitte wählen</option>
+          <option value="" disabled>{{ 'quizSession.matching.pleaseSelect' | translate }}</option>
           <option *ngFor="let choice of question.matchingChoices || []" [value]="choice.id">
             {{ choice.text }}
           </option>
@@ -40,13 +40,13 @@
 
   <div class="submit-area" *ngIf="!submitted()">
     <button class="btn btn-primary gradient" [disabled]="isSelectionMissing()" (click)="submitAnswer()">
-      Submit Answer
+      {{ 'quizSession.actions.submitAnswer' | translate }}
     </button>
   </div>
 
   <div class="result" *ngIf="showResult">
     <div class="correct-pairs" *ngIf="!resultCorrect()">
-      <p class="label">Richtige Zuordnung</p>
+      <p class="label">{{ 'quizSession.matching.correctMatching' | translate }}</p>
       <div class="pill" *ngFor="let opt of question.matchingPairs">
         <span class="dot" [class.correct-dot]="isPairCorrect(opt.id)"></span>
         <span class="text" [class.correct-text]="isPairCorrect(opt.id)">{{ opt.leftText }}</span>

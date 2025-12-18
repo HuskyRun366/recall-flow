@@ -2,6 +2,7 @@ import { Component, OnInit, signal, computed, inject, DestroyRef, HostListener, 
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TranslateModule } from '@ngx-translate/core';
 import { FlashcardDeckService } from '../../../core/services/flashcard-deck.service';
 import { FlashcardService } from '../../../core/services/flashcard.service';
 import { FlashcardProgressService } from '../../../core/services/flashcard-progress.service';
@@ -21,7 +22,7 @@ interface FlashcardWithProgress {
 @Component({
   selector: 'app-flashcard-session',
   standalone: true,
-  imports: [CommonModule, RouterModule, StatCardComponent, FlashcardComponent],
+  imports: [CommonModule, RouterModule, TranslateModule, StatCardComponent, FlashcardComponent],
   templateUrl: './flashcard-session.component.html',
   styleUrls: ['./flashcard-session.component.scss']
 })

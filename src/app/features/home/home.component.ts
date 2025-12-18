@@ -2,6 +2,7 @@ import { Component, OnInit, signal, computed, inject, DestroyRef } from '@angula
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TranslateModule } from '@ngx-translate/core';
 import { FirestoreService } from '../../core/services/firestore.service';
 import { ProgressService } from '../../core/services/progress.service';
 import { ParticipantService } from '../../core/services/participant.service';
@@ -25,7 +26,7 @@ interface QuizWithProgress {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, SkeletonLoaderComponent, StatCardComponent],
+  imports: [CommonModule, RouterModule, TranslateModule, SkeletonLoaderComponent, StatCardComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })

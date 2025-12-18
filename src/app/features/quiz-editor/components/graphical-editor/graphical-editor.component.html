@@ -2,65 +2,65 @@
   <!-- Sidebar with question list -->
   <div class="sidebar" id="settings">
     <div class="sidebar-header">
-      <h3>Quiz Settings</h3>
-      <p class="sidebar-subtitle">Grunddaten & Fragenübersicht</p>
+      <h3>{{ 'quiz.editor.graphical.settingsTitle' | translate }}</h3>
+      <p class="sidebar-subtitle">{{ 'quiz.editor.graphical.settingsSubtitle' | translate }}</p>
     </div>
 
     <div class="quiz-metadata">
 
       <div class="form-group">
-        <label>Title</label>
+        <label>{{ 'common.title' | translate }}</label>
         <input
           type="text"
           name="quizTitle"
           autocomplete="off"
           [(ngModel)]="quiz.title"
           (ngModelChange)="updateQuizMetadata('title', $event)"
-          placeholder="Quiz Title">
+          [placeholder]="'quiz.editor.graphical.placeholders.title' | translate">
       </div>
 
       <div class="form-group">
-        <label>Description</label>
+        <label>{{ 'common.description' | translate }}</label>
         <textarea
           name="quizDescription"
           autocomplete="off"
           [(ngModel)]="quiz.description"
           (ngModelChange)="updateQuizMetadata('description', $event)"
-          placeholder="Quiz Description"
+          [placeholder]="'quiz.editor.graphical.placeholders.description' | translate"
           rows="3"></textarea>
       </div>
 
       <div class="form-group">
-        <label>Visibility</label>
+        <label>{{ 'common.visibility' | translate }}</label>
         <select
           name="quizVisibility"
           [value]="quiz.visibility || 'private'"
           [disabled]="!isOwner"
           (change)="updateQuizMetadata('visibility', $any($event.target).value)">
-          <option value="private">Private</option>
-          <option value="public">Public</option>
-          <option value="unlisted">Unlisted</option>
+          <option value="private">{{ 'quiz.visibility.private' | translate }}</option>
+          <option value="public">{{ 'quiz.visibility.public' | translate }}</option>
+          <option value="unlisted">{{ 'quiz.visibility.unlisted' | translate }}</option>
         </select>
       </div>
 
       <div class="coauthor-card">
         <div class="coauthor-header">
           <div>
-            <p class="eyebrow">Co-Authors</p>
-            <h4>Mitarbeitende hinzufügen</h4>
+            <p class="eyebrow">{{ 'common.coAuthors' | translate }}</p>
+            <h4>{{ 'common.addCollaborators' | translate }}</h4>
           </div>
-          <span class="pill">Optional</span>
+          <span class="pill">{{ 'common.optional' | translate }}</span>
         </div>
 
         <div class="coauthor-input">
-          <label for="coAuthors">E-Mails (Komma oder Zeilen getrennt)</label>
+          <label for="coAuthors">{{ 'common.coAuthorsHint' | translate }}</label>
           <textarea id="coAuthors" name="coAuthors"
             [value]="coAuthors.join(', ')"
             [disabled]="!isOwner"
             (input)="onCoAuthorInput($any($event.target).value)"
             rows="2"
-            placeholder="anna@example.com, max@example.com"></textarea>
-          <small>Co-Authors dürfen bearbeiten, aber nicht löschen.</small>
+            [placeholder]="'common.coAuthorsPlaceholder' | translate"></textarea>
+          <small>{{ 'common.coAuthorsNote' | translate }}</small>
         </div>
 
         <div class="coauthor-list" *ngIf="coAuthors?.length">
@@ -70,15 +70,15 @@
     </div>
 
     <div class="sidebar-header" id="questions">
-      <h3>Questions ({{ questions.length }})</h3>
+      <h3>{{ 'quiz.editor.graphical.questionsTitle' | translate }} ({{ questions.length }})</h3>
       <div class="add-buttons">
-        <button class="btn btn-small btn-primary" (click)="addQuestion('multiple-choice')" title="Add Multiple Choice">
+        <button class="btn btn-small btn-primary" (click)="addQuestion('multiple-choice')" [title]="'quiz.editor.graphical.addMultipleChoice' | translate">
           + MC
         </button>
-        <button class="btn btn-small btn-primary" (click)="addQuestion('ordering')" title="Add Ordering">
+        <button class="btn btn-small btn-primary" (click)="addQuestion('ordering')" [title]="'quiz.editor.graphical.addOrdering' | translate">
           + Order
         </button>
-        <button class="btn btn-small btn-primary" (click)="addQuestion('matching')" title="Add Matching">
+        <button class="btn btn-small btn-primary" (click)="addQuestion('matching')" [title]="'quiz.editor.graphical.addMatching' | translate">
           + Match
         </button>
       </div>
@@ -98,16 +98,16 @@
         </div>
         <div class="question-text">{{ question.questionText }}</div>
         <div class="question-actions">
-          <button class="icon-btn" (click)="moveQuestion(i, 'up'); $event.stopPropagation()" [disabled]="i === 0" title="Move Up">↑</button>
-          <button class="icon-btn" (click)="moveQuestion(i, 'down'); $event.stopPropagation()" [disabled]="i === questions.length - 1" title="Move Down">↓</button>
-          <button class="icon-btn delete" (click)="deleteQuestion(i); $event.stopPropagation()" title="Delete">×</button>
+          <button class="icon-btn" (click)="moveQuestion(i, 'up'); $event.stopPropagation()" [disabled]="i === 0" [title]="'common.moveUp' | translate">↑</button>
+          <button class="icon-btn" (click)="moveQuestion(i, 'down'); $event.stopPropagation()" [disabled]="i === questions.length - 1" [title]="'common.moveDown' | translate">↓</button>
+          <button class="icon-btn delete" (click)="deleteQuestion(i); $event.stopPropagation()" [title]="'common.delete' | translate">×</button>
         </div>
       </div>
 
       <div class="empty-state" *ngIf="questions.length === 0">
         <div class="empty-badge">+</div>
-        <p>No questions yet</p>
-        <p class="hint">Click + MC or + Order to add questions</p>
+        <p>{{ 'quiz.editor.graphical.empty.title' | translate }}</p>
+        <p class="hint">{{ 'quiz.editor.graphical.empty.hint' | translate }}</p>
       </div>
     </div>
   </div>
@@ -117,41 +117,47 @@
     <div class="editor-empty" *ngIf="selectedQuestionIndex() === null">
       <div class="empty-content">
         <div class="empty-icon">?</div>
-        <h2>Select a question to edit</h2>
-        <p>Or create a new question using the + buttons</p>
+        <h2>{{ 'quiz.editor.graphical.noSelection.title' | translate }}</h2>
+        <p>{{ 'quiz.editor.graphical.noSelection.hint' | translate }}</p>
       </div>
     </div>
 
     <div class="question-editor" *ngIf="selectedQuestionIndex() !== null && questions[selectedQuestionIndex()!] as question">
       <div class="editor-header">
         <div>
-          <div class="breadcrumb">Quiz · Frage {{ selectedQuestionIndex()! + 1 }}</div>
-          <h2>Question {{ selectedQuestionIndex()! + 1 }}</h2>
+          <div class="breadcrumb">{{ 'quiz.editor.graphical.breadcrumb' | translate:{ number: (selectedQuestionIndex()! + 1) } }}</div>
+          <h2>{{ 'quiz.editor.graphical.questionTitle' | translate:{ number: (selectedQuestionIndex()! + 1) } }}</h2>
         </div>
         <div class="meta-chips">
           <span class="chip chip-primary">
-            {{ question.type === 'multiple-choice' ? 'Multiple Choice' : question.type === 'ordering' ? 'Ordering' : 'Matching' }}
+            {{ (question.type === 'multiple-choice' ? 'quiz.questionTypes.multipleChoice' : question.type === 'ordering' ? 'quiz.questionTypes.ordering' : 'quiz.questionTypes.matching') | translate }}
           </span>
-          <span class="chip chip-soft">{{ (question.questionText || 'Neue Frage').slice(0, 32) || 'Neue Frage' }}</span>
+          <span class="chip chip-soft">
+            @if (question.questionText) {
+              {{ question.questionText | slice:0:32 }}
+            } @else {
+              {{ 'quiz.editor.graphical.newQuestion' | translate }}
+            }
+          </span>
         </div>
       </div>
 
       <!-- Common fields -->
       <div class="form-group">
-        <label>Question Text</label>
+        <label>{{ 'quiz.editor.graphical.fields.questionText' | translate }}</label>
         <textarea
           [attr.name]="'questionText_' + selectedQuestionIndex()"
           [value]="question.questionText"
           (input)="updateQuestion(selectedQuestionIndex()!, 'questionText', $any($event.target).value)"
-          placeholder="Enter your question"
+          [placeholder]="'quiz.editor.graphical.placeholders.questionText' | translate"
           rows="2"></textarea>
       </div>
 
       <!-- Multiple Choice Options -->
       <div *ngIf="question.type === 'multiple-choice'" class="options-section">
         <div class="section-header">
-          <h3>Options</h3>
-          <button class="btn btn-small" (click)="addOption(selectedQuestionIndex()!)">+ Add Option</button>
+          <h3>{{ 'quiz.editor.graphical.multipleChoice.optionsTitle' | translate }}</h3>
+          <button class="btn btn-small" (click)="addOption(selectedQuestionIndex()!)">{{ 'quiz.editor.graphical.multipleChoice.addOption' | translate }}</button>
         </div>
 
         <div class="options-list">
@@ -159,7 +165,7 @@
             *ngFor="let option of $any(question).options; let j = index; trackBy: trackByOption"
             class="option-item">
             <div class="option-header">
-              <span class="option-label">Option {{ j + 1 }}</span>
+              <span class="option-label">{{ 'quiz.editor.graphical.multipleChoice.optionLabel' | translate:{ number: (j + 1) } }}</span>
               <button class="icon-btn delete" (click)="deleteOption(selectedQuestionIndex()!, j)">×</button>
             </div>
             <input
@@ -167,14 +173,14 @@
               [attr.name]="'option_' + selectedQuestionIndex() + '_' + j"
               [value]="option.text"
               (input)="updateOption(selectedQuestionIndex()!, j, 'text', $any($event.target).value)"
-              placeholder="Option text">
+              [placeholder]="'quiz.editor.graphical.multipleChoice.placeholders.optionText' | translate">
             <label class="checkbox-label">
               <input
                 type="checkbox"
                 [attr.name]="'optionCorrect_' + selectedQuestionIndex() + '_' + j"
                 [checked]="option.isCorrect"
                 (change)="updateOption(selectedQuestionIndex()!, j, 'isCorrect', $any($event.target).checked)">
-              <span id="correct-answer-text">Correct Answer</span>
+              <span id="correct-answer-text">{{ 'quiz.editor.graphical.multipleChoice.correctAnswer' | translate }}</span>
             </label>
           </div>
         </div>
@@ -183,8 +189,8 @@
       <!-- Ordering Items -->
       <div *ngIf="question.type === 'ordering'" class="ordering-section">
         <div class="section-header">
-          <h3>Items (Correct Order)</h3>
-          <button class="btn btn-small" (click)="addOrderItem(selectedQuestionIndex()!)">+ Add Item</button>
+          <h3>{{ 'quiz.editor.graphical.ordering.itemsTitle' | translate }}</h3>
+          <button class="btn btn-small" (click)="addOrderItem(selectedQuestionIndex()!)">{{ 'quiz.editor.graphical.ordering.addItem' | translate }}</button>
         </div>
 
         <div class="ordering-list">
@@ -204,7 +210,7 @@
               [attr.name]="'orderItem_' + selectedQuestionIndex() + '_' + j"
               [value]="item.text"
               (input)="updateOrderItem(selectedQuestionIndex()!, j, 'text', $any($event.target).value)"
-              placeholder="Item text">
+              [placeholder]="'quiz.editor.graphical.ordering.placeholders.itemText' | translate">
           </div>
         </div>
       </div>
@@ -212,14 +218,14 @@
       <!-- Matching Question -->
       <div *ngIf="question.type === 'matching'" class="matching-section">
         <div class="section-header">
-          <h3>Auswahloptionen (Dropdown)</h3>
-          <button class="btn btn-small" (click)="addMatchingChoice(selectedQuestionIndex()!)">+ Option</button>
+          <h3>{{ 'quiz.editor.graphical.matching.choicesTitle' | translate }}</h3>
+          <button class="btn btn-small" (click)="addMatchingChoice(selectedQuestionIndex()!)">{{ 'quiz.editor.graphical.matching.addChoice' | translate }}</button>
         </div>
 
         <div class="options-list matching-choices">
           <div *ngFor="let choice of $any(question).matchingChoices; trackBy: trackByMatchingChoice" class="matching-choice">
             <div class="option-header">
-              <span class="option-label">Option</span>
+              <span class="option-label">{{ 'quiz.editor.graphical.matching.choiceLabel' | translate }}</span>
               <button class="icon-btn delete" (click)="deleteMatchingChoice(selectedQuestionIndex()!, choice.id)">×</button>
             </div>
             <input
@@ -227,28 +233,28 @@
               [attr.name]="'matchingChoice_' + selectedQuestionIndex() + '_' + choice.id"
               [value]="choice.text"
               (input)="updateMatchingChoice(selectedQuestionIndex()!, choice.id, $any($event.target).value)"
-              placeholder="Optionstext">
+              [placeholder]="'quiz.editor.graphical.matching.placeholders.choiceText' | translate">
           </div>
         </div>
 
         <div class="section-header mt-24">
-          <h3>Paare (links · korrekte Auswahl)</h3>
-          <button class="btn btn-small" (click)="addMatchingPair(selectedQuestionIndex()!)">+ Paar</button>
+          <h3>{{ 'quiz.editor.graphical.matching.pairsTitle' | translate }}</h3>
+          <button class="btn btn-small" (click)="addMatchingPair(selectedQuestionIndex()!)">{{ 'quiz.editor.graphical.matching.addPair' | translate }}</button>
         </div>
 
         <div class="matching-pairs">
           <div *ngFor="let pair of $any(question).matchingPairs; trackBy: trackByMatchingPair" class="pair-row">
             <div class="pair-left">
-              <label>Linker Text</label>
+              <label>{{ 'quiz.editor.graphical.matching.leftTextLabel' | translate }}</label>
               <input
                 type="text"
                 [attr.name]="'pair_left_' + selectedQuestionIndex() + '_' + pair.id"
                 [value]="pair.leftText"
                 (input)="updateMatchingPairText(selectedQuestionIndex()!, pair.id, $any($event.target).value)"
-                placeholder="Zuordnungs-Text">
+                [placeholder]="'quiz.editor.graphical.matching.placeholders.leftText' | translate">
             </div>
             <div class="pair-right">
-              <label>Korrekter Dropdown-Wert</label>
+              <label>{{ 'quiz.editor.graphical.matching.correctChoiceLabel' | translate }}</label>
               <select
                 [attr.name]="'pair_choice_' + selectedQuestionIndex() + '_' + pair.id"
                 [(ngModel)]="pair.correctChoiceId"
@@ -259,7 +265,7 @@
                 </option>
               </select>
             </div>
-            <button class="icon-btn delete pair-delete" (click)="deleteMatchingPair(selectedQuestionIndex()!, pair.id)" title="Paar löschen">×</button>
+            <button class="icon-btn delete pair-delete" (click)="deleteMatchingPair(selectedQuestionIndex()!, pair.id)" [title]="'quiz.editor.graphical.matching.deletePairTitle' | translate">×</button>
           </div>
         </div>
       </div>

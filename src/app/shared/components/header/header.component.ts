@@ -1,19 +1,28 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { A11yModule } from '@angular/cdk/a11y';
+import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { ModeService } from '../../../core/services/mode.service';
 import { UpdatesService } from '../../../core/services/updates.service';
 import { NetworkStatusComponent } from '../network-status/network-status.component';
 import { ModeSwitchComponent } from '../mode-switch/mode-switch.component';
-import { signal } from '@angular/core';
+import { LanguageSwitcherComponent } from '../language-switcher/language-switcher.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule, A11yModule, NetworkStatusComponent, ModeSwitchComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    A11yModule,
+    TranslateModule,
+    NetworkStatusComponent,
+    ModeSwitchComponent,
+    LanguageSwitcherComponent
+  ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })

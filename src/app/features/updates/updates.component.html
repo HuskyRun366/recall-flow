@@ -1,7 +1,7 @@
 <div class="updates-page">
   <div class="page-header">
-    <h1>📣 Updates & Changelog</h1>
-    <p class="subtitle">Alle Neuigkeiten und Änderungen an RecallFlow</p>
+    <h1>📣 {{ 'updates.title' | translate }}</h1>
+    <p class="subtitle">{{ 'updates.subtitle' | translate }}</p>
   </div>
 
   <div class="changelog-timeline">
@@ -28,7 +28,7 @@
             @for (change of entry.changes; track change.text) {
               <div class="change-item" [ngClass]="getTypeClass(change.type)">
                 <span class="change-icon">{{ getTypeIcon(change.type) }}</span>
-                <span class="change-type">{{ getTypeLabel(change.type) }}:</span>
+                <span class="change-type">{{ getTypeLabel(change.type) | translate }}:</span>
                 <span class="change-text">{{ change.text }}</span>
               </div>
             }
@@ -39,6 +39,6 @@
   </div>
 
   <div class="changelog-footer">
-    <p>Diese Liste wird regelmäßig mit neuen Updates aktualisiert.</p>
+    <p>{{ 'updates.footer' | translate }}</p>
   </div>
 </div>

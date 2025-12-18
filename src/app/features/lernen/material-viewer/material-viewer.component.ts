@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, signal, computed, inject, effect } from '
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { TranslateModule } from '@ngx-translate/core';
 import { LearningMaterialService } from '../../../core/services/learning-material.service';
 import { MaterialParticipantService } from '../../../core/services/material-participant.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -13,7 +14,7 @@ import { SkeletonLoaderComponent } from '../../../shared/components/skeleton-loa
 @Component({
   selector: 'app-material-viewer',
   standalone: true,
-  imports: [CommonModule, RouterModule, SkeletonLoaderComponent],
+  imports: [CommonModule, RouterModule, TranslateModule, SkeletonLoaderComponent],
   templateUrl: './material-viewer.component.html',
   styleUrls: ['./material-viewer.component.scss']
 })

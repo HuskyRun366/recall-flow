@@ -1,5 +1,6 @@
 import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { ModeService } from '../../../core/services/mode.service';
 
 /**
@@ -9,7 +10,7 @@ import { ModeService } from '../../../core/services/mode.service';
 @Component({
   selector: 'app-mode-switch',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './mode-switch.component.html',
   styleUrls: ['./mode-switch.component.scss']
 })

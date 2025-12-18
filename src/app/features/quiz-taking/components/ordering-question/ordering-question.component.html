@@ -1,7 +1,7 @@
 <div class="ordering-question">
   <div class="question-text">
     <h3>{{ question.questionText }}</h3>
-    <p class="instruction">Drag the items to arrange them in the correct order</p>
+    <p class="instruction">{{ 'quizSession.ordering.instruction' | translate }}</p>
   </div>
 
   <div class="question-image" *ngIf="question.imageUrl">
@@ -39,18 +39,18 @@
 
   <div class="submit-area" *ngIf="!submitted()">
     <button class="btn btn-primary" (click)="submitAnswer()">
-      Submit Answer
+      {{ 'quizSession.actions.submitAnswer' | translate }}
     </button>
   </div>
 
   <div class="result-message" *ngIf="showResult">
     <div class="message" [class.correct]="isCorrect()" [class.incorrect]="!isCorrect()">
-      <strong>{{ isCorrect() ? 'Perfect!' : 'Nicht ganz' }}</strong>
-      <span *ngIf="!isCorrect()">Sieh dir die richtige Reihenfolge unten an.</span>
+      <strong>{{ isCorrect() ? ('quizSession.ordering.perfect' | translate) : ('quizSession.ordering.notQuite' | translate) }}</strong>
+      <span *ngIf="!isCorrect()">{{ 'quizSession.ordering.reviewCorrectOrder' | translate }}</span>
     </div>
 
     <div class="correct-order" *ngIf="!isCorrect()">
-      <p class="label">Richtige Reihenfolge</p>
+      <p class="label">{{ 'quizSession.ordering.correctOrder' | translate }}</p>
       <div class="pill" *ngFor="let item of correctOrder(); let idx = index">
         <span class="badge">{{ idx + 1 }}</span>
         <span class="text">{{ item.text }}</span>

@@ -2,6 +2,7 @@ import { Component, OnInit, signal, computed, inject, DestroyRef } from '@angula
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FlashcardDeckService } from '../../../core/services/flashcard-deck.service';
 import { FlashcardProgressService } from '../../../core/services/flashcard-progress.service';
 import { DeckParticipantService } from '../../../core/services/deck-participant.service';
@@ -22,7 +23,7 @@ interface DeckWithProgress {
 @Component({
   selector: 'app-lernen-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, SkeletonLoaderComponent, StatCardComponent, ProgressBarComponent],
+  imports: [CommonModule, RouterModule, TranslateModule, SkeletonLoaderComponent, StatCardComponent, ProgressBarComponent],
   templateUrl: './lernen-home.component.html',
   styleUrls: ['./lernen-home.component.scss']
 })
@@ -33,6 +34,7 @@ export class LernenHomeComponent implements OnInit {
   private authService = inject(AuthService);
   private pwaDetection = inject(PwaDetectionService);
   private destroyRef = inject(DestroyRef);
+  private translate = inject(TranslateService);
 
   decksWithProgress = signal<DeckWithProgress[]>([]);
   searchTerm = signal('');

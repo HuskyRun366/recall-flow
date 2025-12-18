@@ -8,21 +8,21 @@
         <app-skeleton-loader type="text" />
       </div>
     </div>
-  } @else if (error()) {
-    <div class="error-state">
+	  } @else if (error()) {
+	    <div class="error-state">
       <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="12" cy="12" r="10" />
         <line x1="12" y1="8" x2="12" y2="12" />
         <line x1="12" y1="16" x2="12.01" y2="16" />
       </svg>
-      <h2>Fehler</h2>
-      <p>{{ error() }}</p>
-      <button class="btn btn-primary" (click)="goBack()">Zurück zur Übersicht</button>
-    </div>
-  } @else if (material()) {
+	      <h2>{{ 'common.error' | translate }}</h2>
+	      <p>{{ error() }}</p>
+	      <button class="btn btn-primary" (click)="goBack()">{{ 'common.backToOverview' | translate }}</button>
+	    </div>
+	  } @else if (material()) {
     <div class="viewer-header" [class.hidden]="isFullscreen()">
       <div class="header-left">
-        <button class="btn btn-icon" (click)="goBack()" aria-label="Zurück">
+	        <button class="btn btn-icon" (click)="goBack()" [attr.aria-label]="'common.back' | translate">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M19 12H5"/>
             <polyline points="12 19 5 12 12 5"/>
@@ -47,64 +47,64 @@
               </svg>
               {{ formatDate(material()!.updatedAt) }}
             </span>
-            @if (material()!.visibility !== 'private') {
-              <span class="badge" [class.badge-public]="material()!.visibility === 'public'" [class.badge-unlisted]="material()!.visibility === 'unlisted'">
-                {{ material()!.visibility === 'public' ? 'Öffentlich' : 'Nicht gelistet' }}
-              </span>
-            }
+	            @if (material()!.visibility !== 'private') {
+	              <span class="badge" [class.badge-public]="material()!.visibility === 'public'" [class.badge-unlisted]="material()!.visibility === 'unlisted'">
+	                {{ material()!.visibility === 'public' ? ('quiz.visibility.public' | translate) : ('quiz.visibility.unlisted' | translate) }}
+	              </span>
+	            }
           </div>
         </div>
       </div>
 
-      <div class="header-actions">
-        @if (material()!.joinCode && isOwner()) {
-          <button class="btn btn-secondary" (click)="copyJoinCode()" title="Beitritts-Code kopieren">
+	      <div class="header-actions">
+	        @if (material()!.joinCode && isOwner()) {
+	          <button class="btn btn-secondary" (click)="copyJoinCode()" [title]="'common.copyCode' | translate">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
               <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
             </svg>
-            Code teilen
-          </button>
-        }
+	            {{ 'join.shareCode' | translate }}
+	          </button>
+	        }
 
-        @if (canEdit()) {
-          <button class="btn btn-secondary" (click)="editMaterial()">
+	        @if (canEdit()) {
+	          <button class="btn btn-secondary" (click)="editMaterial()">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
             </svg>
-            Bearbeiten
-          </button>
-        }
+	            {{ 'common.edit' | translate }}
+	          </button>
+	        }
 
-        <button class="btn btn-primary" (click)="toggleFullscreen()">
-          @if (isFullscreen()) {
+	        <button class="btn btn-primary" (click)="toggleFullscreen()">
+	          @if (isFullscreen()) {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>
             </svg>
-            Beenden
-          } @else {
+	            {{ 'materials.viewer.exitFullscreen' | translate }}
+	          } @else {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
             </svg>
-            Vollbild
-          }
-        </button>
+	            {{ 'materials.viewer.fullscreen' | translate }}
+	          }
+	        </button>
       </div>
     </div>
 
     <div class="material-viewer-container">
       @if (sanitizedContent()) {
-        <iframe
-          class="content-frame"
-          [srcdoc]="sanitizedContent()"
-          sandbox="allow-scripts allow-forms allow-modals allow-popups"
-          title="Lernunterlage"
-        ></iframe>
-      }
+	        <iframe
+	          class="content-frame"
+	          [srcdoc]="sanitizedContent()"
+	          sandbox="allow-scripts allow-forms allow-modals allow-popups"
+	          [title]="'materials.viewer.iframeTitle' | translate"
+	        ></iframe>
+	      }
 
       @if (isFullscreen()) {
-        <button class="exit-fullscreen-btn" (click)="toggleFullscreen()" aria-label="Vollbild beenden">
+	        <button class="exit-fullscreen-btn" (click)="toggleFullscreen()" [attr.aria-label]="'materials.viewer.exitFullscreenAria' | translate">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>
           </svg>

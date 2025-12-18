@@ -1,204 +1,147 @@
 <div class="legal-container">
   <div class="legal-content">
     <div class="legal-header">
-      <a routerLink="/" class="back-link">← Zurück zur App</a>
-      <h1>Datenschutzerklärung</h1>
-      <p class="last-updated">Stand: {{ lastUpdated }}</p>
+      <a routerLink="/" class="back-link">← {{ 'legal.backToApp' | translate }}</a>
+      <h1>{{ 'legal.privacy.title' | translate }}</h1>
+      <p class="last-updated">{{ 'legal.lastUpdated' | translate }}: {{ lastUpdated }}</p>
     </div>
 
     <section>
-      <h2>1. Verantwortlicher</h2>
-      <p>Verantwortlich für die Datenverarbeitung auf dieser Website ist:</p>
+      <h2>{{ 'legal.privacy.s1.title' | translate }}</h2>
+      <p>{{ 'legal.privacy.s1.p1' | translate }}</p>
       <p>
         <strong>{{ contactName }}</strong><br>
-        {{ contactZipCode }}<br>
-        E-Mail: {{ contactEmail }}
+        {{ contactZipCode }} {{ contactCity }}<br>
+        {{ contactCountry }}<br>
+        {{ 'legal.labels.email' | translate }}: {{ contactEmail }}
       </p>
     </section>
 
     <section>
-      <h2>2. Allgemeines zur Datenverarbeitung</h2>
-      <h3>2.1 Umfang der Verarbeitung personenbezogener Daten</h3>
-      <p>
-        Wir verarbeiten personenbezogene Daten unserer Nutzer grundsätzlich nur, soweit dies zur Bereitstellung
-        einer funktionsfähigen Website sowie unserer Inhalte und Leistungen erforderlich ist. Die Verarbeitung
-        personenbezogener Daten unserer Nutzer erfolgt regelmäßig nur nach Einwilligung des Nutzers.
-      </p>
+      <h2>{{ 'legal.privacy.s2.title' | translate }}</h2>
+      <h3>{{ 'legal.privacy.s2.s21.title' | translate }}</h3>
+      <p>{{ 'legal.privacy.s2.s21.p1' | translate }}</p>
 
-      <h3>2.2 Rechtsgrundlage für die Verarbeitung personenbezogener Daten</h3>
-      <p>
-        Soweit wir für Verarbeitungsvorgänge personenbezogener Daten eine Einwilligung der betroffenen Person
-        einholen, dient Art. 6 Abs. 1 lit. a EU-Datenschutzgrundverordnung (DSGVO) als Rechtsgrundlage.
-      </p>
-      <p>
-        Bei der Verarbeitung von personenbezogenen Daten, die zur Erfüllung eines Vertrages erforderlich ist,
-        dient Art. 6 Abs. 1 lit. b DSGVO als Rechtsgrundlage.
-      </p>
-      <p>
-        Soweit eine Verarbeitung personenbezogener Daten zur Erfüllung einer rechtlichen Verpflichtung
-        erforderlich ist, dient Art. 6 Abs. 1 lit. c DSGVO als Rechtsgrundlage.
-      </p>
-      <p>
-        Für den Fall, dass lebenswichtige Interessen der betroffenen Person oder einer anderen natürlichen
-        Person eine Verarbeitung personenbezogener Daten erforderlich machen, dient Art. 6 Abs. 1 lit. d DSGVO
-        als Rechtsgrundlage.
-      </p>
-      <p>
-        Ist die Verarbeitung zur Wahrung eines berechtigten Interesses unseres Unternehmens oder eines Dritten
-        erforderlich und überwiegen die Interessen, Grundrechte und Grundfreiheiten des Betroffenen das
-        erstgenannte Interesse nicht, so dient Art. 6 Abs. 1 lit. f DSGVO als Rechtsgrundlage für die Verarbeitung.
-      </p>
+      <h3>{{ 'legal.privacy.s2.s22.title' | translate }}</h3>
+      <p>{{ 'legal.privacy.s2.s22.p1' | translate }}</p>
+      <p>{{ 'legal.privacy.s2.s22.p2' | translate }}</p>
+      <p>{{ 'legal.privacy.s2.s22.p3' | translate }}</p>
+      <p>{{ 'legal.privacy.s2.s22.p4' | translate }}</p>
+      <p>{{ 'legal.privacy.s2.s22.p5' | translate }}</p>
     </section>
 
     <section>
-      <h2>3. Datenerfassung auf dieser Website</h2>
+      <h2>{{ 'legal.privacy.s3.title' | translate }}</h2>
 
-      <h3>3.1 Google Authentication</h3>
-      <p>
-        Diese Website verwendet Google Authentication für die Benutzeranmeldung. Dabei werden folgende Daten erfasst:
-      </p>
+      <h3>{{ 'legal.privacy.s3.s31.title' | translate }}</h3>
+      <p>{{ 'legal.privacy.s3.s31.p1' | translate }}</p>
       <ul>
-        <li>E-Mail-Adresse</li>
-        <li>Anzeigename (Display Name)</li>
-        <li>Profilbild (optional)</li>
-        <li>Google User ID</li>
+        <li>{{ 'legal.privacy.s3.s31.list.email' | translate }}</li>
+        <li>{{ 'legal.privacy.s3.s31.list.displayName' | translate }}</li>
+        <li>{{ 'legal.privacy.s3.s31.list.profileImageOptional' | translate }}</li>
+        <li>{{ 'legal.privacy.s3.s31.list.googleUserId' | translate }}</li>
       </ul>
-      <p>
-        Die Verarbeitung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO zur Erfüllung des Nutzungsvertrags.
-      </p>
+      <p>{{ 'legal.privacy.s3.s31.p2' | translate }}</p>
 
-      <h3>3.2 Firebase Services</h3>
-      <p>
-        Wir nutzen Firebase (ein Dienst von Google LLC) für folgende Zwecke:
-      </p>
+      <h3>{{ 'legal.privacy.s3.s32.title' | translate }}</h3>
+      <p>{{ 'legal.privacy.s3.s32.p1' | translate }}</p>
       <ul>
-        <li><strong>Firebase Authentication:</strong> Verwaltung der Benutzeranmeldung</li>
-        <li><strong>Cloud Firestore:</strong> Speicherung von Quiz-Daten, Benutzerinformationen und Lernfortschritten</li>
-        <li><strong>Firebase Hosting:</strong> Bereitstellung der Webanwendung</li>
+        <li><strong>Firebase Authentication:</strong> {{ 'legal.privacy.s3.s32.list.auth' | translate }}</li>
+        <li><strong>Cloud Firestore:</strong> {{ 'legal.privacy.s3.s32.list.firestore' | translate }}</li>
+        <li><strong>Firebase Hosting:</strong> {{ 'legal.privacy.s3.s32.list.hosting' | translate }}</li>
       </ul>
+      <p>{{ 'legal.privacy.s3.s32.p2' | translate }}</p>
       <p>
-        Firebase verarbeitet Daten in Rechenzentren weltweit. Google LLC ist unter dem EU-US Data Privacy Framework zertifiziert.
-      </p>
-      <p>
-        Weitere Informationen finden Sie in der Datenschutzerklärung von Google:
+        {{ 'legal.privacy.s3.s32.p3' | translate }}
         <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">https://policies.google.com/privacy</a>
       </p>
 
-      <h3>3.3 Google Gemini AI</h3>
-      <p>
-        Für die automatische Quiz-Generierung verwenden wir Google Gemini AI. Dabei werden hochgeladene Dokumente
-        (PDFs, Bilder) temporär an Google übermittelt, um Quiz-Fragen zu generieren. Die Dokumente werden nach
-        der Verarbeitung nicht dauerhaft gespeichert.
-      </p>
-      <p>
-        Die Nutzung erfolgt auf Grundlage Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO) durch die aktive
-        Verwendung der Quiz-Generierungs-Funktion.
-      </p>
+      <h3>{{ 'legal.privacy.s3.s33.title' | translate }}</h3>
+      <p>{{ 'legal.privacy.s3.s33.p1' | translate }}</p>
+      <p>{{ 'legal.privacy.s3.s33.p2' | translate }}</p>
     </section>
 
     <section>
-      <h2>4. Welche Daten wir speichern</h2>
+      <h2>{{ 'legal.privacy.s4.title' | translate }}</h2>
 
-      <h3>4.1 Benutzerdaten</h3>
+      <h3>{{ 'legal.privacy.s4.s41.title' | translate }}</h3>
       <ul>
-        <li>Google User ID (eindeutige Kennung)</li>
-        <li>E-Mail-Adresse</li>
-        <li>Anzeigename</li>
-        <li>Profilbild-URL (falls vorhanden)</li>
-        <li>Registrierungsdatum</li>
+        <li>{{ 'legal.privacy.s4.s41.list.userId' | translate }}</li>
+        <li>{{ 'legal.privacy.s4.s41.list.email' | translate }}</li>
+        <li>{{ 'legal.privacy.s4.s41.list.displayName' | translate }}</li>
+        <li>{{ 'legal.privacy.s4.s41.list.profileImageUrl' | translate }}</li>
+        <li>{{ 'legal.privacy.s4.s41.list.registrationDate' | translate }}</li>
       </ul>
 
-      <h3>4.2 Quiz-Daten</h3>
+      <h3>{{ 'legal.privacy.s4.s42.title' | translate }}</h3>
       <ul>
-        <li>Von Ihnen erstellte Quizze (Titel, Beschreibung, Fragen)</li>
-        <li>Quiz-Berechtigungen (Eigentümer, Co-Autoren, Teilnehmer)</li>
-        <li>Quiz-Einstellungen (Sichtbarkeit, Join-Code)</li>
+        <li>{{ 'legal.privacy.s4.s42.list.createdQuizzes' | translate }}</li>
+        <li>{{ 'legal.privacy.s4.s42.list.permissions' | translate }}</li>
+        <li>{{ 'legal.privacy.s4.s42.list.settings' | translate }}</li>
       </ul>
 
-      <h3>4.3 Lernfortschritt</h3>
+      <h3>{{ 'legal.privacy.s4.s43.title' | translate }}</h3>
       <ul>
-        <li>Ihre Antworten auf Quiz-Fragen</li>
-        <li>Lernfortschritt (Progress Level 0-3)</li>
-        <li>Zeitstempel der letzten Aktivitäten</li>
+        <li>{{ 'legal.privacy.s4.s43.list.answers' | translate }}</li>
+        <li>{{ 'legal.privacy.s4.s43.list.progress' | translate }}</li>
+        <li>{{ 'legal.privacy.s4.s43.list.timestamps' | translate }}</li>
       </ul>
     </section>
 
     <section>
-      <h2>5. Datenspeicherung und -löschung</h2>
-      <p>
-        Ihre Daten werden solange gespeichert, wie Sie Ihr Benutzerkonto aktiv nutzen. Sie können Ihr Konto
-        jederzeit löschen, wodurch alle Ihre personenbezogenen Daten entfernt werden.
-      </p>
-      <p>
-        Von Ihnen erstellte Quizze werden nach Kontolöschung anonymisiert aufbewahrt, sofern andere Nutzer
-        darauf zugreifen (z.B. Co-Autoren oder Teilnehmer).
-      </p>
+      <h2>{{ 'legal.privacy.s5.title' | translate }}</h2>
+      <p>{{ 'legal.privacy.s5.p1' | translate }}</p>
+      <p>{{ 'legal.privacy.s5.p2' | translate }}</p>
     </section>
 
     <section>
-      <h2>6. Ihre Rechte</h2>
-      <p>Sie haben folgende Rechte bezüglich Ihrer personenbezogenen Daten:</p>
+      <h2>{{ 'legal.privacy.s6.title' | translate }}</h2>
+      <p>{{ 'legal.privacy.s6.p1' | translate }}</p>
       <ul>
-        <li><strong>Auskunftsrecht (Art. 15 DSGVO):</strong> Sie haben das Recht, Auskunft über Ihre gespeicherten Daten zu erhalten.</li>
-        <li><strong>Berichtigungsrecht (Art. 16 DSGVO):</strong> Sie können die Berichtigung unrichtiger Daten verlangen.</li>
-        <li><strong>Löschungsrecht (Art. 17 DSGVO):</strong> Sie können die Löschung Ihrer Daten verlangen.</li>
-        <li><strong>Einschränkung der Verarbeitung (Art. 18 DSGVO):</strong> Sie können die Einschränkung der Verarbeitung verlangen.</li>
-        <li><strong>Datenübertragbarkeit (Art. 20 DSGVO):</strong> Sie können Ihre Daten in einem strukturierten Format erhalten.</li>
-        <li><strong>Widerspruchsrecht (Art. 21 DSGVO):</strong> Sie können der Verarbeitung Ihrer Daten widersprechen.</li>
-        <li><strong>Widerrufsrecht:</strong> Sie können erteilte Einwilligungen jederzeit widerrufen.</li>
+        <li><strong>{{ 'legal.privacy.s6.list.access.title' | translate }}:</strong> {{ 'legal.privacy.s6.list.access.desc' | translate }}</li>
+        <li><strong>{{ 'legal.privacy.s6.list.rectification.title' | translate }}:</strong> {{ 'legal.privacy.s6.list.rectification.desc' | translate }}</li>
+        <li><strong>{{ 'legal.privacy.s6.list.erasure.title' | translate }}:</strong> {{ 'legal.privacy.s6.list.erasure.desc' | translate }}</li>
+        <li><strong>{{ 'legal.privacy.s6.list.restriction.title' | translate }}:</strong> {{ 'legal.privacy.s6.list.restriction.desc' | translate }}</li>
+        <li><strong>{{ 'legal.privacy.s6.list.portability.title' | translate }}:</strong> {{ 'legal.privacy.s6.list.portability.desc' | translate }}</li>
+        <li><strong>{{ 'legal.privacy.s6.list.objection.title' | translate }}:</strong> {{ 'legal.privacy.s6.list.objection.desc' | translate }}</li>
+        <li><strong>{{ 'legal.privacy.s6.list.withdrawal.title' | translate }}:</strong> {{ 'legal.privacy.s6.list.withdrawal.desc' | translate }}</li>
       </ul>
+      <p>{{ 'legal.privacy.s6.p2' | translate }} {{ contactEmail }}</p>
+    </section>
+
+    <section>
+      <h2>{{ 'legal.privacy.s7.title' | translate }}</h2>
+      <p>{{ 'legal.privacy.s7.p1' | translate }}</p>
+      <p>{{ 'legal.privacy.s7.p2' | translate }}</p>
       <p>
-        Zur Ausübung Ihrer Rechte kontaktieren Sie uns bitte unter: husky.run.366&#64;gmail.com
+        {{ 'legal.privacy.s7.authority.name' | translate }}<br>
+        {{ 'legal.privacy.s7.authority.address' | translate }}<br>
+        <a href="https://www.dsb.gv.at" target="_blank" rel="noopener">https://www.dsb.gv.at</a>
       </p>
     </section>
 
     <section>
-      <h2>7. Beschwerderecht bei Aufsichtsbehörde</h2>
-      <p>
-        Sie haben das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren. Die für uns zuständige
-        Aufsichtsbehörde ist:
-      </p>
-      <p>
-        Österreichische Datenschutzbehörde<br>
-        Barichgasse 40-42, 1030 Wien<br>
-        https://www.dsb.gv.at
-      </p>
+      <h2>{{ 'legal.privacy.s8.title' | translate }}</h2>
+      <p>{{ 'legal.privacy.s8.p1' | translate }}</p>
     </section>
 
     <section>
-      <h2>8. Cookies und lokale Speicherung</h2>
-      <p>
-        Diese Website verwendet keine Tracking-Cookies. Firebase Authentication und Ihre Theme-Präferenz werden
-        im lokalen Browser-Speicher (localStorage) gespeichert, um die Funktionalität der App zu gewährleisten.
-      </p>
+      <h2>{{ 'legal.privacy.s9.title' | translate }}</h2>
+      <p>{{ 'legal.privacy.s9.p1' | translate }}</p>
     </section>
 
     <section>
-      <h2>9. SSL/TLS-Verschlüsselung</h2>
-      <p>
-        Diese Website nutzt aus Sicherheitsgründen und zum Schutz der Übertragung vertraulicher Inhalte eine
-        SSL/TLS-Verschlüsselung. Eine verschlüsselte Verbindung erkennen Sie daran, dass die Adresszeile des
-        Browsers von "http://" auf "https://" wechselt.
-      </p>
-    </section>
-
-    <section>
-      <h2>10. Änderungen dieser Datenschutzerklärung</h2>
-      <p>
-        Wir behalten uns vor, diese Datenschutzerklärung anzupassen, damit sie stets den aktuellen rechtlichen
-        Anforderungen entspricht oder um Änderungen unserer Leistungen in der Datenschutzerklärung umzusetzen.
-        Für Ihren erneuten Besuch gilt dann die neue Datenschutzerklärung.
-      </p>
+      <h2>{{ 'legal.privacy.s10.title' | translate }}</h2>
+      <p>{{ 'legal.privacy.s10.p1' | translate }}</p>
     </section>
 
     <section class="contact-section">
-      <h2>11. Kontakt</h2>
+      <h2>{{ 'legal.privacy.s11.title' | translate }}</h2>
+      <p>{{ 'legal.privacy.s11.p1' | translate }}</p>
       <p>
-        Bei Fragen zum Datenschutz oder zur Ausübung Ihrer Rechte kontaktieren Sie uns bitte unter:
+        <strong>{{ 'legal.labels.email' | translate }}:</strong> {{ contactEmail }}<br>
+        <strong>{{ 'legal.labels.name' | translate }}:</strong> {{ contactName }}<br>
       </p>
-      <p>
-        <strong>E-Mail:</strong> {{ contactEmail }}<br>
-        <strong>Name:</strong> {{ contactName }}<br>
     </section>
   </div>
 </div>

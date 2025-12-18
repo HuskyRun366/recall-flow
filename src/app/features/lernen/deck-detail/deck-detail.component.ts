@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { FlashcardDeckService } from '../../../core/services/flashcard-deck.service';
 import { FlashcardService } from '../../../core/services/flashcard.service';
 import { FlashcardProgressService } from '../../../core/services/flashcard-progress.service';
@@ -23,7 +24,7 @@ interface FlashcardWithProgress {
 @Component({
   selector: 'app-deck-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, StatCardComponent, BadgeComponent, LevelBadgeComponent, PullToRefreshDirective],
+  imports: [CommonModule, RouterModule, TranslateModule, StatCardComponent, BadgeComponent, LevelBadgeComponent, PullToRefreshDirective],
   templateUrl: './deck-detail.component.html',
   styleUrls: ['./deck-detail.component.scss']
 })
@@ -62,19 +63,6 @@ export class DeckDetailComponent implements OnInit {
     if (this.deck()?.visibility !== 'public') return true;
     if (this.canEdit()) return true;
     return this.isEnrolled();
-  });
-
-  badgeConfig = computed(() => {
-    const d = this.deck();
-    if (!d) return null;
-    return {
-      variant: d.visibility === 'public' ? 'public' as const :
-                d.visibility === 'unlisted' ? 'unlisted' as const :
-                'private' as const,
-      label: d.visibility === 'public' ? 'Öffentlich' :
-             d.visibility === 'unlisted' ? 'Nicht gelistet' :
-             'Privat'
-    };
   });
 
   ngOnInit(): void {

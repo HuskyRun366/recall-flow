@@ -1,13 +1,14 @@
 import { Component, Input, Output, EventEmitter, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Quiz, Question, MultipleChoiceQuestion, OrderingQuestion, QuestionType, MultipleChoiceOption, OrderingItem, MatchingQuestion, MatchingChoice, MatchingPair } from '../../../../models';
 
 @Component({
   selector: 'app-graphical-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './graphical-editor.component.html',
   styleUrls: ['./graphical-editor.component.scss']
 })

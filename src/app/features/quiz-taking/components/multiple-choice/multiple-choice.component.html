@@ -31,12 +31,12 @@
       class="btn btn-primary"
       [disabled]="selectedCount() === 0"
       (click)="submitAnswer()">
-      Submit Answer
+      {{ 'quizSession.actions.submitAnswer' | translate }}
     </button>
   </div>
 
   <div class="correct-answers" *ngIf="showResult && !resultCorrect()">
-    <p class="label">Richtige Antworten</p>
+    <p class="label">{{ 'quizSession.multipleChoice.correctAnswers' | translate }}</p>
     <div class="pill" *ngFor="let opt of question.options">
       <span class="dot" [class.correct-dot]="opt.isCorrect"></span>
       <span class="text" [class.correct-text]="opt.isCorrect">{{ opt.text }}</span>

@@ -1,8 +1,8 @@
 <div class="lernen-home-container" appPullToRefresh (refresh)="refreshData()">
   <!-- Header -->
   <div class="home-header">
-    <h1>Meine Lernkarten</h1>
-    <p class="subtitle">Willkommen zurück! Bereit zum Lernen?</p>
+    <h1>{{ 'lernen.myFlashcards' | translate }}</h1>
+    <p class="subtitle">{{ 'lernen.welcomeBack' | translate }}</p>
   </div>
 
   @if (isLoading()) {
@@ -18,9 +18,9 @@
         <line x1="12" y1="8" x2="12" y2="12"/>
         <line x1="12" y1="16" x2="12.01" y2="16"/>
       </svg>
-      <h2>Fehler beim Laden</h2>
+      <h2>{{ 'errors.loadingFailed' | translate }}</h2>
       <p>{{ error() }}</p>
-      <button class="btn btn-primary" (click)="refreshData()">Erneut versuchen</button>
+      <button class="btn btn-primary" (click)="refreshData()">{{ 'common.retry' | translate }}</button>
     </div>
   } @else {
     <!-- Statistics Summary -->
@@ -33,7 +33,7 @@
     <!-- Progress Bars -->
     @if (totalFlashcards() > 0) {
       <div class="card progress-card">
-        <h2>Lernfortschritt</h2>
+        <h2>{{ 'lernen.learningProgress' | translate }}</h2>
         <app-progress-bar [config]="progressBarConfig()" />
       </div>
     }
@@ -48,8 +48,8 @@
           </svg>
         </div>
         <div class="action-content">
-          <h3>Flashcard Decks</h3>
-          <p>Lernkarten erstellen und verwalten</p>
+          <h3>{{ 'lernen.flashcardDecks' | translate }}</h3>
+          <p>{{ 'lernen.manageDecks' | translate }}</p>
         </div>
         <svg class="action-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="9 18 15 12 9 6"/>
@@ -64,8 +64,8 @@
           </svg>
         </div>
         <div class="action-content">
-          <h3>Lernunterlagen</h3>
-          <p>Interaktive HTML-Dokumente anzeigen</p>
+          <h3>{{ 'lernen.learningMaterials' | translate }}</h3>
+          <p>{{ 'lernen.viewMaterials' | translate }}</p>
         </div>
         <svg class="action-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="9 18 15 12 9 6"/>
@@ -77,8 +77,8 @@
     @if (recentDecks().length > 0) {
       <div class="card recent-card">
         <div class="card-header">
-          <h2>Zuletzt bearbeitet</h2>
-          <a [routerLink]="['/lernen/decks']" class="view-all">Alle anzeigen</a>
+          <h2>{{ 'lernen.recentlyEdited' | translate }}</h2>
+          <a [routerLink]="['/lernen/decks']" class="view-all">{{ 'common.viewAll' | translate }}</a>
         </div>
         <div class="deck-list">
           @for (item of recentDecks(); track item.deck.id) {
@@ -98,7 +98,7 @@
                         <rect x="2" y="7" width="20" height="14" rx="2"/>
                         <path d="M2 11h20"/>
                       </svg>
-                      {{ item.totalCards }} Karten
+                      {{ item.totalCards }} {{ 'common.cards' | translate }}
                     </span>
                     <span class="meta-item">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -123,14 +123,14 @@
           <rect x="2" y="7" width="20" height="14" rx="2"/>
           <path d="M2 11h20"/>
         </svg>
-        <h2>Keine Decks gefunden</h2>
-        <p>Erstelle dein erstes Lernkarten-Deck und beginne zu lernen</p>
+        <h2>{{ 'lernen.noDecksFound' | translate }}</h2>
+        <p>{{ 'lernen.createFirstDeck' | translate }}</p>
         <a routerLink="/lernen/deck-editor/new" class="btn btn-primary">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="12" y1="5" x2="12" y2="19"/>
             <line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
-          Neues Deck erstellen
+          {{ 'lernen.newDeck' | translate }}
         </a>
       </div>
     }
@@ -143,11 +143,11 @@
     <div class="fab-menu">
       <a class="fab-item" routerLink="/lernen/deck-editor/new" (click)="toggleFab()">
         <span class="icon-circle">➕</span>
-        <span class="label">Neues Deck</span>
+        <span class="label">{{ 'lernen.newDeck' | translate }}</span>
       </a>
       <a class="fab-item" routerLink="/lernen/material-editor/new" (click)="toggleFab()">
         <span class="icon-circle">📄</span>
-        <span class="label">Neue Unterlage</span>
+        <span class="label">{{ 'lernen.newMaterial' | translate }}</span>
       </a>
     </div>
 
@@ -155,7 +155,7 @@
             class="fab"
             (click)="toggleFab()"
             [attr.aria-expanded]="fabOpen()"
-            aria-label="Erstellen-Menü öffnen"
+            [attr.aria-label]="'lernen.openCreateMenu' | translate"
             aria-haspopup="menu">
       <span class="fab-lines" aria-hidden="true"></span>
     </button>

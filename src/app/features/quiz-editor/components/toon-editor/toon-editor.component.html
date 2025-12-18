@@ -1,13 +1,13 @@
 <div class="toon-editor">
   <div class="toon-toolbar">
     <div class="toolbar-left">
-      <h3>TOON Editor</h3>
-      <span class="info-text">Token Oriented Object Notation</span>
+      <h3>{{ 'toonEditor.title' | translate }}</h3>
+      <span class="info-text">{{ 'toonEditor.subtitle' | translate }}</span>
       <div style="display:flex; justify-content:flex-end; margin-bottom:0.5rem;">
   <button
     type="button"
     (click)="openAbout()"
-    aria-label="Was ist Toon?"
+    [attr.aria-label]="'toonEditor.about.ariaLabel' | translate"
     style="
       width:28px;
       height:28px;
@@ -27,15 +27,15 @@
 </div>
     </div>
     <div class="toolbar-right">
-      <button class="btn btn-small" (click)="formatDocument()">Format</button>
-      <button class="btn btn-small" (click)="foldAll()">Fold all</button>
-      <button class="btn btn-small" (click)="unfoldAll()">Unfold all</button>
-      <button class="btn btn-small" (click)="insertExample()">Insert Example</button>
+      <button class="btn btn-small" (click)="formatDocument()">{{ 'toonEditor.toolbar.format' | translate }}</button>
+      <button class="btn btn-small" (click)="foldAll()">{{ 'toonEditor.toolbar.foldAll' | translate }}</button>
+      <button class="btn btn-small" (click)="unfoldAll()">{{ 'toonEditor.toolbar.unfoldAll' | translate }}</button>
+      <button class="btn btn-small" (click)="insertExample()">{{ 'toonEditor.toolbar.insertExample' | translate }}</button>
     </div>
   </div>
 
   <div class="parse-error" *ngIf="parseError()">
-    <strong>Parse Error:</strong> {{ parseError() }}
+    <strong>{{ 'toonEditor.parseError' | translate }}:</strong> {{ parseError() }}
   </div>
 
   <div class="codemirror-container">
@@ -46,19 +46,17 @@
 <div class="modal-backdrop" *ngIf="showAbout()" (click)="closeAbout()"></div>
 <div class="modal" *ngIf="showAbout()">
   <div class="modal-header">
-    <h3>TOON Format</h3>
+    <h3>{{ 'toonEditor.about.title' | translate }}</h3>
     <button class="close-btn" type="button" (click)="closeAbout()">×</button>
   </div>
   <div class="modal-body">
-    <p><strong><a href="https://github.com/toon-format/toon" target="_blank" rel="noopener noreferrer">TOON</a></strong> (Token Oriented Object Notation) beschreibt ein Quiz in klaren Abschnitten:
-      <code>quiz</code> (Metadaten), <code>questions</code>, <code>options</code> und <code>orderItems</code>.
-    </p>
-    <p>Warum? Einfache, schnelle Bearbeitung im Editor, gute Lesbarkeit für Menschen, geringerer Token-Aufwand und bessere Genauigkeit für LLMs.</p>
+    <p [innerHTML]="'toonEditor.about.p1Html' | translate"></p>
+    <p>{{ 'toonEditor.about.p2' | translate }}</p>
     <ul>
-      <li>Klare Struktur: Fragen + Antworten + Reihenfolgen</li>
-      <li>Perfekt für Batch‑Importe/Exporte</li>
+      <li>{{ 'toonEditor.about.list.structure' | translate }}</li>
+      <li>{{ 'toonEditor.about.list.batch' | translate }}</li>
     </ul>
-    <p>Tipp: Autocomplete mit Tab oder Enter annehmen, Fold für Blöcke nutzen.</p>
+    <p>{{ 'toonEditor.about.tip' | translate }}</p>
   </div>
   <div class="model-compare">
   <div class="model-title">gemini-2.5-flash</div>
@@ -101,6 +99,6 @@
 </div>
 
   <div class="modal-actions">
-    <button class="btn btn-primary" type="button" (click)="closeAbout()">Alles klar</button>
+    <button class="btn btn-primary" type="button" (click)="closeAbout()">{{ 'common.gotIt' | translate }}</button>
   </div>
 </div>

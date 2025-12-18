@@ -1,12 +1,13 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { UpdatesService } from '../../core/services/updates.service';
 import { CHANGELOG } from '../../shared/data/changelog';
 
 @Component({
   selector: 'app-updates',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './updates.component.html',
   styleUrls: ['./updates.component.scss']
 })
@@ -31,13 +32,8 @@ export class UpdatesComponent implements OnInit {
   }
 
   getTypeLabel(type: string): string {
-    const labels: Record<string, string> = {
-      'feature': 'Neue Funktion',
-      'bugfix': 'Bugfix',
-      'improvement': 'Verbesserung',
-      'breaking': 'Breaking Change'
-    };
-    return labels[type] || type;
+    const known = ['feature', 'bugfix', 'improvement', 'breaking'];
+    return known.includes(type) ? `updates.types.${type}` : type;
   }
 
   getTypeClass(type: string): string {

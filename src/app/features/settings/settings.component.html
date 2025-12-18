@@ -1,9 +1,9 @@
 <div class="settings-page">
   <div class="page-header">
     <div class="title-block">
-      <p class="eyebrow">Einstellungen</p>
-      <h1>App-Einstellungen</h1>
-      <p class="subtitle">Verwalte Benachrichtigungen und Offline-Zugriff</p>
+      <p class="eyebrow">{{ 'settings.title' | translate }}</p>
+      <h1>{{ 'settings.page.title' | translate }}</h1>
+      <p class="subtitle">{{ 'settings.page.subtitle' | translate }}</p>
     </div>
   </div>
 
@@ -18,8 +18,8 @@
         </svg>
       </div>
       <div class="notice-content">
-        <strong>Hinweis</strong>
-        <p>Einige Funktionen sind nur im PWA-Modus verfügbar. Installiere die App auf deinem Gerät, um alle Features zu nutzen.</p>
+        <strong>{{ 'settings.page.pwaNotice.title' | translate }}</strong>
+        <p>{{ 'settings.page.pwaNotice.message' | translate }}</p>
       </div>
     </div>
   }
@@ -34,8 +34,8 @@
         </svg>
       </div>
       <div>
-        <h2>Push-Benachrichtigungen</h2>
-        <p class="section-description">Erhalte Updates zu deinen Quizzes</p>
+        <h2>{{ 'settings.page.notifications.title' | translate }}</h2>
+        <p class="section-description">{{ 'settings.page.notifications.subtitle' | translate }}</p>
       </div>
     </div>
 
@@ -47,7 +47,7 @@
             <line x1="12" y1="8" x2="12" y2="12"/>
             <line x1="12" y1="16" x2="12.01" y2="16"/>
           </svg>
-          <p>Push-Benachrichtigungen sind nur im PWA-Modus verfügbar.</p>
+          <p>{{ 'settings.page.notifications.pwaOnly' | translate }}</p>
         </div>
       } @else if (notificationPermission() === 'denied') {
         <div class="warning-message">
@@ -57,8 +57,8 @@
             <line x1="12" y1="17" x2="12.01" y2="17"/>
           </svg>
           <div>
-            <strong>Benachrichtigungen blockiert</strong>
-            <p>Du hast Benachrichtigungen für diese App blockiert. Bitte aktiviere sie in deinen Browser-Einstellungen.</p>
+            <strong>{{ 'settings.page.notifications.blocked.title' | translate }}</strong>
+            <p>{{ 'settings.page.notifications.blocked.message' | translate }}</p>
           </div>
         </div>
       } @else if (isNotificationsEnabled()) {
@@ -71,8 +71,8 @@
               </svg>
             </div>
             <div>
-              <strong>Benachrichtigungen aktiviert</strong>
-              <p>Du erhältst Push-Benachrichtigungen für diese App</p>
+              <strong>{{ 'settings.page.notifications.enabled.title' | translate }}</strong>
+              <p>{{ 'settings.page.notifications.enabled.message' | translate }}</p>
             </div>
           </div>
           <button
@@ -80,9 +80,9 @@
             [disabled]="isDisabling()"
             (click)="disableNotifications()">
             @if (isDisabling()) {
-              <span>Deaktiviere...</span>
+              <span>{{ 'settings.page.notifications.disableLoading' | translate }}</span>
             } @else {
-              <span>Deaktivieren</span>
+              <span>{{ 'settings.page.notifications.disable' | translate }}</span>
             }
           </button>
         </div>
@@ -96,8 +96,8 @@
               </svg>
             </div>
             <div>
-              <strong>Benachrichtigungen deaktiviert</strong>
-              <p>Aktiviere Benachrichtigungen, um Updates zu erhalten</p>
+              <strong>{{ 'settings.page.notifications.disabled.title' | translate }}</strong>
+              <p>{{ 'settings.page.notifications.disabled.message' | translate }}</p>
             </div>
           </div>
           <button
@@ -106,9 +106,9 @@
             (click)="enableNotifications()">
             @if (isEnabling()) {
               <div class="spinner-small"></div>
-              <span>Aktiviere...</span>
+              <span>{{ 'settings.page.notifications.enableLoading' | translate }}</span>
             } @else {
-              <span>Aktivieren</span>
+              <span>{{ 'settings.page.notifications.enable' | translate }}</span>
             }
           </button>
         </div>
@@ -127,8 +127,8 @@
         </svg>
       </div>
       <div>
-        <h2>Offline-Modus</h2>
-        <p class="section-description">Lade deine Quizzes für die Offline-Nutzung herunter</p>
+        <h2>{{ 'settings.page.offline.title' | translate }}</h2>
+        <p class="section-description">{{ 'settings.page.offline.subtitle' | translate }}</p>
       </div>
     </div>
 
@@ -140,7 +140,7 @@
             <line x1="12" y1="8" x2="12" y2="12"/>
             <line x1="12" y1="16" x2="12.01" y2="16"/>
           </svg>
-          <p>Offline-Downloads sind nur im PWA-Modus verfügbar.</p>
+          <p>{{ 'settings.page.offline.pwaOnly' | translate }}</p>
         </div>
       } @else {
         <div class="download-section">
@@ -154,7 +154,7 @@
               </div>
               <div class="status-info">
                 <div class="status-value">{{ preloadedCount() }} / {{ totalQuizzesCount() }}</div>
-                <div class="status-label">Quizzes heruntergeladen</div>
+                <div class="status-label">{{ 'settings.page.offline.downloadedLabel' | translate }}</div>
               </div>
             </div>
 
@@ -169,7 +169,7 @@
                   <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
                   <line x1="12" y1="20" x2="12.01" y2="20"/>
                 </svg>
-                Offline
+                {{ 'settings.page.offline.status.offline' | translate }}
               </div>
             } @else {
               <div class="status-badge online">
@@ -179,7 +179,7 @@
                   <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
                   <line x1="12" y1="20" x2="12.01" y2="20"/>
                 </svg>
-                Online
+                {{ 'settings.page.offline.status.online' | translate }}
               </div>
             }
           </div>
@@ -189,7 +189,7 @@
             @if (isPreloading()) {
               <div class="preload-progress">
                 <div class="spinner-small"></div>
-                <span>Lade Quizzes herunter... {{ preloadProgress()?.current }} / {{ preloadProgress()?.total }}</span>
+                <span>{{ 'settings.page.offline.downloading' | translate:{ current: preloadProgress()?.current, total: preloadProgress()?.total } }}</span>
               </div>
             } @else if (!isOnline()) {
               <div class="info-message">
@@ -198,7 +198,7 @@
                   <line x1="12" y1="8" x2="12" y2="12"/>
                   <line x1="12" y1="16" x2="12.01" y2="16"/>
                 </svg>
-                <p>Du bist offline. Verbinde dich mit dem Internet, um Quizzes herunterzuladen.</p>
+                <p>{{ 'settings.page.offline.offlineHint' | translate }}</p>
               </div>
             } @else {
               <button
@@ -209,7 +209,7 @@
                   <polyline points="7 10 12 15 17 10"/>
                   <line x1="12" y1="15" x2="12" y2="3"/>
                 </svg>
-                Alle Quizzes jetzt herunterladen
+                {{ 'settings.page.offline.downloadAll' | translate }}
               </button>
             }
           </div>
@@ -221,7 +221,7 @@
               <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
               <line x1="12" y1="17" x2="12.01" y2="17"/>
             </svg>
-            <p>Heruntergeladene Quizzes werden auf deinem Gerät gespeichert und sind auch ohne Internetverbindung verfügbar.</p>
+            <p>{{ 'settings.page.offline.info' | translate }}</p>
           </div>
         </div>
       }
