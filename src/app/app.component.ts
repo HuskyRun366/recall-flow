@@ -13,6 +13,7 @@ import { OfflinePreloadService } from './core/services/offline-preload.service';
 import { BackgroundSyncService } from './core/services/background-sync.service';
 import { BadgingService } from './core/services/badging.service';
 import { KeyboardShortcutsService } from './core/services/keyboard-shortcuts.service';
+import { ColorThemeService } from './core/services/color-theme.service';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs/operators';
 
@@ -112,6 +113,7 @@ export class AppComponent implements OnInit {
   private backgroundSyncService = inject(BackgroundSyncService);
   private badgingService = inject(BadgingService);
   private keyboardShortcuts = inject(KeyboardShortcutsService);
+  private colorThemeService = inject(ColorThemeService);
   private swUpdate = inject(SwUpdate);
 
   /**

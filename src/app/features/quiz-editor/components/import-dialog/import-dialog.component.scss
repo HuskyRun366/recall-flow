@@ -81,7 +81,7 @@
 
   &.dragging {
     border-color: var(--color-primary);
-    background: rgba(33, 150, 243, 0.05);
+    background: rgba(var(--color-primary-rgb), 0.05);
   }
 
   svg {
@@ -175,7 +175,7 @@
   transition: all $transition-fast;
 
   &:hover {
-    background: rgba(33, 150, 243, 0.1);
+    background: rgba(var(--color-primary-rgb), 0.1);
   }
 
   svg {
@@ -244,7 +244,7 @@
     align-items: center;
     justify-content: center;
     background: var(--color-primary);
-    color: white;
+    color: var(--color-on-primary);
     border-radius: 50%;
     font-weight: 700;
     flex-shrink: 0;
@@ -277,8 +277,8 @@
 .warnings {
   margin-top: $spacing-lg;
   padding: $spacing-md;
-  background: rgba(255, 152, 0, 0.1);
-  border: 1px solid rgba(255, 152, 0, 0.3);
+  background: rgba(var(--color-accent-rgb), 0.1);
+  border: 1px solid rgba(var(--color-accent-rgb), 0.3);
   border-radius: $radius-md;
 
   h4 {
@@ -316,8 +316,8 @@
   gap: $spacing-xs;
 
   &.btn-primary {
-    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-    color: white;
+    background: var(--gradient-primary);
+    color: var(--color-on-gradient);
 
     &:hover {
       filter: brightness(1.05);

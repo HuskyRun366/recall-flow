@@ -41,18 +41,18 @@ import { PwaService } from '../../../core/services/pwa.service';
   styles: [`
     @use '../../../../styles/variables' as *;
 
-    .install-prompt {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-      color: white;
-      padding: $spacing-md;
-      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
-      animation: slideUp 0.3s ease-out;
-    }
+	    .install-prompt {
+	      position: fixed;
+	      bottom: 0;
+	      left: 0;
+	      right: 0;
+	      z-index: 1000;
+	      background: var(--gradient-primary);
+	      color: var(--color-on-gradient);
+	      padding: $spacing-md;
+	      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
+	      animation: slideUp 0.3s ease-out;
+	    }
 
     @keyframes slideUp {
       from {
@@ -159,22 +159,22 @@ import { PwaService } from '../../../core/services/pwa.service';
       }
     }
 
-    .btn-dismiss {
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: all $transition-fast;
-      color: white;
+	    .btn-dismiss {
+	      width: 36px;
+	      height: 36px;
+	      display: flex;
+	      align-items: center;
+	      justify-content: center;
+	      background: rgba(255, 255, 255, 0.2);
+	      border: none;
+	      border-radius: 50%;
+	      cursor: pointer;
+	      transition: all $transition-fast;
+	      color: var(--color-on-gradient);
 
-      &:hover {
-        background: rgba(255, 255, 255, 0.3);
-      }
+	      &:hover {
+	        background: rgba(255, 255, 255, 0.3);
+	      }
 
       &:active {
         transform: scale(0.9);

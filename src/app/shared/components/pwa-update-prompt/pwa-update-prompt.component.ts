@@ -65,20 +65,20 @@ import { PwaService } from '../../../core/services/pwa.service';
       gap: $spacing-md;
     }
 
-    .update-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-      border-radius: 50%;
-      flex-shrink: 0;
-      color: white;
+	    .update-icon {
+	      display: flex;
+	      align-items: center;
+	      justify-content: center;
+	      width: 40px;
+	      height: 40px;
+	      background: var(--gradient-primary);
+	      border-radius: 50%;
+	      flex-shrink: 0;
+	      color: var(--color-on-gradient);
 
-      svg {
-        width: 24px;
-        height: 24px;
+	      svg {
+	        width: 24px;
+	        height: 24px;
       }
     }
 
@@ -118,14 +118,14 @@ import { PwaService } from '../../../core/services/pwa.service';
       transition: all $transition-fast;
     }
 
-    .btn-update {
-      background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-      color: white;
-      flex: 1;
+	    .btn-update {
+	      background: var(--gradient-primary);
+	      color: var(--color-on-gradient);
+	      flex: 1;
 
-      &:hover {
-        transform: translateY(-1px);
-        box-shadow: $shadow-md;
+	      &:hover {
+	        transform: translateY(-1px);
+	        box-shadow: $shadow-md;
       }
 
       &:active {

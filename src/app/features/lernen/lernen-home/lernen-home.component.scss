@@ -246,8 +246,8 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  color: white;
+  background: var(--gradient-primary);
+  color: var(--color-on-gradient);
   display: flex;
   align-items: center;
   justify-content: center;

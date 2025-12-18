@@ -6,11 +6,12 @@ import { OfflinePreloadService } from '../../core/services/offline-preload.servi
 import { NetworkStatusService } from '../../core/services/network-status.service';
 import { PwaDetectionService } from '../../core/services/pwa-detection.service';
 import { AuthService } from '../../core/services/auth.service';
+import { ThemeSettingsComponent } from './components/theme-settings/theme-settings.component';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, ThemeSettingsComponent],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss'
 })

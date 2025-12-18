@@ -5,11 +5,20 @@
   --color-primary: #2196f3;
   --color-primary-light: #64b5f6;
   --color-primary-dark: #1976d2;
+  --color-primary-rgb: 33, 150, 243;
+  --color-on-primary: #ffffff;
 
   // Accent colors
   --color-accent: #ff9800;
   --color-accent-light: #ffb74d;
   --color-accent-dark: #f57c00;
+  --color-accent-rgb: 255, 152, 0;
+  --color-on-accent: #ffffff;
+  --color-on-gradient: #ffffff;
+
+  // Gradients
+  --gradient-primary: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  --gradient-primary-soft: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.12), rgba(var(--color-accent-rgb), 0.10));
 
   // Background colors
   --color-background: #fafafa;
@@ -53,11 +62,20 @@
   --color-primary: #64b5f6;
   --color-primary-light: #90caf9;
   --color-primary-dark: #42a5f5;
+  --color-primary-rgb: 100, 181, 246;
+  --color-on-primary: #ffffff;
 
   // Accent colors
   --color-accent: #ffb74d;
   --color-accent-light: #ffcc80;
   --color-accent-dark: #ffa726;
+  --color-accent-rgb: 255, 183, 77;
+  --color-on-accent: #ffffff;
+  --color-on-gradient: #ffffff;
+
+  // Gradients
+  --gradient-primary: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  --gradient-primary-soft: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.12), rgba(var(--color-accent-rgb), 0.10));
 
   // Background colors
   --color-background: #121212;

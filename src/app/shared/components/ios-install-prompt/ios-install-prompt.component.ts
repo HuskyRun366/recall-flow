@@ -156,19 +156,19 @@ import { CommonModule } from '@angular/common';
       border-radius: $radius-lg;
     }
 
-    .step-number {
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--color-primary);
-      color: white;
-      border-radius: 50%;
-      font-weight: 700;
-      font-size: 0.9rem;
-      flex-shrink: 0;
-    }
+	    .step-number {
+	      width: 32px;
+	      height: 32px;
+	      display: flex;
+	      align-items: center;
+	      justify-content: center;
+	      background: var(--color-primary);
+	      color: var(--color-on-primary);
+	      border-radius: 50%;
+	      font-weight: 700;
+	      font-size: 0.9rem;
+	      flex-shrink: 0;
+	    }
 
     .step-text {
       flex: 1;

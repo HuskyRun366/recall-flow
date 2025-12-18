@@ -151,8 +151,8 @@
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-    color: white;
+    background: var(--gradient-primary);
+    color: var(--color-on-gradient);
     padding: $spacing-md $spacing-xl;
     min-height: 56px;
     border-radius: $radius-lg;
@@ -184,7 +184,8 @@
     left: 50%;
     width: 14px;
     height: 2px;
-    background: rgba(255,255,255,0.95);
+    background: currentColor;
+    opacity: 0.95;
     border-radius: 2px;
     transform: translate(-50%, -50%);
   }
@@ -196,8 +197,8 @@
 
 // Offline Banner
 .offline-banner {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  color: white;
+  background: var(--gradient-primary);
+  color: var(--color-on-gradient);
   border-radius: $radius-lg;
   padding: $spacing-lg;
   margin-bottom: $spacing-xl;
@@ -524,8 +525,8 @@
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-      color: white;
+      background: var(--gradient-primary);
+      color: var(--color-on-gradient);
 
       &:hover {
         box-shadow: $shadow-lg;
@@ -559,8 +560,8 @@
     width: 64px;
     height: 64px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-    color: white;
+    background: var(--gradient-primary);
+    color: var(--color-on-gradient);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -591,7 +592,8 @@
         left: 0;
         width: 20px;
         height: 2px;
-        background: #fff;
+        background: currentColor;
+        opacity: 0.95;
         border-radius: 2px;
         transition: transform $transition-normal;
       }

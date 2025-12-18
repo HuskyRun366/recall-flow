@@ -4,8 +4,8 @@
   display: flex;
   align-items: center;
   gap: $spacing-lg;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--gradient-primary-soft);
+  color: var(--color-text-primary);
   border-radius: $radius-lg;
   padding: $spacing-lg;
   margin-bottom: $spacing-xl;
@@ -16,7 +16,7 @@
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(var(--color-primary-rgb), 0.12);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -45,8 +45,8 @@
   }
 
   .btn {
-    background: white;
-    color: #667eea;
+    background: var(--color-surface);
+    color: var(--color-primary-dark);
     padding: $spacing-sm $spacing-lg;
     border-radius: $radius-md;
     font-weight: 600;
@@ -71,8 +71,8 @@
     .spinner-small {
       width: 16px;
       height: 16px;
-      border: 2px solid rgba(102, 126, 234, 0.3);
-      border-top-color: #667eea;
+      border: 2px solid rgba(var(--color-primary-rgb), 0.3);
+      border-top-color: var(--color-primary);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }

@@ -90,7 +90,7 @@
 
     &.active {
       color: var(--color-primary);
-      background: rgba(33, 150, 243, 0.1);
+      background: rgba(var(--color-primary-rgb), 0.1);
     }
   }
 
@@ -365,7 +365,7 @@
     align-items: center;
     justify-content: center;
     background: var(--color-primary);
-    color: white;
+    color: var(--color-on-primary);
     font-weight: 600;
     font-size: 0.9rem;
   }
@@ -482,7 +482,7 @@
 
   &:hover {
     background: var(--color-primary);
-    color: white;
+    color: var(--color-on-primary);
     transform: scale(1.05);
   }
 

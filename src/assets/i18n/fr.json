@@ -470,6 +470,13 @@
     "theme": "Thème",
     "darkMode": "Mode sombre",
     "lightMode": "Mode clair",
+    "themes": {
+      "default": "Par défaut",
+      "ocean": "Océan",
+      "forest": "Forêt",
+      "sunset": "Coucher de soleil",
+      "highContrast": "Contraste élevé"
+    },
     "notifications": "Notifications",
     "account": "Compte",
     "profile": "Profil",
@@ -479,6 +486,51 @@
       "pwaNotice": {
         "title": "Astuce : installer comme application",
         "message": "Pour les téléchargements hors ligne et les notifications push, installez RecallFlow en PWA."
+      },
+      "theme": {
+        "title": "Thèmes de couleur",
+        "subtitle": "Choisissez un préréglage ou créez le vôtre",
+        "current": "Thème actuel",
+        "reset": "Réinitialiser",
+        "presets": {
+          "title": "Préréglages",
+          "subtitle": "Changez rapidement de palette de couleurs"
+        },
+        "custom": {
+          "title": "Thème personnalisé",
+          "subtitle": "Créez et gérez vos propres palettes",
+          "nameLabel": "Nom",
+          "namePlaceholder": "ex. « Mon thème »",
+          "primaryLabel": "Couleur principale",
+          "accentLabel": "Couleur d’accent",
+          "save": "Enregistrer",
+          "update": "Mettre à jour",
+          "preview": "Aperçu",
+          "empty": "Aucun thème personnalisé pour le moment"
+        },
+        "marketplace": {
+          "title": "Marketplace des thèmes",
+          "subtitle": "Installez des thèmes de la communauté",
+          "install": "Installer",
+          "installed": "Installé"
+        },
+        "importExport": {
+          "title": "Import & export",
+          "subtitle": "Partagez des thèmes en JSON ou importez-les",
+          "exportTitle": "Export",
+          "copy": "Copier",
+          "importTitle": "Import",
+          "import": "Importer",
+          "importPlaceholder": "Collez ici le JSON du thème…"
+        },
+        "badges": {
+          "preset": "Préréglage",
+          "custom": "Personnalisé",
+          "marketplace": "Marketplace"
+        },
+        "import": {
+          "error": "JSON de thème invalide"
+        }
       },
       "notifications": {
         "title": "Notifications",

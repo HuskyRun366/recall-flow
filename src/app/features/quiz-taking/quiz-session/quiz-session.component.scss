@@ -718,21 +718,21 @@
   text-align: center;
   animation: slideUp 0.4s ease-out;
 
-  .completion-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 1.5rem;
-    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-    border-radius: 50%;
-    color: white;
-    animation: scaleIn 0.5s ease-out 0.2s both;
+	  .completion-icon {
+	    display: inline-flex;
+	    align-items: center;
+	    justify-content: center;
+	    width: 120px;
+	    height: 120px;
+	    margin: 0 auto 1.5rem;
+	    background: var(--gradient-primary);
+	    border-radius: 50%;
+	    color: var(--color-on-gradient);
+	    animation: scaleIn 0.5s ease-out 0.2s both;
 
-    svg {
-      width: 80px;
-      height: 80px;
+	    svg {
+	      width: 80px;
+	      height: 80px;
     }
   }
 

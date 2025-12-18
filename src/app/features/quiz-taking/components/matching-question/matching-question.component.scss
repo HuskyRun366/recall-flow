@@ -41,7 +41,7 @@
 
   &.selected {
     border-color: var(--color-primary);
-    background: linear-gradient(135deg, rgba(33,150,243,0.08), rgba(255,152,0,0.08));
+    background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.08), rgba(var(--color-accent-rgb), 0.08));
     box-shadow: 0 8px 18px rgba(0,0,0,0.12);
   }
 

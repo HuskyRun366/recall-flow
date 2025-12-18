@@ -82,9 +82,9 @@
       justify-content: center;
       width: 56px;
       height: 56px;
-      background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+      background: var(--gradient-primary);
       border-radius: 16px;
-      color: white;
+      color: var(--color-on-gradient);
       flex-shrink: 0;
     }
 
@@ -233,9 +233,9 @@
       justify-content: center;
       width: 48px;
       height: 48px;
-      background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+      background: var(--gradient-primary);
       border-radius: 12px;
-      color: white;
+      color: var(--color-on-gradient);
       flex-shrink: 0;
     }
 

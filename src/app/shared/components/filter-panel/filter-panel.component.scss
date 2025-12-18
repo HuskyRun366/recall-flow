@@ -1,4 +1,4 @@
-@use '../../../styles/variables' as *;
+@use '../../../../styles/variables' as *;
 
 .filter-panel {
   background: var(--color-surface);
@@ -58,7 +58,7 @@
   border-radius: 9px;
   font-size: 0.7rem;
   font-weight: 600;
-  color: white;
+  color: var(--color-on-primary);
 }
 
 .clear-btn {
@@ -128,23 +128,26 @@
   &.active {
     background: var(--color-primary);
     border-color: var(--color-primary);
-    color: white;
+    color: var(--color-on-primary);
   }
 
   // Difficulty variants
   &.difficulty-beginner.active {
     background: var(--color-success);
     border-color: var(--color-success);
+    color: #ffffff;
   }
 
   &.difficulty-intermediate.active {
     background: var(--color-warning);
     border-color: var(--color-warning);
+    color: rgba(0, 0, 0, 0.87);
   }
 
   &.difficulty-advanced.active {
     background: var(--color-error);
     border-color: var(--color-error);
+    color: #ffffff;
   }
 }
 

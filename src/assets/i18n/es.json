@@ -101,7 +101,7 @@
     "startQuiz": "Iniciar cuestionario",
     "questions": "Preguntas",
     "question": "Pregunta",
-    "answer": "Answer",
+    "answer": "Respuesta",
     "participants": "Participantes",
     "progress": "Progreso",
     "learningProgress": "Progreso de aprendizaje",
@@ -116,10 +116,10 @@
     "results": "Resultados",
     "result": "Resultado",
     "download": "Descargar",
-    "export": "Export",
-    "exportTooltip": "Export quiz as text file",
-    "exported": "Exported",
-    "exportedTooltip": "Export complete",
+    "export": "Exportar",
+    "exportTooltip": "Exportar el cuestionario como archivo de texto",
+    "exported": "Exportado",
+    "exportedTooltip": "Exportación completa",
     "subtitle": "Aprende con repetición espaciada",
     "openCreateMenu": "Abrir menú de creación",
     "visibility": {
@@ -133,112 +133,112 @@
       "participant": "Participante"
     },
     "questionTypes": {
-      "multipleChoice": "Multiple Choice",
-      "ordering": "Ordering",
-      "matching": "Matching"
+      "multipleChoice": "Opción múltiple",
+      "ordering": "Ordenación",
+      "matching": "Emparejamiento"
     },
     "questionMeta": {
-      "optionsCount": "{{count}} options",
-      "itemsCount": "{{count}} items",
-      "pairsCount": "{{count}} pairs"
+      "optionsCount": "{{count}} opciones",
+      "itemsCount": "{{count}} elementos",
+      "pairsCount": "{{count}} pares"
     },
     "list": {
-      "categoriesAria": "Quiz categories",
-      "searchAria": "Search quizzes",
+      "categoriesAria": "Categorías de cuestionarios",
+      "searchAria": "Buscar cuestionarios",
       "searchPlaceholder": {
-        "owned": "Search my quizzes",
-        "coAuthored": "Search co-authored quizzes",
-        "public": "Search public quizzes"
+        "owned": "Buscar mis cuestionarios",
+        "coAuthored": "Buscar cuestionarios en coautoría",
+        "public": "Buscar cuestionarios públicos"
       },
       "pill": {
-        "owned": "My quizzes",
-        "coAuthored": "Co-authored",
-        "public": "Public quizzes"
+        "owned": "Mis cuestionarios",
+        "coAuthored": "En coautoría",
+        "public": "Cuestionarios públicos"
       },
       "empty": {
         "owned": {
-          "search": "No quiz matches your search.",
-          "none": "You haven't created any quizzes yet."
+          "search": "Ningún cuestionario coincide con tu búsqueda.",
+          "none": "Aún no has creado ningún cuestionario."
         },
         "coAuthored": {
-          "search": "No co-authored quiz matches your search.",
-          "none": "You don't have any co-authored quizzes yet."
+          "search": "Ningún cuestionario en coautoría coincide con tu búsqueda.",
+          "none": "Aún no tienes cuestionarios en coautoría."
         },
         "public": {
-          "search": "No public quiz matches your search.",
-          "none": "No public quizzes available."
+          "search": "Ningún cuestionario público coincide con tu búsqueda.",
+          "none": "No hay cuestionarios públicos disponibles."
         }
       }
     },
     "detail": {
-      "eyebrow": "Quiz"
+      "eyebrow": "Cuestionario"
     },
     "editor": {
-      "eyebrow": "Quiz Editor",
+      "eyebrow": "Editor de cuestionario",
       "subtitle": {
-        "toon": "TOON mode",
-        "graphical": "Graphical mode"
+        "toon": "Modo TOON",
+        "graphical": "Modo gráfico"
       },
-      "useAi": "Use AI",
-      "switchToGraphical": "Switch to graphical editor",
-      "switchToToon": "Switch to TOON editor",
-      "loading": "Loading quiz...",
-      "coAuthorIssues": "Co-author issues",
+      "useAi": "Usar IA",
+      "switchToGraphical": "Cambiar al editor gráfico",
+      "switchToToon": "Cambiar al editor TOON",
+      "loading": "Cargando cuestionario...",
+      "coAuthorIssues": "Problemas de coautoría",
       "graphical": {
-        "settingsTitle": "Quiz settings",
-        "settingsSubtitle": "Basics & question overview",
-        "questionsTitle": "Questions",
-        "addMultipleChoice": "Add multiple choice",
-        "addOrdering": "Add ordering",
-        "addMatching": "Add matching",
+        "settingsTitle": "Configuración del cuestionario",
+        "settingsSubtitle": "Básicos y resumen de preguntas",
+        "questionsTitle": "Preguntas",
+        "addMultipleChoice": "Añadir opción múltiple",
+        "addOrdering": "Añadir ordenación",
+        "addMatching": "Añadir emparejamiento",
         "empty": {
-          "title": "No questions yet",
-          "hint": "Click + MC, + Order, or + Match to add questions"
+          "title": "Aún no hay preguntas",
+          "hint": "Haz clic en + MC, + Order o + Match para añadir preguntas"
         },
         "noSelection": {
-          "title": "Select a question to edit",
-          "hint": "Or create a new question using the + buttons"
+          "title": "Selecciona una pregunta para editar",
+          "hint": "O crea una nueva pregunta usando los botones +"
         },
-        "breadcrumb": "Quiz · Question {{number}}",
-        "questionTitle": "Question {{number}}",
-        "newQuestion": "New question",
+        "breadcrumb": "Cuestionario · Pregunta {{number}}",
+        "questionTitle": "Pregunta {{number}}",
+        "newQuestion": "Nueva pregunta",
         "placeholders": {
-          "title": "Quiz title",
-          "description": "Quiz description",
-          "questionText": "Enter your question"
+          "title": "Título del cuestionario",
+          "description": "Descripción del cuestionario",
+          "questionText": "Introduce tu pregunta"
         },
         "fields": {
-          "questionText": "Question text"
+          "questionText": "Texto de la pregunta"
         },
         "multipleChoice": {
-          "optionsTitle": "Options",
-          "addOption": "+ Add option",
-          "optionLabel": "Option {{number}}",
+          "optionsTitle": "Opciones",
+          "addOption": "+ Añadir opción",
+          "optionLabel": "Opción {{number}}",
           "placeholders": {
-            "optionText": "Option text"
+            "optionText": "Texto de la opción"
           },
-          "correctAnswer": "Correct answer"
+          "correctAnswer": "Respuesta correcta"
         },
         "ordering": {
-          "itemsTitle": "Items (correct order)",
-          "addItem": "+ Add item",
+          "itemsTitle": "Elementos (orden correcto)",
+          "addItem": "+ Añadir elemento",
           "placeholders": {
-            "itemText": "Item text"
+            "itemText": "Texto del elemento"
           }
         },
         "matching": {
-          "choicesTitle": "Choices (dropdown)",
-          "addChoice": "+ Choice",
-          "choiceLabel": "Choice",
+          "choicesTitle": "Opciones (desplegable)",
+          "addChoice": "+ Opción",
+          "choiceLabel": "Opción",
           "placeholders": {
-            "choiceText": "Choice text",
-            "leftText": "Left text"
+            "choiceText": "Texto de la opción",
+            "leftText": "Texto de la izquierda"
           },
-          "pairsTitle": "Pairs (left · correct choice)",
-          "addPair": "+ Pair",
-          "leftTextLabel": "Left text",
-          "correctChoiceLabel": "Correct dropdown value",
-          "deletePairTitle": "Delete pair"
+          "pairsTitle": "Pares (izquierda · opción correcta)",
+          "addPair": "+ Par",
+          "leftTextLabel": "Texto de la izquierda",
+          "correctChoiceLabel": "Valor correcto del desplegable",
+          "deletePairTitle": "Eliminar par"
         }
       }
     }
@@ -259,42 +259,42 @@
     "newMaterial": "Nuevo material",
     "openCreateMenu": "Abrir menú de creación",
     "deckDetail": {
-      "eyebrow": "Deck"
+      "eyebrow": "Mazo"
     },
     "list": {
-      "subtitle": "Manage your decks and learn efficiently",
-      "categoriesAria": "Deck categories",
-      "searchAria": "Search decks",
+      "subtitle": "Gestiona tus mazos y aprende de forma eficiente",
+      "categoriesAria": "Categorías de mazos",
+      "searchAria": "Buscar mazos",
       "searchPlaceholder": {
-        "owned": "Search my decks",
-        "coAuthored": "Search co-authored decks",
-        "public": "Search public decks"
+        "owned": "Buscar mis mazos",
+        "coAuthored": "Buscar mazos en coautoría",
+        "public": "Buscar mazos públicos"
       },
       "pill": {
-        "owned": "My decks",
-        "coAuthored": "Co-authored",
-        "public": "Public decks"
+        "owned": "Mis mazos",
+        "coAuthored": "En coautoría",
+        "public": "Mazos públicos"
       },
       "empty": {
         "owned": {
-          "search": "No deck matches your search.",
-          "none": "You haven't created any decks yet."
+          "search": "Ningún mazo coincide con tu búsqueda.",
+          "none": "Aún no has creado ningún mazo."
         },
         "coAuthored": {
-          "search": "No co-authored deck matches your search.",
-          "none": "You don't have any co-authored decks yet."
+          "search": "Ningún mazo en coautoría coincide con tu búsqueda.",
+          "none": "Aún no tienes mazos en coautoría."
         },
         "public": {
-          "search": "No public deck matches your search.",
-          "none": "No public decks available."
+          "search": "Ningún mazo público coincide con tu búsqueda.",
+          "none": "No hay mazos públicos disponibles."
         }
       }
     },
     "page": {
-      "searchPlaceholder": "Search decks",
-      "searchAria": "Search decks",
-      "noMatchingDeck": "No deck matches your search.",
-      "toLearn": "To learn"
+      "searchPlaceholder": "Buscar mazos",
+      "searchAria": "Buscar mazos",
+      "noMatchingDeck": "Ningún mazo coincide con tu búsqueda.",
+      "toLearn": "Por aprender"
     }
   },
   "flashcard": {
@@ -310,16 +310,16 @@
     "front": "Frente",
     "back": "Reverso",
     "level": "Nivel",
-    "tapToFlip": "Tap to flip",
-    "practiceAgain": "Practice again",
-    "again": "Again",
-    "addCards": "Add cards",
-    "noCardsTitle": "No cards yet",
-    "noCardsMessage": "Create your first flashcard or import existing cards.",
-    "export": "Export",
-    "exportTooltip": "Export deck as text file",
-    "exported": "Exported",
-    "exportedTooltip": "Export complete",
+    "tapToFlip": "Toca para voltear",
+    "practiceAgain": "Practicar de nuevo",
+    "again": "Otra vez",
+    "addCards": "Añadir tarjetas",
+    "noCardsTitle": "Aún no hay tarjetas",
+    "noCardsMessage": "Crea tu primera flashcard o importa tarjetas existentes.",
+    "export": "Exportar",
+    "exportTooltip": "Exportar el mazo como archivo de texto",
+    "exported": "Exportado",
+    "exportedTooltip": "Exportación completa",
     "levels": {
       "0": "No aprendido",
       "1": "Aprendido una vez",
@@ -327,23 +327,23 @@
       "3": "Perfectamente aprendido"
     },
     "editor": {
-      "eyebrow": "Deck editor",
-      "defaultTitle": "New deck",
-      "loading": "Loading deck...",
-      "settingsTitle": "Deck settings",
+      "eyebrow": "Editor de mazo",
+      "defaultTitle": "Nuevo mazo",
+      "loading": "Cargando mazo...",
+      "settingsTitle": "Configuración del mazo",
       "placeholders": {
-        "title": "Deck title",
-        "front": "What do you want to learn?",
-        "back": "The answer or explanation..."
+        "title": "Título del mazo",
+        "front": "¿Qué quieres aprender?",
+        "back": "La respuesta o explicación..."
       },
       "fields": {
-        "frontLabel": "Front (question)",
-        "backLabel": "Back (answer)"
+        "frontLabel": "Frente (pregunta)",
+        "backLabel": "Reverso (respuesta)"
       },
-      "addCard": "New card",
-      "createFirstCard": "Create first card",
-      "importCards": "Import cards",
-      "editCardTitle": "Edit card #{{number}}"
+      "addCard": "Nueva tarjeta",
+      "createFirstCard": "Crear la primera tarjeta",
+      "importCards": "Importar tarjetas",
+      "editCardTitle": "Editar tarjeta #{{number}}"
     }
   },
   "session": {
@@ -375,70 +375,70 @@
     "uploadHtml": "Subir archivo HTML",
     "noMaterials": "No se encontraron materiales",
     "list": {
-      "subtitle": "Manage your interactive HTML materials",
-      "categoriesAria": "Material categories",
-      "searchAria": "Search materials",
+      "subtitle": "Gestiona tus materiales HTML interactivos",
+      "categoriesAria": "Categorías de materiales",
+      "searchAria": "Buscar materiales",
       "searchPlaceholder": {
-        "owned": "Search my materials",
-        "coAuthored": "Search co-authored materials",
-        "public": "Search public materials"
+        "owned": "Buscar mis materiales",
+        "coAuthored": "Buscar materiales en coautoría",
+        "public": "Buscar materiales públicos"
       },
       "pill": {
-        "owned": "My materials",
-        "coAuthored": "Co-authored",
-        "public": "Public materials"
+        "owned": "Mis materiales",
+        "coAuthored": "En coautoría",
+        "public": "Materiales públicos"
       },
       "empty": {
         "owned": {
-          "search": "No material matches your search.",
-          "none": "You haven't created any materials yet."
+          "search": "Ningún material coincide con tu búsqueda.",
+          "none": "Aún no has creado ningún material."
         },
         "coAuthored": {
-          "search": "No co-authored material matches your search.",
-          "none": "You don't have any co-authored materials yet."
+          "search": "Ningún material en coautoría coincide con tu búsqueda.",
+          "none": "Aún no tienes materiales en coautoría."
         },
         "public": {
-          "search": "No public material matches your search.",
-          "none": "No public materials available."
+          "search": "Ningún material público coincide con tu búsqueda.",
+          "none": "No hay materiales públicos disponibles."
         }
       },
-      "copyCodeTitle": "Copy code ({{code}})",
-      "totalSize": "Total size",
-      "size": "Size"
+      "copyCodeTitle": "Copiar código ({{code}})",
+      "totalSize": "Tamaño total",
+      "size": "Tamaño"
     },
     "viewer": {
-      "fullscreen": "Fullscreen",
-      "exitFullscreen": "Exit fullscreen",
-      "exitFullscreenAria": "Exit fullscreen",
-      "iframeTitle": "Learning material"
+      "fullscreen": "Pantalla completa",
+      "exitFullscreen": "Salir de pantalla completa",
+      "exitFullscreenAria": "Salir de pantalla completa",
+      "iframeTitle": "Material de aprendizaje"
     },
     "editor": {
-      "eyebrow": "Material editor",
-      "loading": "Loading material...",
+      "eyebrow": "Editor de material",
+      "loading": "Cargando material...",
       "view": {
         "editor": "Editor",
-        "preview": "Preview"
+        "preview": "Vista previa"
       },
       "placeholders": {
-        "title": "Material title"
+        "title": "Título del material"
       },
       "visibility": {
-        "unlistedWithCode": "Unlisted (with code)"
+        "unlistedWithCode": "No listado (con código)"
       },
       "upload": {
-        "dropTitle": "Drop HTML file here",
-        "dropSubtitle": "or click to choose",
-        "hint": ".html or .htm, max 500KB",
-        "defaultFileName": "HTML content",
-        "chooseAnother": "Choose another file"
+        "dropTitle": "Suelta un archivo HTML aquí",
+        "dropSubtitle": "o haz clic para elegir",
+        "hint": ".html o .htm, máx. 500KB",
+        "defaultFileName": "Contenido HTML",
+        "chooseAnother": "Elegir otro archivo"
       },
-      "htmlContentLabel": "HTML content",
-      "characters": "characters",
+      "htmlContentLabel": "Contenido HTML",
+      "characters": "caracteres",
       "preview": {
-        "title": "Preview",
-        "backToEditor": "Back to editor",
-        "iframeTitle": "Material preview",
-        "empty": "No content to display"
+        "title": "Vista previa",
+        "backToEditor": "Volver al editor",
+        "iframeTitle": "Vista previa del material",
+        "empty": "No hay contenido para mostrar"
       }
     }
   },
@@ -470,53 +470,105 @@
     "theme": "Tema",
     "darkMode": "Modo oscuro",
     "lightMode": "Modo claro",
+    "themes": {
+      "default": "Predeterminado",
+      "ocean": "Océano",
+      "forest": "Bosque",
+      "sunset": "Atardecer",
+      "highContrast": "Alto contraste"
+    },
     "notifications": "Notificaciones",
     "account": "Cuenta",
     "profile": "Perfil",
     "page": {
-      "title": "Settings",
-      "subtitle": "Manage notifications and offline access",
+      "title": "Configuración",
+      "subtitle": "Gestiona las notificaciones y el acceso sin conexión",
       "pwaNotice": {
-        "title": "Tip: Install as an app",
-        "message": "For offline downloads and push notifications, install RecallFlow as a PWA."
+        "title": "Consejo: instalar como aplicación",
+        "message": "Para descargas sin conexión y notificaciones push, instala RecallFlow como PWA."
+      },
+      "theme": {
+        "title": "Temas de color",
+        "subtitle": "Elige un preajuste o crea el tuyo",
+        "current": "Tema actual",
+        "reset": "Restablecer",
+        "presets": {
+          "title": "Preajustes",
+          "subtitle": "Cambia rápidamente la paleta de colores"
+        },
+        "custom": {
+          "title": "Tema personalizado",
+          "subtitle": "Crea y gestiona tus propias paletas",
+          "nameLabel": "Nombre",
+          "namePlaceholder": "p. ej. \"Mi tema\"",
+          "primaryLabel": "Primario",
+          "accentLabel": "Acento",
+          "save": "Guardar",
+          "update": "Actualizar",
+          "preview": "Vista previa",
+          "empty": "Aún no hay temas personalizados"
+        },
+        "marketplace": {
+          "title": "Tienda de temas",
+          "subtitle": "Instala temas de la comunidad",
+          "install": "Instalar",
+          "installed": "Instalado"
+        },
+        "importExport": {
+          "title": "Importar y exportar",
+          "subtitle": "Comparte temas como JSON o impórtalos",
+          "exportTitle": "Exportar",
+          "copy": "Copiar",
+          "importTitle": "Importar",
+          "import": "Importar",
+          "importPlaceholder": "Pega aquí el JSON del tema…"
+        },
+        "badges": {
+          "preset": "Preajuste",
+          "custom": "Personalizado",
+          "marketplace": "Tienda"
+        },
+        "import": {
+          "error": "JSON de tema no válido"
+        }
       },
       "notifications": {
-        "title": "Notifications",
-        "subtitle": "Push updates about your quizzes",
-        "pwaOnly": "Notifications are only available in the installed app (PWA).",
+        "title": "Notificaciones",
+        "subtitle": "Actualizaciones push sobre tus cuestionarios",
+        "pwaOnly": "Las notificaciones solo están disponibles en la aplicación instalada (PWA).",
         "blocked": {
-          "title": "Notifications blocked",
-          "message": "You disabled notifications in your browser. Please enable them in your browser settings."
+          "title": "Notificaciones bloqueadas",
+          "message": "Has desactivado las notificaciones en tu navegador. Actívalas en la configuración del navegador."
         },
         "enabled": {
-          "title": "Notifications enabled",
-          "message": "You'll receive updates about your quizzes."
+          "title": "Notificaciones activadas",
+          "message": "Recibirás actualizaciones sobre tus cuestionarios."
         },
         "disabled": {
-          "title": "Notifications disabled",
-          "message": "Enable notifications to receive updates."
+          "title": "Notificaciones desactivadas",
+          "message": "Activa las notificaciones para recibir actualizaciones."
         },
-        "enable": "Enable",
-        "enableLoading": "Enabling...",
-        "disable": "Disable",
-        "disableLoading": "Disabling...",
+        "enable": "Activar",
+        "enableLoading": "Activando...",
+        "disable": "Desactivar",
+        "disableLoading": "Desactivando...",
         "card": {
-          "title": "Enable notifications",
-          "message": "Get updates about your quizzes"
+          "title": "Activar notificaciones",
+          "message": "Recibe actualizaciones sobre tus cuestionarios"
         }
       },
       "offline": {
-        "title": "Offline",
-        "subtitle": "Download quizzes for offline use",
-        "pwaOnly": "Offline download is only available in the installed app (PWA).",
-        "downloadedLabel": "downloaded",
-        "downloading": "Downloading {{current}} of {{total}}...",
-        "offlineHint": "You're offline. Connect to the internet to download content.",
-        "downloadAll": "Download all",
-        "info": "Downloaded content is available offline on this device.",
+        "title": "Sin conexión",
+        "subtitle": "Descarga cuestionarios para usarlos sin conexión",
+        "pwaOnly": "La descarga sin conexión solo está disponible en la aplicación instalada (PWA).",
+        "downloadedLabel": "descargado",
+        "downloading": "Descargando {{current}} de {{total}}...",
+        "offlineHint": "Estás sin conexión. Conéctate a Internet para descargar contenido.",
+        "downloadAll": "Descargar todo",
+        "info": "El contenido descargado está disponible sin conexión en este dispositivo.",
         "status": {
-          "offline": "Offline",
-          "online": "Online"
+          "offline": "Sin conexión",
+          "online": "En línea"
         }
       }
     }
@@ -528,221 +580,221 @@
     "es": "Español"
   },
   "tabs": {
-    "owned": "Owned",
-    "coAuthored": "Co-authored",
-    "public": "Public"
+    "owned": "Míos",
+    "coAuthored": "En coautoría",
+    "public": "Públicos"
   },
   "access": {
-    "enrollmentRequired": "Enrollment required",
-    "directStart": "Direct start",
-    "directAvailable": "Available directly"
+    "enrollmentRequired": "Se requiere inscripción",
+    "directStart": "Inicio directo",
+    "directAvailable": "Disponible directamente"
   },
   "join": {
-    "joinWithCode": "Join with code",
-    "join": "Join",
-    "joining": "Joining...",
-    "codePlaceholder": "Enter code",
-    "codeLabel": "Code",
-    "shareCode": "Share code",
+    "joinWithCode": "Unirse con un código",
+    "join": "Unirse",
+    "joining": "Uniéndose...",
+    "codePlaceholder": "Introduce el código",
+    "codeLabel": "Código",
+    "shareCode": "Compartir código",
     "quiz": {
-      "title": "Join quiz",
-      "subtitle": "Enter a join code to join a quiz.",
-      "ariaLabel": "Quiz code"
+      "title": "Unirse al cuestionario",
+      "subtitle": "Introduce un código para unirte a un cuestionario.",
+      "ariaLabel": "Código del cuestionario"
     },
     "deck": {
-      "title": "Join deck",
-      "subtitle": "Enter a code to join a deck.",
-      "ariaLabel": "Deck code"
+      "title": "Unirse al mazo",
+      "subtitle": "Introduce un código para unirte a un mazo.",
+      "ariaLabel": "Código del mazo"
     },
     "material": {
-      "title": "Open material",
-      "subtitle": "Enter a code to open a learning material.",
-      "ariaLabel": "Material code"
+      "title": "Abrir material",
+      "subtitle": "Introduce un código para abrir un material de aprendizaje.",
+      "ariaLabel": "Código del material"
     }
   },
   "updates": {
-    "title": "Updates",
-    "subtitle": "Changelog & news",
-    "footer": "More updates coming soon.",
+    "title": "Actualizaciones",
+    "subtitle": "Registro de cambios y noticias",
+    "footer": "Pronto habrá más actualizaciones.",
     "types": {
-      "feature": "Feature",
-      "bugfix": "Bugfix",
-      "improvement": "Improvement",
-      "breaking": "Breaking"
+      "feature": "Funcionalidad",
+      "bugfix": "Corrección",
+      "improvement": "Mejora",
+      "breaking": "Cambio importante"
     }
   },
   "quizSession": {
-    "loading": "Loading quiz...",
-    "completeTitle": "Quiz complete!",
-    "perfectAllCorrect": "Perfect! All answers were correct.",
-    "reviewMode": "Review mode",
-    "sessionTitle": "Quiz session",
-    "swipeHint": "Swipe to navigate",
-    "questionNumber": "Question {{number}}",
+    "loading": "Cargando cuestionario...",
+    "completeTitle": "¡Cuestionario completado!",
+    "perfectAllCorrect": "¡Perfecto! Todas las respuestas fueron correctas.",
+    "reviewMode": "Modo de repaso",
+    "sessionTitle": "Sesión de cuestionario",
+    "swipeHint": "Desliza para navegar",
+    "questionNumber": "Pregunta {{number}}",
     "nav": {
-      "of": "{{current}} of {{total}}"
+      "of": "{{current}} de {{total}}"
     },
     "stats": {
-      "totalQuestions": "Total questions",
-      "wrong": "Wrong"
+      "totalQuestions": "Total de preguntas",
+      "wrong": "Incorrectas"
     },
     "actions": {
-      "submitAnswer": "Submit answer",
-      "nextQuestion": "Next question",
-      "reviewWrong": "Review wrong answers ({{count}})"
+      "submitAnswer": "Enviar respuesta",
+      "nextQuestion": "Siguiente pregunta",
+      "reviewWrong": "Revisar respuestas incorrectas ({{count}})"
     },
     "flashcardMode": {
       "flashcard": "Flashcard",
       "normal": "Normal",
-      "switchToFlashcard": "Switch to flashcard mode",
-      "switchToNormal": "Switch to quiz mode"
+      "switchToFlashcard": "Cambiar a modo flashcards",
+      "switchToNormal": "Cambiar a modo cuestionario"
     },
     "multipleChoice": {
-      "correctAnswers": "Correct answers"
+      "correctAnswers": "Respuestas correctas"
     },
     "ordering": {
-      "instruction": "Put the items in the correct order",
-      "perfect": "Perfect!",
-      "notQuite": "Not quite",
-      "correctOrder": "Correct order",
-      "reviewCorrectOrder": "Review correct order"
+      "instruction": "Coloca los elementos en el orden correcto",
+      "perfect": "¡Perfecto!",
+      "notQuite": "Casi",
+      "correctOrder": "Orden correcto",
+      "reviewCorrectOrder": "Revisar el orden correcto"
     },
     "matching": {
-      "pleaseSelect": "Please select an option for each pair.",
-      "correctMatching": "Correct matching"
+      "pleaseSelect": "Selecciona una opción para cada par.",
+      "correctMatching": "Emparejamiento correcto"
     },
     "result": {
-      "correct": "Correct!",
-      "incorrect": "Incorrect",
-      "greatJob": "Great job! You're now level {{level}}.",
-      "reviewCorrect": "Review the correct answer and try again."
+      "correct": "¡Correcto!",
+      "incorrect": "Incorrecto",
+      "greatJob": "¡Buen trabajo! Ahora estás en el nivel {{level}}.",
+      "reviewCorrect": "Revisa la respuesta correcta e inténtalo de nuevo."
     }
   },
   "importDialog": {
-    "title": "Import quiz",
-    "processing": "Processing file...",
+    "title": "Importar cuestionario",
+    "processing": "Procesando archivo...",
     "dropzone": {
-      "title": "Drop a file here or click",
-      "supportedFormats": "Supported formats: CSV, Anki TXT, Anki APKG",
-      "chooseFile": "Choose file"
+      "title": "Suelta un archivo aquí o haz clic",
+      "supportedFormats": "Formatos compatibles: CSV, Anki TXT, Anki APKG",
+      "chooseFile": "Elegir archivo"
     },
     "examples": {
-      "title": "Format examples:",
-      "downloadSample": "Download sample",
+      "title": "Ejemplos de formato:",
+      "downloadSample": "Descargar ejemplo",
       "csv": {
-        "title": "CSV format"
+        "title": "Formato CSV"
       },
       "ankiTxt": {
-        "title": "Anki TXT format"
+        "title": "Formato Anki TXT"
       },
       "ankiApkg": {
-        "title": "Anki APKG format",
-        "hint": "Export your Anki deck as .apkg"
+        "title": "Formato Anki APKG",
+        "hint": "Exporta tu mazo de Anki como .apkg"
       }
     },
     "result": {
-      "successTitleOne": "{{count}} question imported successfully",
-      "successTitleMany": "{{count}} questions imported successfully",
+      "successTitleOne": "{{count}} pregunta importada correctamente",
+      "successTitleMany": "{{count}} preguntas importadas correctamente",
       "formatDetected": {
-        "csv": "Format detected: CSV",
-        "ankiTxt": "Format detected: Anki TXT",
-        "ankiApkg": "Format detected: Anki APKG"
+        "csv": "Formato detectado: CSV",
+        "ankiTxt": "Formato detectado: Anki TXT",
+        "ankiApkg": "Formato detectado: Anki APKG"
       },
-      "previewTitle": "Preview:",
-      "moreOne": "... and {{count}} more question",
-      "moreMany": "... and {{count}} more questions",
-      "warningsTitle": "Warnings ({{count}}):",
-      "moreWarnings": "... and {{count}} more",
-      "failedTitle": "Import failed"
+      "previewTitle": "Vista previa:",
+      "moreOne": "... y {{count}} pregunta más",
+      "moreMany": "... y {{count}} preguntas más",
+      "warningsTitle": "Advertencias ({{count}}):",
+      "moreWarnings": "... y {{count}} más",
+      "failedTitle": "Importación fallida"
     },
     "actions": {
-      "importOne": "Import {{count}} question",
-      "importMany": "Import {{count}} questions"
+      "importOne": "Importar {{count}} pregunta",
+      "importMany": "Importar {{count}} preguntas"
     }
   },
   "toonEditor": {
-    "title": "TOON editor",
+    "title": "Editor TOON",
     "subtitle": "Token Oriented Object Notation",
     "toolbar": {
-      "format": "Format",
-      "foldAll": "Fold all",
-      "unfoldAll": "Unfold all",
-      "insertExample": "Insert example"
+      "format": "Formatear",
+      "foldAll": "Plegar todo",
+      "unfoldAll": "Desplegar todo",
+      "insertExample": "Insertar ejemplo"
     },
-    "parseError": "Parse error",
+    "parseError": "Error de análisis",
     "about": {
-      "ariaLabel": "What is TOON?",
-      "title": "TOON format",
-      "p1Html": "<strong><a href=\"https://github.com/toon-format/toon\" target=\"_blank\" rel=\"noopener noreferrer\">TOON</a></strong> (Token Oriented Object Notation) describes a quiz in clear sections: <code>quiz</code> (metadata), <code>questions</code>, <code>options</code>, and <code>orderItems</code>.",
-      "p2": "Why? Easy, fast editing in the editor, great readability for humans, lower token cost, and better accuracy for LLMs.",
+      "ariaLabel": "¿Qué es TOON?",
+      "title": "Formato TOON",
+      "p1Html": "<strong><a href=\"https://github.com/toon-format/toon\" target=\"_blank\" rel=\"noopener noreferrer\">TOON</a></strong> (Token Oriented Object Notation) describe un quiz en secciones claras: <code>quiz</code> (metadatos), <code>questions</code>, <code>options</code> y <code>orderItems</code>.",
+      "p2": "¿Por qué? Edición fácil y rápida en el editor, buena legibilidad, menor coste de tokens y mejor precisión para los LLM.",
       "list": {
-        "structure": "Clear structure: questions + answers + ordering",
-        "batch": "Perfect for batch imports/exports"
+        "structure": "Estructura clara: preguntas + respuestas + orden",
+        "batch": "Perfecto para importaciones/exportaciones por lotes"
       },
-      "tip": "Tip: Accept autocomplete with Tab or Enter, use fold for blocks."
+      "tip": "Consejo: acepta el autocompletado con Tab o Enter, usa el plegado para bloques."
     }
   },
   "aiGenerator": {
-    "title": "Generate quiz with AI",
-    "subtitle": "Upload images or PDFs and let AI create a quiz",
+    "title": "Generar cuestionario con IA",
+    "subtitle": "Sube imágenes o PDF y deja que la IA cree un cuestionario",
     "upload": {
-      "title": "Select files",
-      "supportedTypes": "Images (JPG, PNG, GIF, WebP) or PDFs",
-      "limits": "Max. {{maxFiles}} files, {{maxFileSizeMB}}MB each",
-      "dragHint": "Drag files here or click to select",
-      "browse": "Browse"
+      "title": "Seleccionar archivos",
+      "supportedTypes": "Imágenes (JPG, PNG, GIF, WebP) o PDF",
+      "limits": "Máx. {{maxFiles}} archivos, {{maxFileSizeMB}}MB cada uno",
+      "dragHint": "Arrastra archivos aquí o haz clic para seleccionar",
+      "browse": "Explorar"
     },
     "config": {
-      "title": "Quiz configuration",
-      "teacherStyle": "Teacher style",
-      "questionCount": "Number of questions",
-      "typeDistribution": "Question type distribution"
+      "title": "Configuración del cuestionario",
+      "teacherStyle": "Estilo del profesor",
+      "questionCount": "Número de preguntas",
+      "typeDistribution": "Distribución de tipos de preguntas"
     },
     "teacherStyles": {
       "relaxed": {
-        "name": "Relaxed",
-        "description": "Simple, basic questions"
+        "name": "Relajado",
+        "description": "Preguntas simples y básicas"
       },
       "balanced": {
-        "name": "Balanced",
-        "description": "A balanced mix"
+        "name": "Equilibrado",
+        "description": "Una mezcla equilibrada"
       },
       "demanding": {
-        "name": "Demanding",
-        "description": "Detailed questions"
+        "name": "Exigente",
+        "description": "Preguntas detalladas"
       },
       "strict": {
-        "name": "Strict",
-        "description": "Precise, in-depth"
+        "name": "Estricto",
+        "description": "Preciso y en profundidad"
       }
     },
     "selectedFiles": {
-      "title": "Selected files ({{count}}/{{maxFiles}})",
+      "title": "Archivos seleccionados ({{count}}/{{maxFiles}})",
       "totalSize": "Total: {{size}}"
     },
     "actions": {
-      "generate": "Generate quiz",
-      "retry": "Retry ({{current}}/{{maxRetries}})"
+      "generate": "Generar cuestionario",
+      "retry": "Reintentar ({{current}}/{{maxRetries}})"
     },
     "progress": {
-      "processingFiles": "Processing files...",
-      "generating": "Generating quiz with AI...",
-      "validatingToon": "Validating TOON...",
-      "savingQuiz": "Saving quiz...",
-      "openingQuiz": "Done! Opening quiz..."
+      "processingFiles": "Procesando archivos...",
+      "generating": "Generando cuestionario con IA...",
+      "validatingToon": "Validando TOON...",
+      "savingQuiz": "Guardando cuestionario...",
+      "openingQuiz": "¡Listo! Abriendo el cuestionario..."
     },
     "loading": {
-      "hint": "This may take a few seconds..."
+      "hint": "Esto puede tardar unos segundos..."
     },
     "errors": {
-      "notEnabled": "AI generation is not enabled in this environment.",
-      "maxFiles": "Maximum {{maxFiles}} files allowed.",
-      "selectAtLeastOne": "Please select at least one file.",
-      "mustBeSignedIn": "You must be signed in.",
-      "generationFailedRetry": "Error: {{message}}. Please try again.",
-      "generationFailedRetryGeneric": "Error. Please try again.",
-      "generationFailed": "Generation failed after {{maxRetries}} attempts: {{message}}",
-      "generationFailedGeneric": "Generation failed after {{maxRetries}} attempts."
+      "notEnabled": "La generación con IA no está habilitada en este entorno.",
+      "maxFiles": "Se permiten como máximo {{maxFiles}} archivos.",
+      "selectAtLeastOne": "Selecciona al menos un archivo.",
+      "mustBeSignedIn": "Debes iniciar sesión.",
+      "generationFailedRetry": "Error: {{message}}. Inténtalo de nuevo.",
+      "generationFailedRetryGeneric": "Error. Inténtalo de nuevo.",
+      "generationFailed": "La generación falló después de {{maxRetries}} intentos: {{message}}",
+      "generationFailedGeneric": "La generación falló después de {{maxRetries}} intentos."
     }
   },
   "legal": {
@@ -1041,8 +1093,8 @@
     }
   },
   "fileValidation": {
-    "invalidType": "Invalid file type: {{type}}. Allowed: {{allowed}}",
-    "tooLarge": "File too large: {{size}}. Maximum: {{max}}"
+    "invalidType": "Tipo de archivo no válido: {{type}}. Permitidos: {{allowed}}",
+    "tooLarge": "Archivo demasiado grande: {{size}}. Máximo: {{max}}"
   },
   "mode": {
     "ariaLabel": "Modo de la aplicación"

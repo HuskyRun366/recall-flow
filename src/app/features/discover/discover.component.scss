@@ -1,4 +1,4 @@
-@use '../../styles/variables' as *;
+@use '../../../styles/variables' as *;
 
 .discover-page {
   padding: $spacing-lg;
@@ -141,7 +141,7 @@
 
     &.active {
       background: var(--color-primary);
-      color: white;
+      color: var(--color-on-primary);
     }
   }
 }

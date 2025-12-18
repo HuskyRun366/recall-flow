@@ -482,6 +482,13 @@
     "theme": "Theme",
     "darkMode": "Dark Mode",
     "lightMode": "Light Mode",
+    "themes": {
+      "default": "Default",
+      "ocean": "Ocean",
+      "forest": "Forest",
+      "sunset": "Sunset",
+      "highContrast": "High contrast"
+    },
     "notifications": "Notifications",
     "account": "Account",
     "profile": "Profile",
@@ -491,6 +498,51 @@
       "pwaNotice": {
         "title": "Tip: Install as an app",
         "message": "For offline downloads and push notifications, install RecallFlow as a PWA."
+      },
+      "theme": {
+        "title": "Color themes",
+        "subtitle": "Pick a preset or create your own",
+        "current": "Current theme",
+        "reset": "Reset",
+        "presets": {
+          "title": "Presets",
+          "subtitle": "Quickly switch the color palette"
+        },
+        "custom": {
+          "title": "Custom theme",
+          "subtitle": "Create and manage your own palettes",
+          "nameLabel": "Name",
+          "namePlaceholder": "e.g. \"My Theme\"",
+          "primaryLabel": "Primary",
+          "accentLabel": "Accent",
+          "save": "Save",
+          "update": "Update",
+          "preview": "Preview",
+          "empty": "No custom themes yet"
+        },
+        "marketplace": {
+          "title": "Theme marketplace",
+          "subtitle": "Install community themes",
+          "install": "Install",
+          "installed": "Installed"
+        },
+        "importExport": {
+          "title": "Import & export",
+          "subtitle": "Share themes as JSON or import them",
+          "exportTitle": "Export",
+          "copy": "Copy",
+          "importTitle": "Import",
+          "import": "Import",
+          "importPlaceholder": "Paste theme JSON here…"
+        },
+        "badges": {
+          "preset": "Preset",
+          "custom": "Custom",
+          "marketplace": "Marketplace"
+        },
+        "import": {
+          "error": "Invalid theme JSON"
+        }
       },
       "notifications": {
         "title": "Notifications",

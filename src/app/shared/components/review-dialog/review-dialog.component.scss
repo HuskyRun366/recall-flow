@@ -1,4 +1,4 @@
-@use '../../../styles/variables' as *;
+@use '../../../../styles/variables' as *;
 
 .dialog-backdrop {
   position: fixed;
@@ -173,7 +173,7 @@
 .btn-primary {
   background: var(--color-primary);
   border: none;
-  color: white;
+  color: var(--color-on-primary);
 
   &:hover:not(:disabled) {
     background: var(--color-primary-dark);

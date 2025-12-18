@@ -36,9 +36,9 @@
   }
 
   &.badge-download {
-    background: rgba(33, 150, 243, 0.15);
+    background: rgba(var(--color-primary-rgb), 0.15);
     color: var(--color-primary, #2196F3);
-    border: 1px solid rgba(33, 150, 243, 0.3);
+    border: 1px solid rgba(var(--color-primary-rgb), 0.3);
   }
 
   &.badge-success {

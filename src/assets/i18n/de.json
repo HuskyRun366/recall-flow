@@ -481,6 +481,13 @@
     "theme": "Design",
     "darkMode": "Dunkler Modus",
     "lightMode": "Heller Modus",
+    "themes": {
+      "default": "Standard",
+      "ocean": "Ozean",
+      "forest": "Wald",
+      "sunset": "Sonnenuntergang",
+      "highContrast": "Hoher Kontrast"
+    },
     "notifications": "Benachrichtigungen",
     "account": "Konto",
     "profile": "Profil",
@@ -490,6 +497,51 @@
       "pwaNotice": {
         "title": "Tipp: Als App installieren",
         "message": "Für Offline-Downloads und Push-Benachrichtigungen installiere RecallFlow als PWA."
+      },
+      "theme": {
+        "title": "Design-Themes",
+        "subtitle": "Wähle ein Farbschema oder erstelle dein eigenes",
+        "current": "Aktuelles Theme",
+        "reset": "Zurücksetzen",
+        "presets": {
+          "title": "Vordefinierte Themes",
+          "subtitle": "Schnell zwischen Farbschemata wechseln"
+        },
+        "custom": {
+          "title": "Eigenes Theme",
+          "subtitle": "Erstelle und verwalte deine eigenen Farbschemata",
+          "nameLabel": "Name",
+          "namePlaceholder": "z.B. „Mein Theme“",
+          "primaryLabel": "Primärfarbe",
+          "accentLabel": "Akzentfarbe",
+          "save": "Speichern",
+          "update": "Aktualisieren",
+          "preview": "Vorschau",
+          "empty": "Noch keine eigenen Themes"
+        },
+        "marketplace": {
+          "title": "Theme-Marktplatz",
+          "subtitle": "Installiere Community-Themes",
+          "install": "Installieren",
+          "installed": "Installiert"
+        },
+        "importExport": {
+          "title": "Import & Export",
+          "subtitle": "Themes als JSON teilen oder importieren",
+          "exportTitle": "Export",
+          "copy": "Kopieren",
+          "importTitle": "Import",
+          "import": "Importieren",
+          "importPlaceholder": "Theme-JSON hier einfügen…"
+        },
+        "badges": {
+          "preset": "Voreinstellung",
+          "custom": "Eigen",
+          "marketplace": "Marktplatz"
+        },
+        "import": {
+          "error": "Ungültiges Theme-JSON"
+        }
       },
       "notifications": {
         "title": "Benachrichtigungen",
