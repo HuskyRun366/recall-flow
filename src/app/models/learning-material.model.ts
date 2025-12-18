@@ -1,3 +1,5 @@
+import { ContentCategory, DifficultyLevel, ForkedFromInfo } from './quiz.model';
+
 export interface LearningMaterial {
   id: string;
   title: string;
@@ -14,4 +16,11 @@ export interface LearningMaterial {
     totalStudents: number; // Number of people with access
     totalViews: number;
   };
+  // Marketplace fields
+  category?: ContentCategory;
+  difficulty?: DifficultyLevel;
+  language?: string; // ISO 639-1 code: 'de', 'en', 'es', 'fr'
+  forkedFrom?: ForkedFromInfo;
+  averageRating?: number; // 0-5, denormalized from reviews
+  ratingCount?: number;
 }

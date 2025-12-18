@@ -29,6 +29,13 @@
             <a routerLink="/lernen/decks" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">{{ 'nav.flashcards' | translate }}</a>
             <a routerLink="/lernen/materials" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">{{ 'nav.materials' | translate }}</a>
           }
+          <a routerLink="/discover" routerLinkActive="active" (click)="mobileMenuOpen.set(false)" class="discover-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+            {{ 'nav.discover' | translate }}
+          </a>
           <a routerLink="/updates" routerLinkActive="active" (click)="mobileMenuOpen.set(false)" class="mobile-updates-link">
             {{ 'nav.updates' | translate }}
             @if (hasNewUpdates()) {

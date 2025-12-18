@@ -131,6 +131,12 @@ export const routes: Routes = [
     ]
   },
   {
+    path: 'discover',
+    canActivate: [authGuard],
+    data: { animationIndex: 50 },
+    loadComponent: () => import('./features/discover/discover.component').then(m => m.DiscoverComponent)
+  },
+  {
     path: 'settings',
     canActivate: [authGuard],
     data: { animationIndex: 30 },

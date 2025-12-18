@@ -1,0 +1,169 @@
+<div class="discover-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="header-content">
+      <span class="eyebrow">RecallFlow</span>
+      <h1>{{ 'discover.title' | translate }}</h1>
+      <p class="subtitle">{{ 'discover.subtitle' | translate }}</p>
+    </div>
+  </header>
+
+  <!-- Search & Filters -->
+  <section class="search-section">
+    <app-search-bar
+      [searchTerm]="searchTerm()"
+      [resultCount]="filteredResults().length"
+      (searchChange)="onSearchChange($event)"
+      [placeholder]="'discover.searchPlaceholder' | translate"
+    />
+
+    <app-filter-panel
+      [(contentType)]="contentType"
+      [(category)]="category"
+      [(difficulty)]="difficulty"
+      [(language)]="language"
+      (filterChange)="onFilterChange()"
+    />
+  </section>
+
+  <!-- Featured Section (only show if no active filters) -->
+  @if (!hasSearchFilters() && featuredItems().length > 0) {
+    <section class="featured-section">
+      <h2 class="section-title">{{ 'discover.featured' | translate }}</h2>
+      <div class="featured-scroll">
+        @if (isLoadingFeatured()) {
+          @for (i of [1,2,3]; track i) {
+            <div class="featured-card-skeleton">
+              <app-skeleton-loader type="card" />
+            </div>
+          }
+        } @else {
+          @for (item of featuredItems(); track item.content.id) {
+            <app-marketplace-card
+              [item]="item"
+              (fork)="onFork($event)"
+            />
+          }
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Top Charts Section (only show if no active search) -->
+  @if (!hasSearchFilters()) {
+    <section class="charts-section">
+      <div class="charts-header">
+        <h2 class="section-title">{{ 'discover.topCharts' | translate }}</h2>
+        <div class="chart-tabs">
+          <button
+            class="chart-tab"
+            [class.active]="activeChart() === 'popular'"
+            (click)="selectChart('popular')"
+          >
+            {{ 'discover.mostPopular' | translate }}
+          </button>
+          <button
+            class="chart-tab"
+            [class.active]="activeChart() === 'trending'"
+            (click)="selectChart('trending')"
+          >
+            {{ 'discover.trending' | translate }}
+          </button>
+          <button
+            class="chart-tab"
+            [class.active]="activeChart() === 'recent'"
+            (click)="selectChart('recent')"
+          >
+            {{ 'discover.recentlyAdded' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        @if (isLoadingChart()) {
+          @for (i of [1,2,3,4,5,6]; track i) {
+            <app-skeleton-loader type="card" />
+          }
+        } @else if (topChartItems().length === 0) {
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+              <path d="M9 19v-6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2zm0 0V9a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v10m-6 0a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2m0 0V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z"/>
+            </svg>
+            <p>{{ 'discover.noChartResults' | translate }}</p>
+          </div>
+        } @else {
+          @for (item of topChartItems(); track item.content.id) {
+            <app-marketplace-card
+              [item]="item"
+              (fork)="onFork($event)"
+            />
+          }
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Search Results Section -->
+  @if (hasSearchFilters()) {
+    <section class="results-section">
+      <div class="results-header">
+        <h2 class="section-title">
+          {{ 'discover.searchResults' | translate }}
+          <span class="result-count">({{ filteredResults().length }})</span>
+        </h2>
+      </div>
+
+      <div class="results-grid">
+        @if (isLoadingSearch()) {
+          @for (i of [1,2,3,4,5,6]; track i) {
+            <app-skeleton-loader type="card" />
+          }
+        } @else if (filteredResults().length === 0) {
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <p>{{ 'discover.noResults' | translate }}</p>
+          </div>
+        } @else {
+          @for (item of filteredResults(); track item.content.id) {
+            <app-marketplace-card
+              [item]="item"
+              (fork)="onFork($event)"
+            />
+          }
+        }
+      </div>
+    </section>
+  }
+
+  <!-- All Content Section (when no filters) -->
+  @if (!hasSearchFilters()) {
+    <section class="all-content-section">
+      <h2 class="section-title">{{ 'discover.allContent' | translate }}</h2>
+
+      <div class="content-grid">
+        @if (isLoadingSearch()) {
+          @for (i of [1,2,3,4,5,6]; track i) {
+            <app-skeleton-loader type="card" />
+          }
+        } @else if (searchResults().length === 0) {
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+              <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/>
+            </svg>
+            <p>{{ 'discover.noContent' | translate }}</p>
+          </div>
+        } @else {
+          @for (item of searchResults(); track item.content.id) {
+            <app-marketplace-card
+              [item]="item"
+              (fork)="onFork($event)"
+            />
+          }
+        }
+      </div>
+    </section>
+  }
+</div>

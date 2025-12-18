@@ -1,3 +1,5 @@
+import { ContentCategory, DifficultyLevel, ForkedFromInfo } from './quiz.model';
+
 export interface FlashcardDeck {
   id: string;
   title: string;
@@ -13,4 +15,11 @@ export interface FlashcardDeck {
     totalStudents: number; // Number of people studying this deck
     totalCompletions: number;
   };
+  // Marketplace fields
+  category?: ContentCategory;
+  difficulty?: DifficultyLevel;
+  language?: string; // ISO 639-1 code: 'de', 'en', 'es', 'fr'
+  forkedFrom?: ForkedFromInfo;
+  averageRating?: number; // 0-5, denormalized from reviews
+  ratingCount?: number;
 }

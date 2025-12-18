@@ -1,0 +1,253 @@
+@use '../../styles/variables' as *;
+
+.discover-page {
+  padding: $spacing-lg;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xxl;
+}
+
+// Page Header
+.page-header {
+  text-align: center;
+  padding: $spacing-xl 0;
+}
+
+.header-content {
+  .eyebrow {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--color-primary);
+    margin-bottom: $spacing-sm;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    margin: $spacing-sm 0 0;
+    font-size: 1.1rem;
+    color: var(--color-text-secondary);
+  }
+}
+
+// Search Section
+.search-section {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+// Section Titles
+.section-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+
+  .result-count {
+    font-weight: 400;
+    color: var(--color-text-tertiary);
+  }
+}
+
+// Featured Section
+.featured-section {
+  .featured-scroll {
+    display: flex;
+    gap: $spacing-lg;
+    overflow-x: auto;
+    padding: $spacing-md 0;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: var(--color-surface-elevated);
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--color-border);
+      border-radius: 4px;
+
+      &:hover {
+        background: var(--color-text-tertiary);
+      }
+    }
+
+    app-marketplace-card {
+      min-width: 320px;
+      max-width: 360px;
+      scroll-snap-align: start;
+    }
+  }
+
+  .featured-card-skeleton {
+    min-width: 320px;
+    max-width: 360px;
+  }
+}
+
+// Charts Section
+.charts-section {
+  .charts-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+    margin-bottom: $spacing-lg;
+  }
+
+  .chart-tabs {
+    display: flex;
+    gap: $spacing-xs;
+    background: var(--color-surface-elevated);
+    padding: 4px;
+    border-radius: $radius-lg;
+  }
+
+  .chart-tab {
+    padding: $spacing-sm $spacing-md;
+    background: transparent;
+    border: none;
+    border-radius: $radius-md;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover:not(.active) {
+      color: var(--color-text-primary);
+      background: var(--color-surface);
+    }
+
+    &.active {
+      background: var(--color-primary);
+      color: white;
+    }
+  }
+}
+
+// Grid layouts
+.charts-grid,
+.results-grid,
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: $spacing-lg;
+}
+
+// Results Section
+.results-section,
+.all-content-section {
+  .results-header {
+    margin-bottom: $spacing-lg;
+  }
+}
+
+// Empty State
+.empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xxl;
+  text-align: center;
+
+  svg {
+    color: var(--color-text-tertiary);
+    opacity: 0.5;
+    margin-bottom: $spacing-md;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .discover-page {
+    padding: $spacing-md;
+    gap: $spacing-xl;
+  }
+
+  .page-header {
+    padding: $spacing-md 0;
+  }
+
+  .header-content {
+    h1 {
+      font-size: 1.8rem;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+    }
+  }
+
+  .charts-section {
+    .charts-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .chart-tabs {
+      justify-content: center;
+    }
+  }
+
+  .charts-grid,
+  .results-grid,
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header {
+    padding: $spacing-sm 0;
+  }
+
+  .header-content {
+    h1 {
+      font-size: 1.5rem;
+    }
+  }
+
+  .section-title {
+    font-size: 1.2rem;
+  }
+
+  .chart-tabs {
+    flex-wrap: wrap;
+  }
+
+  .chart-tab {
+    flex: 1;
+    text-align: center;
+    padding: $spacing-xs $spacing-sm;
+    font-size: 0.8rem;
+  }
+}

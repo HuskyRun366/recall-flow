@@ -1,0 +1,63 @@
+<div class="dialog-backdrop" (click)="onBackdropClick($event)">
+  <div class="dialog">
+    <div class="dialog-header">
+      <h2>{{ 'discover.rating.title' | translate }}</h2>
+      <button class="close-btn" (click)="onClose()" [attr.aria-label]="'common.close' | translate">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="dialog-body">
+      @if (contentTitle()) {
+        <p class="content-title">{{ contentTitle() }}</p>
+      }
+
+      <div class="rating-section">
+        <label class="rating-label">{{ 'discover.rating.yourRating' | translate }}</label>
+        <app-star-rating
+          [rating]="rating()"
+          [editable]="true"
+          size="lg"
+          [showCount]="false"
+          (ratingChange)="onRatingChange($event)"
+        />
+      </div>
+
+      <div class="comment-section">
+        <label class="comment-label" for="review-comment">
+          {{ 'discover.rating.comment' | translate }}
+        </label>
+        <textarea
+          id="review-comment"
+          class="comment-input"
+          [ngModel]="comment()"
+          (ngModelChange)="comment.set($event)"
+          rows="4"
+          maxlength="500"
+          [placeholder]="'discover.rating.commentPlaceholder' | translate"
+        ></textarea>
+        <span class="char-count">{{ comment().length }}/500</span>
+      </div>
+    </div>
+
+    <div class="dialog-actions">
+      <button class="btn-secondary" (click)="onClose()" [disabled]="isSubmitting()">
+        {{ 'common.cancel' | translate }}
+      </button>
+      <button
+        class="btn-primary"
+        (click)="submit()"
+        [disabled]="rating() === 0 || isSubmitting()"
+      >
+        @if (isSubmitting()) {
+          {{ 'discover.rating.submitting' | translate }}
+        } @else {
+          {{ 'discover.rating.submit' | translate }}
+        }
+      </button>
+    </div>
+  </div>
+</div>

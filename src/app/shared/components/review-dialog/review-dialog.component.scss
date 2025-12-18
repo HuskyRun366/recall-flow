@@ -1,0 +1,206 @@
+@use '../../../styles/variables' as *;
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-lg;
+  z-index: 1200;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.dialog {
+  background: var(--color-surface);
+  border-radius: $radius-xl;
+  box-shadow: $shadow-xl;
+  width: 100%;
+  max-width: 420px;
+  animation: slideUp 0.25s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-lg $spacing-xl;
+  border-bottom: 1px solid var(--color-border);
+
+  h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+}
+
+.close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: $radius-md;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: var(--color-surface-elevated);
+    color: var(--color-text-primary);
+  }
+}
+
+.dialog-body {
+  padding: $spacing-xl;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.content-title {
+  margin: 0;
+  padding: $spacing-md;
+  background: var(--color-surface-elevated);
+  border-radius: $radius-md;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.rating-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.rating-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.comment-section {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.comment-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.comment-input {
+  padding: $spacing-md;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-md;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  resize: vertical;
+  min-height: 100px;
+  transition: border-color $transition-fast;
+
+  &::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+}
+
+.char-count {
+  align-self: flex-end;
+  font-size: 0.7rem;
+  color: var(--color-text-tertiary);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-md;
+  padding: $spacing-lg $spacing-xl;
+  border-top: 1px solid var(--color-border);
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: $spacing-sm $spacing-lg;
+  border-radius: $radius-md;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  border: none;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background: var(--color-primary-dark);
+    transform: translateY(-1px);
+  }
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+
+  &:hover:not(:disabled) {
+    background: var(--color-surface-elevated);
+    border-color: var(--color-text-tertiary);
+  }
+}
+
+// Responsive
+@media (max-width: 480px) {
+  .dialog-backdrop {
+    padding: $spacing-md;
+    align-items: flex-end;
+  }
+
+  .dialog {
+    max-width: 100%;
+    border-radius: $radius-xl $radius-xl 0 0;
+  }
+}

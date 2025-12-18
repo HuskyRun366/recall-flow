@@ -1,0 +1,98 @@
+@use '../../../styles/variables' as *;
+
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.stars {
+  display: flex;
+  gap: 2px;
+}
+
+.star {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: default;
+  color: var(--color-warning);
+  transition: transform $transition-fast, color $transition-fast;
+
+  svg {
+    display: block;
+  }
+
+  &.empty {
+    color: var(--color-text-tertiary);
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.editable {
+  .star {
+    cursor: pointer;
+
+    &:hover {
+      transform: scale(1.15);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+}
+
+// Sizes
+.size-sm {
+  .star svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .rating-info {
+    font-size: 0.75rem;
+  }
+}
+
+.size-md {
+  .star svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .rating-info {
+    font-size: 0.875rem;
+  }
+}
+
+.size-lg {
+  .star svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .rating-info {
+    font-size: 1rem;
+  }
+}
+
+.rating-info {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  color: var(--color-text-secondary);
+}
+
+.rating-value {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.rating-count {
+  font-size: 0.85em;
+  color: var(--color-text-tertiary);
+}

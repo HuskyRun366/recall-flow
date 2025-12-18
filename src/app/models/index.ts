@@ -10,3 +10,5 @@ export * from './flashcard-progress.model';
 export * from './deck-participant.model';
 export * from './learning-material.model';
 export * from './material-participant.model';
+export * from './review.model';
+export * from './marketplace.model';
