@@ -17,6 +17,7 @@ import { MarketplaceService, MarketplaceSearchParams } from '../../core/services
 import { ForkService } from '../../core/services/fork.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ToastService } from '../../core/services/toast.service';
+import { ColorThemeService } from '../../core/services/color-theme.service';
 import { SearchBarComponent } from '../../shared/components/search-bar/search-bar.component';
 import { MarketplaceCardComponent } from '../../shared/components/marketplace-card/marketplace-card.component';
 import { FilterPanelComponent } from '../../shared/components/filter-panel/filter-panel.component';
@@ -42,6 +43,7 @@ export class DiscoverComponent implements OnInit {
   private forkService = inject(ForkService);
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
+  private colorThemeService = inject(ColorThemeService);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
 
@@ -119,6 +121,18 @@ export class DiscoverComponent implements OnInit {
     this.isForkingId.set(item.content.id);
 
     try {
+      if (item.type === 'theme') {
+        const originId = (item.content as any).originId ?? item.content.id;
+        const installedId = this.colorThemeService.installCommunityTheme(originId);
+        if (installedId) {
+          this.toastService.success('Theme installed');
+        } else {
+          this.toastService.info('Theme already installed');
+        }
+        this.router.navigate(['/settings']);
+        return;
+      }
+
       const ownerName = await this.forkService.getOwnerDisplayName(item.content.ownerId);
       let newId: string;
 
@@ -187,13 +201,13 @@ export class DiscoverComponent implements OnInit {
     let observable;
     switch (chart) {
       case 'trending':
-        observable = this.marketplaceService.getTrending(undefined, 12);
+        observable = this.marketplaceService.getTrending(undefined, 8);
         break;
       case 'popular':
-        observable = this.marketplaceService.getMostPopular(undefined, 12);
+        observable = this.marketplaceService.getMostPopular(undefined, 8);
         break;
       case 'recent':
-        observable = this.marketplaceService.getRecentlyAdded(undefined, 12);
+        observable = this.marketplaceService.getRecentlyAdded(undefined, 8);
         break;
     }
 

@@ -1,5 +1,7 @@
 @use '../../../../styles/variables' as *;
 
+$mobile-breakpoint: 576px;
+
 .language-switcher {
   position: relative;
 }
@@ -47,13 +49,24 @@
   right: 0;
   bottom: 0;
   z-index: 99;
+  background: transparent;
+
+  @media (max-width: $mobile-breakpoint) {
+    background: rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.2s ease-out;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .dropdown-menu {
   position: absolute;
   top: calc(100% + $spacing-xs);
   right: 0;
-  min-width: 160px;
+  min-width: 180px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: $radius-lg;
@@ -61,6 +74,19 @@
   padding: $spacing-xs;
   z-index: 100;
   animation: slideDown 0.15s ease-out;
+
+  @media (max-width: $mobile-breakpoint) {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    min-width: 100%;
+    border-radius: $radius-xl $radius-xl 0 0;
+    padding: $spacing-md;
+    padding-bottom: calc($spacing-md + env(safe-area-inset-bottom, 0px));
+    animation: slideUp 0.25s ease-out;
+  }
 }
 
 @keyframes slideDown {
@@ -71,6 +97,31 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-header {
+  display: none;
+  padding: $spacing-sm $spacing-sm $spacing-md;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: $spacing-sm;
+
+  @media (max-width: $mobile-breakpoint) {
+    display: block;
   }
 }
 
@@ -89,8 +140,18 @@
   text-align: left;
   font-size: 0.95rem;
 
+  @media (max-width: $mobile-breakpoint) {
+    padding: $spacing-md;
+    font-size: 1rem;
+    min-height: $touch-target-comfortable;
+  }
+
   &:hover {
     background: var(--color-background);
+  }
+
+  &:active {
+    background: var(--color-surface-elevated);
   }
 
   &.active {
@@ -100,6 +161,10 @@
 
   .flag {
     font-size: 1.2rem;
+
+    @media (max-width: $mobile-breakpoint) {
+      font-size: 1.4rem;
+    }
   }
 
   .lang-name {

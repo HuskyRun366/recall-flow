@@ -14,6 +14,7 @@
   @if (isOpen()) {
     <div class="dropdown-backdrop" (click)="closeDropdown()"></div>
     <div class="dropdown-menu">
+      <div class="dropdown-header">{{ 'settings.page.language.current.title' | translate }}</div>
       @for (lang of languageService.availableLanguages; track lang.code) {
         <button
           type="button"

@@ -33,6 +33,7 @@ export interface StoredColorThemeV1 {
   name: string;
   source: Exclude<ColorThemeSource, 'preset'>;
   originId?: string;
+  visibility?: 'public' | 'private';
   palette: ThemePalette;
   darkPalette?: Partial<ThemePalette>;
 }
@@ -338,6 +339,42 @@ export class ColorThemeService {
     });
 
     return didUpdate;
+  }
+
+  upsertCustomTheme(input: { id: string; name: string; primary: string; accent: string; visibility?: 'public' | 'private' }): void {
+    const id = input.id.trim();
+    const name = input.name.trim();
+    if (!id || !name) return;
+
+    const primary = normalizeHexColor(input.primary);
+    const accent = normalizeHexColor(input.accent);
+    if (!primary || !accent) return;
+
+    this.storedThemesSignal.update((themes) => {
+      const existingIndex = themes.findIndex((t) => t.id === id);
+      const existing = existingIndex >= 0 ? themes[existingIndex] : null;
+
+      const next: StoredColorThemeV1 = {
+        version: 1,
+        id,
+        name,
+        source: 'custom',
+        originId: existing?.originId,
+        visibility: input.visibility ?? existing?.visibility,
+        palette: {
+          ...(existing?.palette ?? {}),
+          primary,
+          accent
+        },
+        darkPalette: existing?.darkPalette
+      };
+
+      if (existingIndex >= 0) {
+        return [next, ...themes.filter((_, i) => i !== existingIndex)];
+      }
+
+      return [next, ...themes];
+    });
   }
 
   deleteCustomTheme(id: string): void {

@@ -519,6 +519,7 @@
           "title": "Vordefinierte Themes",
           "subtitle": "Schnell zwischen Farbschemata wechseln"
         },
+        "createTheme": "Theme erstellen",
         "custom": {
           "title": "Eigenes Theme",
           "subtitle": "Erstelle und verwalte deine eigenen Farbschemata",
@@ -1143,6 +1144,13 @@
     "title": "Entdecken",
     "subtitle": "Erkunde öffentliche Inhalte der Community",
     "searchPlaceholder": "Quizzes, Decks, Materialien suchen...",
+    "contentType": "Inhaltstyp",
+    "category": "Kategorie",
+    "difficulty": "Schwierigkeit",
+    "language": "Sprache",
+    "categoryNone": "Alle Kategorien",
+    "difficultyNone": "Alle Stufen",
+    "languageNone": "Alle Sprachen",
     "noResults": "Keine Ergebnisse gefunden",
     "noResultsHint": "Versuche andere Suchbegriffe oder Filter",
     "noChartResults": "Keine Inhalte in dieser Kategorie",
@@ -1157,7 +1165,9 @@
     "questions": "Fragen",
     "cards": "Karten",
     "kb": "KB",
+    "colors": "Farben",
     "users": "Nutzer",
+    "installs": "Installationen",
     "viewDetails": "Details ansehen",
     "forkedFrom": "Kopiert von {{title}}",
     "featured": {
@@ -1177,9 +1187,11 @@
       "quiz": "Quiz",
       "deck": "Deck",
       "material": "Material",
+      "theme": "Theme",
       "quizzes": "Quizzes",
       "decks": "Flashcard-Decks",
-      "materials": "Lernunterlagen"
+      "materials": "Lernunterlagen",
+      "themes": "Themes"
     },
     "categories": {
       "all": "Alle Kategorien",

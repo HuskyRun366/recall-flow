@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { LanguageService, SupportedLanguage } from '../../../core/services/language.service';
 
 /**
@@ -9,7 +10,7 @@ import { LanguageService, SupportedLanguage } from '../../../core/services/langu
 @Component({
   selector: 'app-language-switcher',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './language-switcher.component.html',
   styleUrls: ['./language-switcher.component.scss']
 })

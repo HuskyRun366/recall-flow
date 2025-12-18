@@ -19,11 +19,13 @@ import {
   LearningMaterial,
   ContentCategory,
   DifficultyLevel,
+  MarketplaceTheme,
   MarketplaceItem,
   TopChartType,
   FeaturedContentConfig
 } from '../../models';
 import { ContentType } from '../../models/review.model';
+import { ColorThemeService, StoredColorThemeV1 } from './color-theme.service';
 
 export interface MarketplaceSearchParams {
   query?: string;
@@ -41,12 +43,13 @@ export interface MarketplaceSearchParams {
 export class MarketplaceService {
   private firestore = inject(Firestore);
   private injector = inject(Injector);
+  private colorThemes = inject(ColorThemeService);
 
   /**
    * Search marketplace with filters
    */
   searchMarketplace(params: MarketplaceSearchParams): Observable<MarketplaceItem[]> {
-    const contentTypes = params.contentTypes || ['quiz', 'deck', 'material'];
+    const contentTypes = params.contentTypes || ['quiz', 'deck', 'material', 'theme'];
     const limitCount = params.limitCount || 50;
 
     const searches: Observable<MarketplaceItem[]>[] = [];
@@ -59,6 +62,9 @@ export class MarketplaceService {
     }
     if (contentTypes.includes('material')) {
       searches.push(this.searchMaterials(params, limitCount));
+    }
+    if (contentTypes.includes('theme')) {
+      searches.push(this.searchThemes(params, limitCount));
     }
 
     return forkJoin(searches).pipe(
@@ -271,15 +277,42 @@ export class MarketplaceService {
     );
   }
 
+  private searchThemes(params: MarketplaceSearchParams, limitCount: number): Observable<MarketplaceItem[]> {
+    // Themes don't currently support the same category/difficulty/language filtering.
+    if (params.category || params.difficulty || params.language) {
+      return of([]);
+    }
+
+    let themes = this.getMarketplaceThemeItems();
+
+    if (params.query) {
+      const searchLower = params.query.toLowerCase();
+      themes = themes.filter((item) => {
+        const theme = item.content as MarketplaceTheme;
+        return (
+          theme.title.toLowerCase().includes(searchLower) ||
+          theme.description.toLowerCase().includes(searchLower)
+        );
+      });
+    }
+
+    return of(themes.slice(0, limitCount));
+  }
+
   private getTopContent(
     chartType: TopChartType,
     contentType?: ContentType,
     limitCount: number = 10
   ): Observable<MarketplaceItem[]> {
-    const contentTypes = contentType ? [contentType] : ['quiz', 'deck', 'material'] as ContentType[];
+    const contentTypes = contentType ? [contentType] : (['quiz', 'deck', 'material', 'theme'] as ContentType[]);
     const searches: Observable<MarketplaceItem[]>[] = [];
 
     contentTypes.forEach(type => {
+      if (type === 'theme') {
+        searches.push(of(this.getMarketplaceThemeItems().slice(0, limitCount)));
+        return;
+      }
+
       const collectionName = this.getCollectionName(type);
       const contentRef = collection(this.firestore, collectionName);
 
@@ -367,6 +400,8 @@ export class MarketplaceService {
       return (item.content as Quiz).metadata.totalParticipants;
     } else if (item.type === 'deck') {
       return (item.content as FlashcardDeck).metadata.totalStudents;
+    } else if (item.type === 'theme') {
+      return (item.content as MarketplaceTheme).metadata.totalInstalls;
     } else {
       return (item.content as LearningMaterial).metadata.totalStudents;
     }
@@ -380,10 +415,12 @@ export class MarketplaceService {
         return 'flashcardDecks';
       case 'material':
         return 'learningMaterials';
+      case 'theme':
+        return 'themes';
     }
   }
 
-  private convertTimestamps(data: any, type: ContentType): Quiz | FlashcardDeck | LearningMaterial {
+  private convertTimestamps(data: any, type: ContentType): Quiz | FlashcardDeck | LearningMaterial | MarketplaceTheme {
     switch (type) {
       case 'quiz':
         return this.convertQuizTimestamps(data);
@@ -391,6 +428,8 @@ export class MarketplaceService {
         return this.convertDeckTimestamps(data);
       case 'material':
         return this.convertMaterialTimestamps(data);
+      case 'theme':
+        return this.convertThemeTimestamps(data);
     }
   }
 
@@ -416,5 +455,37 @@ export class MarketplaceService {
       createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,
       updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : data.updatedAt
     };
+  }
+
+  private convertThemeTimestamps(data: any): MarketplaceTheme {
+    return {
+      ...data,
+      createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,
+      updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : data.updatedAt
+    };
+  }
+
+  private getMarketplaceThemeItems(): MarketplaceItem[] {
+    const community = this.colorThemes.communityThemes() as readonly Omit<StoredColorThemeV1, 'id'>[];
+    const now = new Date();
+
+    return community.map((t) => ({
+      type: 'theme' as ContentType,
+      content: {
+        id: t.originId ?? t.name,
+        originId: t.originId,
+        title: t.name,
+        description: '',
+        ownerId: 'community',
+        visibility: 'public',
+        createdAt: now,
+        updatedAt: now,
+        palette: t.palette,
+        darkPalette: t.darkPalette,
+        metadata: { totalInstalls: 0 },
+        averageRating: 0,
+        ratingCount: 0
+      } satisfies MarketplaceTheme
+    }));
   }
 }

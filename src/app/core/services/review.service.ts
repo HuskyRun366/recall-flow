@@ -252,6 +252,8 @@ export class ReviewService {
         return 'flashcardDecks';
       case 'material':
         return 'learningMaterials';
+      case 'theme':
+        return 'themes';
     }
   }
 

@@ -519,6 +519,7 @@
           "title": "Presets",
           "subtitle": "Quickly switch the color palette"
         },
+        "createTheme": "Create theme",
         "custom": {
           "title": "Custom theme",
           "subtitle": "Create and manage your own palettes",
@@ -1143,6 +1144,13 @@
     "title": "Discover",
     "subtitle": "Explore public content from the community",
     "searchPlaceholder": "Search quizzes, decks, materials...",
+    "contentType": "Content Type",
+    "category": "Category",
+    "difficulty": "Difficulty",
+    "language": "Language",
+    "categoryNone": "All Categories",
+    "difficultyNone": "All Levels",
+    "languageNone": "All Languages",
     "noResults": "No results found",
     "noResultsHint": "Try different keywords or filters",
     "noChartResults": "No content in this category",
@@ -1157,7 +1165,9 @@
     "questions": "Questions",
     "cards": "Cards",
     "kb": "KB",
+    "colors": "Colors",
     "users": "Users",
+    "installs": "Installs",
     "viewDetails": "View Details",
     "forkedFrom": "Forked from {{title}}",
     "featured": {
@@ -1177,9 +1187,11 @@
       "quiz": "Quiz",
       "deck": "Deck",
       "material": "Material",
+      "theme": "Theme",
       "quizzes": "Quizzes",
       "decks": "Flashcard Decks",
-      "materials": "Learning Materials"
+      "materials": "Learning Materials",
+      "themes": "Themes"
     },
     "categories": {
       "all": "All Categories",

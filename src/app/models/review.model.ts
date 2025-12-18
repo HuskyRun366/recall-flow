@@ -1,4 +1,4 @@
-export type ContentType = 'quiz' | 'deck' | 'material';
+export type ContentType = 'quiz' | 'deck' | 'material' | 'theme';
 
 export interface Review {
   id: string;

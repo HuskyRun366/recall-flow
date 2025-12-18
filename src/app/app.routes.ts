@@ -137,6 +137,18 @@ export const routes: Routes = [
     loadComponent: () => import('./features/discover/discover.component').then(m => m.DiscoverComponent)
   },
   {
+    path: 'settings/theme-editor/new',
+    canActivate: [authGuard],
+    data: { animationIndex: 31 },
+    loadComponent: () => import('./features/theme-editor/theme-editor.component').then(m => m.ThemeEditorComponent)
+  },
+  {
+    path: 'settings/theme-editor/:id',
+    canActivate: [authGuard],
+    data: { animationIndex: 31 },
+    loadComponent: () => import('./features/theme-editor/theme-editor.component').then(m => m.ThemeEditorComponent)
+  },
+  {
     path: 'settings',
     canActivate: [authGuard],
     data: { animationIndex: 30 },

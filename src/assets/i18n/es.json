@@ -508,6 +508,7 @@
           "title": "Preajustes",
           "subtitle": "Cambia rápidamente la paleta de colores"
         },
+        "createTheme": "Crear tema",
         "custom": {
           "title": "Tema personalizado",
           "subtitle": "Crea y gestiona tus propias paletas",
@@ -1119,16 +1120,35 @@
     "title": "Descubrir",
     "subtitle": "Explora contenido público de la comunidad",
     "searchPlaceholder": "Buscar cuestionarios, mazos, materiales...",
+    "contentType": "Tipo de contenido",
+    "category": "Categoría",
+    "difficulty": "Dificultad",
+    "language": "Idioma",
+    "categoryNone": "Todas las categorías",
+    "difficultyNone": "Todos los niveles",
+    "languageNone": "Todos los idiomas",
     "noResults": "No se encontraron resultados",
     "noResultsHint": "Prueba con otras palabras clave o filtros",
+    "noChartResults": "No hay contenido en esta categoría",
+    "noContent": "Aún no hay contenido disponible",
+    "searchResults": "Resultados de búsqueda",
+    "allContent": "Todo el contenido",
     "loading": "Cargando contenido...",
+    "topCharts": "Top Charts",
+    "mostPopular": "Más populares",
+    "trending": "En tendencia",
+    "recentlyAdded": "Añadidos recientemente",
+    "questions": "Preguntas",
+    "cards": "Tarjetas",
+    "kb": "KB",
+    "colors": "Colores",
+    "users": "Usuarios",
+    "installs": "Instalaciones",
+    "viewDetails": "Ver detalles",
+    "forkedFrom": "Copiado de {{title}}",
     "featured": {
       "title": "Destacados",
       "subtitle": "Seleccionados por nuestro equipo"
-    },
-    "trending": {
-      "title": "En tendencia",
-      "subtitle": "Populares esta semana"
     },
     "popular": {
       "title": "Más populares",
@@ -1140,9 +1160,14 @@
     },
     "contentTypes": {
       "all": "Todo",
+      "quiz": "Cuestionario",
+      "deck": "Mazo",
+      "material": "Material",
+      "theme": "Tema",
       "quizzes": "Cuestionarios",
       "decks": "Mazos de flashcards",
-      "materials": "Materiales de aprendizaje"
+      "materials": "Materiales de aprendizaje",
+      "themes": "Temas"
     },
     "categories": {
       "all": "Todas las categorías",

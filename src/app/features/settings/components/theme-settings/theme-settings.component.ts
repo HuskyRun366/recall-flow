@@ -1,43 +1,37 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { AuthService } from '../../../../core/services/auth.service';
 import { ColorTheme, ColorThemeService, StoredColorThemeV1 } from '../../../../core/services/color-theme.service';
+import { ThemeDocumentService } from '../../../../core/services/theme-document.service';
 import { ThemeService } from '../../../../core/services/theme.service';
+import { MarketplaceTheme } from '../../../../models';
 
 @Component({
   selector: 'app-theme-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, RouterModule, TranslateModule],
   templateUrl: './theme-settings.component.html',
   styleUrl: './theme-settings.component.scss'
 })
 export class ThemeSettingsComponent {
   private colorThemes = inject(ColorThemeService);
   private themeService = inject(ThemeService);
+  private authService = inject(AuthService);
+  private themeDocs = inject(ThemeDocumentService);
+  private router = inject(Router);
 
   // Data
   presets = this.colorThemes.presets;
-  customThemes = this.colorThemes.customThemes;
-  communityThemes = this.colorThemes.communityThemes;
-  installedCommunityOriginIds = this.colorThemes.installedCommunityOriginIds;
+  storedThemes = this.colorThemes.customThemes;
 
   activeThemeId = this.colorThemes.activeThemeId;
   activeTheme = this.colorThemes.activeTheme;
   currentMode = this.themeService.theme;
 
-  // Form state
-  editingThemeId = signal<string | null>(null);
-  themeName = signal('');
-  primaryColor = signal('#2196f3');
-  accentColor = signal('#ff9800');
-
-  importJson = signal('');
-  importErrorKey = signal<string | null>(null);
-
-  exportJson = computed(() => this.colorThemes.exportThemeAsJson(this.activeThemeId()) ?? '');
-
-  isEditing = computed(() => this.editingThemeId() !== null);
+  userThemes = signal<MarketplaceTheme[]>([]);
+  isLoadingUserThemes = signal(false);
 
   displayName(theme: ColorTheme): string {
     return theme.labelKey ? theme.labelKey : theme.name;
@@ -59,86 +53,76 @@ export class ThemeSettingsComponent {
     return this.previewGradient(asTheme);
   }
 
+  ownedThemes = computed(() => this.storedThemes().filter((t) => t.source === 'custom'));
+  installedThemes = computed(() => this.storedThemes().filter((t) => t.source === 'community'));
+
+  userThemeById = computed(() => {
+    return new Map(this.userThemes().map((t) => [t.id, t] as const));
+  });
+
   selectTheme(id: string): void {
     this.colorThemes.setActiveThemeId(id);
-  }
-
-  startCreate(): void {
-    this.editingThemeId.set(null);
-    this.themeName.set('');
-    this.primaryColor.set('#2196f3');
-    this.accentColor.set('#ff9800');
-  }
-
-  startEdit(theme: StoredColorThemeV1): void {
-    this.editingThemeId.set(theme.id);
-    this.themeName.set(theme.name);
-    this.primaryColor.set(theme.palette.primary);
-    this.accentColor.set(theme.palette.accent);
-  }
-
-  cancelEdit(): void {
-    this.startCreate();
-  }
-
-  saveTheme(): void {
-    const editingId = this.editingThemeId();
-    if (!editingId) {
-      this.colorThemes.saveCustomTheme({
-        name: this.themeName(),
-        primary: this.primaryColor(),
-        accent: this.accentColor()
-      });
-      this.startCreate();
-      return;
-    }
-
-    this.colorThemes.updateCustomTheme(editingId, {
-      name: this.themeName(),
-      primary: this.primaryColor(),
-      accent: this.accentColor()
-    });
-    this.startCreate();
-  }
-
-  deleteTheme(theme: StoredColorThemeV1, event?: Event): void {
-    event?.stopPropagation();
-    this.colorThemes.deleteCustomTheme(theme.id);
-    if (this.editingThemeId() === theme.id) {
-      this.startCreate();
-    }
   }
 
   resetToDefault(): void {
     this.colorThemes.resetToDefault();
   }
 
-  installCommunityTheme(originId: string, event?: Event): void {
-    event?.stopPropagation();
-    this.colorThemes.installCommunityTheme(originId);
+  createTheme(): void {
+    this.router.navigate(['/settings/theme-editor/new']);
   }
 
-  importTheme(): void {
-    this.importErrorKey.set(null);
+  editTheme(theme: StoredColorThemeV1, event?: Event): void {
+    event?.stopPropagation();
 
-    const id = this.colorThemes.importThemeFromJson(this.importJson());
-    if (!id) {
-      this.importErrorKey.set('settings.page.theme.import.error');
+    const isRemoteTheme = this.userThemeById().has(theme.id);
+    if (isRemoteTheme) {
+      this.router.navigate(['/settings/theme-editor', theme.id]);
       return;
     }
 
-    this.importJson.set('');
+    this.router.navigate(['/settings/theme-editor/new'], {
+      queryParams: { cloneFrom: theme.id }
+    });
   }
 
-  async copyExportJson(): Promise<void> {
-    const text = this.exportJson();
-    if (!text) return;
+  visibilityLabelKey(themeId: string): string | null {
+    const theme = this.userThemeById().get(themeId);
+    if (!theme) return null;
+    return theme.visibility === 'public' ? 'quiz.visibility.public' : 'quiz.visibility.private';
+  }
 
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch {
-      // Ignore (clipboard permissions vary)
-    }
+  constructor() {
+    effect((onCleanup) => {
+      const user = this.authService.currentUser();
+      if (!user) {
+        this.userThemes.set([]);
+        return;
+      }
+
+      this.isLoadingUserThemes.set(true);
+
+      const sub = this.themeDocs.getThemesForUser(user.uid).subscribe({
+          next: (themes) => {
+            this.userThemes.set(themes);
+            themes.forEach((t) => {
+              this.colorThemes.upsertCustomTheme({
+                id: t.id,
+                name: t.title,
+                primary: t.palette.primary,
+                accent: t.palette.accent,
+                visibility: t.visibility
+              });
+            });
+            this.isLoadingUserThemes.set(false);
+          },
+          error: (err) => {
+            console.error('Failed to load user themes:', err);
+            this.isLoadingUserThemes.set(false);
+          }
+        });
+
+      onCleanup(() => sub.unsubscribe());
+    });
   }
 }
-

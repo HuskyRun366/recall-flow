@@ -23,12 +23,21 @@
             <line x1="16" y1="17" x2="8" y2="17"/>
           </svg>
         }
+        @case ('theme') {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22a10 10 0 1 1 10-10c0 5-4 1-4 6 0 1.1-.9 2-2 2h-4Z"/>
+            <circle cx="13.5" cy="6.5" r="1"/>
+            <circle cx="17.5" cy="10.5" r="1"/>
+            <circle cx="8.5" cy="7.5" r="1"/>
+            <circle cx="6.5" cy="12.5" r="1"/>
+          </svg>
+        }
       }
       <span>{{ typeLabel() | translate }}</span>
     </div>
 
-    @if (item().content.forkedFrom) {
-      <span class="forked-badge" [title]="'discover.forkedFrom' | translate : { title: item().content.forkedFrom!.title }">
+    @if (forkedFrom()) {
+      <span class="forked-badge" [title]="'discover.forkedFrom' | translate : { title: forkedFrom()!.title }">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
           <circle cx="12" cy="18" r="3"/>
           <circle cx="6" cy="6" r="3"/>
@@ -37,25 +46,39 @@
           <path d="M12 12v3"/>
         </svg>
       </span>
+    } @else if (themePreviewGradient()) {
+      <div class="theme-preview" [style.background]="themePreviewGradient()"></div>
     }
   </div>
 
   <h3 class="card-title">{{ item().content.title }}</h3>
 
-  <p class="card-description">{{ item().content.description }}</p>
+  @if (item().type === 'theme') {
+    <p class="card-description">{{ 'settings.page.theme.marketplace.subtitle' | translate }}</p>
+  } @else {
+    <p class="card-description">{{ item().content.description }}</p>
+  }
 
   <div class="card-meta">
     @if (categoryLabel()) {
       <span class="meta-badge category">{{ categoryLabel() | translate }}</span>
     }
     @if (difficultyLabel()) {
-      <span class="meta-badge difficulty" [class]="'difficulty-' + item().content.difficulty">
+      <span class="meta-badge difficulty" [class]="difficultyClass()">
         {{ difficultyLabel() | translate }}
       </span>
     }
-    @if (item().content.language) {
-      <span class="meta-badge language">{{ item().content.language | uppercase }}</span>
+    @if (languageCode()) {
+      <span class="meta-badge language">{{ languageCode() | uppercase }}</span>
     }
+  </div>
+
+  <div class="card-rating-row">
+    <app-star-rating
+      [rating]="item().content.averageRating || 0"
+      [count]="item().content.ratingCount || 0"
+      size="sm"
+    />
   </div>
 
   <div class="card-stats">
@@ -65,29 +88,30 @@
     </div>
     <div class="stat">
       <span class="stat-value">{{ popularityCount() }}</span>
-      <span class="stat-label">{{ 'discover.users' | translate }}</span>
-    </div>
-    <div class="stat rating">
-      <app-star-rating
-        [rating]="item().content.averageRating || 0"
-        [count]="item().content.ratingCount || 0"
-        size="sm"
-      />
+      <span class="stat-label">{{ popularityLabel() | translate }}</span>
     </div>
   </div>
 
   <div class="card-actions">
     <span class="view-link">{{ 'discover.viewDetails' | translate }}</span>
     @if (showForkButton()) {
-      <button class="fork-btn" (click)="onFork($event)" [title]="'discover.fork.button' | translate">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-          <circle cx="12" cy="18" r="3"/>
-          <circle cx="6" cy="6" r="3"/>
-          <circle cx="18" cy="6" r="3"/>
-          <path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9"/>
-          <path d="M12 12v3"/>
-        </svg>
-        {{ 'discover.fork.button' | translate }}
+      <button class="fork-btn" (click)="onFork($event)" [title]="actionLabelKey() | translate">
+        @if (item().type === 'theme') {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <path d="M12 3v12"/>
+            <path d="m7 10 5 5 5-5"/>
+            <path d="M5 21h14"/>
+          </svg>
+        } @else {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <circle cx="12" cy="18" r="3"/>
+            <circle cx="6" cy="6" r="3"/>
+            <circle cx="18" cy="6" r="3"/>
+            <path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9"/>
+            <path d="M12 12v3"/>
+          </svg>
+        }
+        {{ actionLabelKey() | translate }}
       </button>
     }
   </div>

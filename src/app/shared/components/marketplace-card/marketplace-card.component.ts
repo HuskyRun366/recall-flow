@@ -2,7 +2,7 @@ import { Component, input, output, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { MarketplaceItem, Quiz, FlashcardDeck, LearningMaterial } from '../../../models';
+import { MarketplaceItem, MarketplaceTheme, Quiz, FlashcardDeck, LearningMaterial, ForkedFromInfo } from '../../../models';
 import { StarRatingComponent } from '../star-rating/star-rating.component';
 
 @Component({
@@ -27,6 +27,8 @@ export class MarketplaceCardComponent {
         return ['/lernen/deck', item.content.id];
       case 'material':
         return ['/lernen/material', item.content.id];
+      case 'theme':
+        return ['/settings'];
     }
   });
 
@@ -38,6 +40,8 @@ export class MarketplaceCardComponent {
         return 'flashcard';
       case 'material':
         return 'material';
+      case 'theme':
+        return 'theme';
     }
   });
 
@@ -49,6 +53,8 @@ export class MarketplaceCardComponent {
         return 'discover.contentTypes.deck';
       case 'material':
         return 'discover.contentTypes.material';
+      case 'theme':
+        return 'discover.contentTypes.theme';
     }
   });
 
@@ -61,6 +67,10 @@ export class MarketplaceCardComponent {
         return (item.content as FlashcardDeck).cardCount;
       case 'material':
         return Math.round((item.content as LearningMaterial).contentSize / 1024); // KB
+      case 'theme': {
+        const theme = item.content as MarketplaceTheme;
+        return Object.keys(theme.palette || {}).length;
+      }
     }
   });
 
@@ -72,6 +82,8 @@ export class MarketplaceCardComponent {
         return 'discover.cards';
       case 'material':
         return 'discover.kb';
+      case 'theme':
+        return 'discover.colors';
     }
   });
 
@@ -84,17 +96,58 @@ export class MarketplaceCardComponent {
         return (item.content as FlashcardDeck).metadata.totalStudents;
       case 'material':
         return (item.content as LearningMaterial).metadata.totalStudents;
+      case 'theme':
+        return (item.content as MarketplaceTheme).metadata.totalInstalls;
     }
   });
 
+  popularityLabel = computed(() => {
+    return this.item().type === 'theme' ? 'discover.installs' : 'discover.users';
+  });
+
   categoryLabel = computed(() => {
-    const category = this.item().content.category;
+    const item = this.item();
+    if (item.type === 'theme') return null;
+    const category = (item.content as Quiz | FlashcardDeck | LearningMaterial).category;
     return category ? `discover.categories.${category}` : null;
   });
 
   difficultyLabel = computed(() => {
-    const difficulty = this.item().content.difficulty;
+    const item = this.item();
+    if (item.type === 'theme') return null;
+    const difficulty = (item.content as Quiz | FlashcardDeck | LearningMaterial).difficulty;
     return difficulty ? `discover.difficulties.${difficulty}` : null;
+  });
+
+  difficultyClass = computed(() => {
+    const item = this.item();
+    if (item.type === 'theme') return '';
+    const difficulty = (item.content as Quiz | FlashcardDeck | LearningMaterial).difficulty;
+    return difficulty ? `difficulty-${difficulty}` : '';
+  });
+
+  languageCode = computed(() => {
+    const item = this.item();
+    if (item.type === 'theme') return null;
+    return (item.content as Quiz | FlashcardDeck | LearningMaterial).language ?? null;
+  });
+
+  forkedFrom = computed<ForkedFromInfo | null>(() => {
+    const item = this.item();
+    if (item.type === 'theme') return null;
+    return (item.content as Quiz | FlashcardDeck | LearningMaterial).forkedFrom ?? null;
+  });
+
+  themePreviewGradient = computed(() => {
+    if (this.item().type !== 'theme') return null;
+    const theme = this.item().content as MarketplaceTheme;
+    return `linear-gradient(135deg, ${theme.palette.primary}, ${theme.palette.accent})`;
+  });
+
+  actionLabelKey = computed(() => {
+    return this.item().type === 'theme'
+      ? 'settings.page.theme.marketplace.install'
+      : 'discover.fork.button';
   });
 
   onFork(event: Event): void {

@@ -46,170 +46,57 @@
   </div>
 
   <div class="theme-block">
-    <div class="block-header">
-      <h3>{{ 'settings.page.theme.custom.title' | translate }}</h3>
-      <p>{{ 'settings.page.theme.custom.subtitle' | translate }}</p>
-    </div>
-
-    <div class="custom-layout">
-      <div class="custom-form">
-        <div class="row">
-          <label for="themeName">{{ 'settings.page.theme.custom.nameLabel' | translate }}</label>
-          <input
-            id="themeName"
-            type="text"
-            autocomplete="off"
-            [ngModel]="themeName()"
-            (ngModelChange)="themeName.set($event)"
-            [placeholder]="'settings.page.theme.custom.namePlaceholder' | translate" />
-        </div>
-
-        <div class="row colors">
-          <div class="color-field">
-            <label for="primaryColor">{{ 'settings.page.theme.custom.primaryLabel' | translate }}</label>
-            <input
-              id="primaryColor"
-              type="color"
-              [ngModel]="primaryColor()"
-              (ngModelChange)="primaryColor.set($event)" />
-            <span class="hex">{{ primaryColor() }}</span>
-          </div>
-
-          <div class="color-field">
-            <label for="accentColor">{{ 'settings.page.theme.custom.accentLabel' | translate }}</label>
-            <input
-              id="accentColor"
-              type="color"
-              [ngModel]="accentColor()"
-              (ngModelChange)="accentColor.set($event)" />
-            <span class="hex">{{ accentColor() }}</span>
-          </div>
-        </div>
-
-        <div class="actions">
-          <button class="btn btn-primary" (click)="saveTheme()">
-            @if (isEditing()) {
-              {{ 'settings.page.theme.custom.update' | translate }}
-            } @else {
-              {{ 'settings.page.theme.custom.save' | translate }}
-            }
-          </button>
-          <button class="btn btn-secondary" (click)="cancelEdit()" [disabled]="!isEditing()">
-            {{ 'common.cancel' | translate }}
-          </button>
-        </div>
-
-        <div class="preview-line">
-          <div class="mini-preview" [style.background]="'linear-gradient(135deg,' + primaryColor() + ',' + accentColor() + ')'"></div>
-          <span>{{ 'settings.page.theme.custom.preview' | translate }}</span>
-        </div>
+    <div class="block-header block-header-row">
+      <div>
+        <h3>{{ 'settings.page.theme.custom.title' | translate }}</h3>
+        <p>{{ 'settings.page.theme.custom.subtitle' | translate }}</p>
       </div>
 
-      <div class="custom-list">
-        @if (customThemes().length === 0) {
-          <div class="empty">
-            {{ 'settings.page.theme.custom.empty' | translate }}
-          </div>
-        } @else {
-          <div class="theme-grid">
-            @for (theme of customThemes(); track theme.id) {
-              <button
-                class="theme-card"
-                type="button"
-                [class.active]="activeThemeId() === theme.id"
-                (click)="selectTheme(theme.id)">
-                <div class="swatch" [style.background]="previewGradientForStoredTheme(theme)"></div>
-                <div class="meta">
-                  <div class="name">{{ theme.name }}</div>
-                  <div class="badge">
-                    @if (theme.source === 'community') {
-                      {{ 'settings.page.theme.badges.marketplace' | translate }}
-                    } @else {
-                      {{ 'settings.page.theme.badges.custom' | translate }}
-                    }
-                  </div>
-                </div>
+      <button class="btn btn-primary btn-small" type="button" (click)="createTheme()">
+        {{ 'settings.page.theme.createTheme' | translate }}
+      </button>
+    </div>
 
-                <div class="card-actions">
-                  <button class="icon-btn" type="button" (click)="startEdit(theme); $event.stopPropagation()" [title]="'common.edit' | translate">
-                    ✎
-                  </button>
-                  <button class="icon-btn danger" type="button" (click)="deleteTheme(theme, $event)" [title]="'common.delete' | translate">
-                    ×
-                  </button>
+    @if (storedThemes().length === 0) {
+      <div class="empty">
+        {{ 'settings.page.theme.custom.empty' | translate }}
+      </div>
+    } @else {
+      <div class="theme-grid">
+        @for (theme of storedThemes(); track theme.id) {
+          <div
+            class="theme-card"
+            role="button"
+            tabindex="0"
+            [class.active]="activeThemeId() === theme.id"
+            (click)="selectTheme(theme.id)">
+            <div class="swatch" [style.background]="previewGradientForStoredTheme(theme)"></div>
+            <div class="meta">
+              <div class="name">{{ theme.name }}</div>
+              <div class="badge-row">
+                <div class="badge">
+                  @if (theme.source === 'community') {
+                    {{ 'settings.page.theme.badges.marketplace' | translate }}
+                  } @else {
+                    {{ 'settings.page.theme.badges.custom' | translate }}
+                  }
                 </div>
-              </button>
-            }
+                @if (theme.source === 'custom' && visibilityLabelKey(theme.id)) {
+                  <div class="badge">{{ visibilityLabelKey(theme.id)! | translate }}</div>
+                }
+              </div>
+            </div>
+
+            <div class="card-actions">
+              @if (theme.source === 'custom') {
+                <button class="icon-btn" type="button" (click)="editTheme(theme, $event)" [title]="'common.edit' | translate">
+                  ✎
+                </button>
+              }
+            </div>
           </div>
         }
       </div>
-    </div>
-  </div>
-
-  <div class="theme-block">
-    <div class="block-header">
-      <h3>{{ 'settings.page.theme.marketplace.title' | translate }}</h3>
-      <p>{{ 'settings.page.theme.marketplace.subtitle' | translate }}</p>
-    </div>
-
-    <div class="theme-grid">
-      @for (theme of communityThemes(); track theme.originId) {
-        <div class="theme-card marketplace" [class.active]="installedCommunityOriginIds().has(theme.originId!)">
-          <div class="swatch" [style.background]="'linear-gradient(135deg,' + theme.palette.primary + ',' + theme.palette.accent + ')'"></div>
-          <div class="meta">
-            <div class="name">{{ theme.name }}</div>
-            <div class="badge">{{ 'settings.page.theme.badges.marketplace' | translate }}</div>
-          </div>
-
-          <div class="marketplace-actions">
-            @if (installedCommunityOriginIds().has(theme.originId!)) {
-              <span class="installed">{{ 'settings.page.theme.marketplace.installed' | translate }}</span>
-            } @else {
-              <button class="btn btn-small btn-secondary" (click)="installCommunityTheme(theme.originId!, $event)">
-                {{ 'settings.page.theme.marketplace.install' | translate }}
-              </button>
-            }
-          </div>
-        </div>
-      }
-    </div>
-  </div>
-
-  <div class="theme-block">
-    <div class="block-header">
-      <h3>{{ 'settings.page.theme.importExport.title' | translate }}</h3>
-      <p>{{ 'settings.page.theme.importExport.subtitle' | translate }}</p>
-    </div>
-
-    <div class="io-grid">
-      <div class="io-panel">
-        <div class="io-header">
-          <strong>{{ 'settings.page.theme.importExport.exportTitle' | translate }}</strong>
-          <button class="btn btn-secondary btn-small" (click)="copyExportJson()" [disabled]="!exportJson()">
-            {{ 'settings.page.theme.importExport.copy' | translate }}
-          </button>
-        </div>
-        <textarea class="io-textarea" [value]="exportJson()" readonly></textarea>
-      </div>
-
-      <div class="io-panel">
-        <div class="io-header">
-          <strong>{{ 'settings.page.theme.importExport.importTitle' | translate }}</strong>
-          <button class="btn btn-primary btn-small" (click)="importTheme()" [disabled]="!importJson().trim()">
-            {{ 'settings.page.theme.importExport.import' | translate }}
-          </button>
-        </div>
-        <textarea
-          class="io-textarea"
-          [ngModel]="importJson()"
-          (ngModelChange)="importJson.set($event)"
-          [placeholder]="'settings.page.theme.importExport.importPlaceholder' | translate"></textarea>
-
-        @if (importErrorKey()) {
-          <div class="io-error">{{ importErrorKey()! | translate }}</div>
-        }
-      </div>
-    </div>
+    }
   </div>
 </div>
-

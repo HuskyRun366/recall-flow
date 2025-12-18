@@ -266,6 +266,25 @@ service cloud.firestore {
     }
 
     // =============================================
+    // THEMES RULES
+    // =============================================
+
+    match /themes/{themeId} {
+      allow read: if resource.data.visibility == 'public' || isOwner(resource.data.ownerId);
+
+      allow create: if isAuthenticated() &&
+                       request.resource.data.ownerId == request.auth.uid &&
+                       request.resource.data.visibility in ['public', 'private'];
+
+      allow update: if isAuthenticated() &&
+                       resource.data.ownerId == request.auth.uid &&
+                       request.resource.data.ownerId == request.auth.uid &&
+                       request.resource.data.visibility in ['public', 'private'];
+
+      allow delete: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
+    }
+
+    // =============================================
     // REVIEWS RULES (for marketplace)
     // =============================================
 
@@ -277,6 +296,8 @@ service cloud.firestore {
         get(/databases/$(database)/documents/flashcardDecks/$(contentId)).data.visibility in ['public', 'unlisted']
       ) : contentType == 'material' ? (
         get(/databases/$(database)/documents/learningMaterials/$(contentId)).data.visibility in ['public', 'unlisted']
+      ) : contentType == 'theme' ? (
+        get(/databases/$(database)/documents/themes/$(contentId)).data.visibility == 'public'
       ) : false;
     }
 
@@ -288,6 +309,8 @@ service cloud.firestore {
         get(/databases/$(database)/documents/flashcardDecks/$(contentId)).data.ownerId == request.auth.uid
       ) : contentType == 'material' ? (
         get(/databases/$(database)/documents/learningMaterials/$(contentId)).data.ownerId == request.auth.uid
+      ) : contentType == 'theme' ? (
+        get(/databases/$(database)/documents/themes/$(contentId)).data.ownerId == request.auth.uid
       ) : false;
     }
 

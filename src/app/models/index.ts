@@ -12,3 +12,4 @@ export * from './learning-material.model';
 export * from './material-participant.model';
 export * from './review.model';
 export * from './marketplace.model';
+export * from './marketplace-theme.model';

@@ -508,6 +508,7 @@
           "title": "Préréglages",
           "subtitle": "Changez rapidement de palette de couleurs"
         },
+        "createTheme": "Créer un thème",
         "custom": {
           "title": "Thème personnalisé",
           "subtitle": "Créez et gérez vos propres palettes",
@@ -1119,16 +1120,35 @@
     "title": "Découvrir",
     "subtitle": "Explorez le contenu public de la communauté",
     "searchPlaceholder": "Rechercher des quiz, decks, documents...",
+    "contentType": "Type de contenu",
+    "category": "Catégorie",
+    "difficulty": "Difficulté",
+    "language": "Langue",
+    "categoryNone": "Toutes les catégories",
+    "difficultyNone": "Tous les niveaux",
+    "languageNone": "Toutes les langues",
     "noResults": "Aucun résultat trouvé",
     "noResultsHint": "Essayez d'autres mots-clés ou filtres",
+    "noChartResults": "Aucun contenu dans cette catégorie",
+    "noContent": "Aucun contenu disponible pour le moment",
+    "searchResults": "Résultats de recherche",
+    "allContent": "Tout le contenu",
     "loading": "Chargement du contenu...",
+    "topCharts": "Top Charts",
+    "mostPopular": "Les plus populaires",
+    "trending": "Tendances",
+    "recentlyAdded": "Ajoutés récemment",
+    "questions": "Questions",
+    "cards": "Cartes",
+    "kb": "KB",
+    "colors": "Couleurs",
+    "users": "Utilisateurs",
+    "installs": "Installations",
+    "viewDetails": "Voir les détails",
+    "forkedFrom": "Copié de {{title}}",
     "featured": {
       "title": "En vedette",
       "subtitle": "Sélectionnés par notre équipe"
-    },
-    "trending": {
-      "title": "Tendances",
-      "subtitle": "Populaires cette semaine"
     },
     "popular": {
       "title": "Les plus populaires",
@@ -1140,9 +1160,14 @@
     },
     "contentTypes": {
       "all": "Tout",
+      "quiz": "Quiz",
+      "deck": "Deck",
+      "material": "Document",
+      "theme": "Thème",
       "quizzes": "Quiz",
       "decks": "Decks de flashcards",
-      "materials": "Documents d'apprentissage"
+      "materials": "Documents d'apprentissage",
+      "themes": "Thèmes"
     },
     "categories": {
       "all": "Toutes les catégories",

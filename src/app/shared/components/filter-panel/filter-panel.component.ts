@@ -40,7 +40,8 @@ export class FilterPanelComponent {
     { value: 'all', label: 'discover.contentTypes.all' },
     { value: 'quiz', label: 'discover.contentTypes.quiz' },
     { value: 'deck', label: 'discover.contentTypes.deck' },
-    { value: 'material', label: 'discover.contentTypes.material' }
+    { value: 'material', label: 'discover.contentTypes.material' },
+    { value: 'theme', label: 'discover.contentTypes.theme' }
   ];
 
   hasActiveFilters(): boolean {
