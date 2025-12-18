@@ -19,15 +19,32 @@
         <line x1="12" y1="16" x2="12.01" y2="16"/>
       </svg>
       <h2>{{ 'errors.loadingFailed' | translate }}</h2>
-      <p>{{ error() }}</p>
+      <p>{{ error() | translate }}</p>
       <button class="btn btn-primary" (click)="refreshData()">{{ 'common.retry' | translate }}</button>
     </div>
   } @else {
     <!-- Statistics Summary -->
     <div class="stats-summary">
-      <app-stat-card [config]="totalDecksConfig()" />
-      <app-stat-card [config]="totalCardsConfig()" />
-      <app-stat-card [config]="progressConfig()" />
+      <app-stat-card [config]="{
+        icon: 'svg',
+        iconContent: '<rect x=\'2\' y=\'7\' width=\'20\' height=\'14\' rx=\'2\'/><path d=\'M2 11h20\'/>',
+        value: totalDecks(),
+        label: ('flashcard.decks' | translate)
+      }" />
+
+      <app-stat-card [config]="{
+        icon: 'svg',
+        iconContent: '<path d=\'M9 11H3v9h6v-9Z M21 11h-6v9h6v-9Z M15 5H9v14h6V5Z\'/>',
+        value: totalFlashcards(),
+        label: ('nav.flashcards' | translate)
+      }" />
+
+      <app-stat-card [config]="{
+        icon: 'svg',
+        iconContent: '<polyline points=\'22 12 18 12 15 21 9 3 6 12 2 12\'/>',
+        value: overallProgress() + '%',
+        label: ('stats.progress' | translate)
+      }" />
     </div>
 
     <!-- Progress Bars -->

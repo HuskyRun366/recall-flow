@@ -3,7 +3,13 @@
     <div class="progress-row">
       <div class="progress-label">
         <span class="level-indicator level-{{ item.level }}"></span>
-        <span [id]="'level-' + item.level + '-label'">{{ item.label }}</span>
+        <span [id]="'level-' + item.level + '-label'">
+          @if (item.labelKey) {
+            {{ item.labelKey | translate }}
+          } @else {
+            {{ item.label }}
+          }
+        </span>
       </div>
       <div class="progress-bar-wrapper">
         <div class="progress-bar" role="progressbar"
