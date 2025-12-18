@@ -9,7 +9,6 @@ import { ModeService } from '../../../core/services/mode.service';
 import { UpdatesService } from '../../../core/services/updates.service';
 import { NetworkStatusComponent } from '../network-status/network-status.component';
 import { ModeSwitchComponent } from '../mode-switch/mode-switch.component';
-import { LanguageSwitcherComponent } from '../language-switcher/language-switcher.component';
 
 @Component({
   selector: 'app-header',
@@ -20,8 +19,7 @@ import { LanguageSwitcherComponent } from '../language-switcher/language-switche
     A11yModule,
     TranslateModule,
     NetworkStatusComponent,
-    ModeSwitchComponent,
-    LanguageSwitcherComponent
+    ModeSwitchComponent
   ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']

@@ -13,6 +13,18 @@ export interface ChangelogItem {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '2.2',
+    date: new Date('2025-12-18'),
+    title: 'Custom Themes & Settings Verbesserungen',
+    changes: [
+      { type: 'feature', text: 'Neue Farb-Themes in den Einstellungen: Presets, eigene Themes, Marketplace sowie Import/Export als JSON' },
+      { type: 'improvement', text: 'Theme-Farben wirken jetzt app-weit inkl. Gradients und besserer Lesbarkeit auf Buttons & Highlights' },
+      { type: 'improvement', text: 'Theme-Bereich in den Einstellungen ist einklappbar (kompakte Vorschau)' },
+      { type: 'improvement', text: 'Sprach-Auswahl wurde aus dem Header in die Einstellungen verschoben' },
+      { type: 'bugfix', text: 'Fix: verbuggtes Theme-Icon im Settings-Header' }
+    ]
+  },
+  {
     version: '2.1',
     date: new Date('2025-12-17'),
     title: 'Materials Integration & Viewer Fixes',

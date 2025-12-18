@@ -487,11 +487,22 @@
         "title": "Astuce : installer comme application",
         "message": "Pour les téléchargements hors ligne et les notifications push, installez RecallFlow en PWA."
       },
+      "language": {
+        "subtitle": "Choisissez la langue de l'application",
+        "current": {
+          "title": "Langue",
+          "subtitle": "Ce réglage s'applique à toute l'application"
+        }
+      },
       "theme": {
         "title": "Thèmes de couleur",
         "subtitle": "Choisissez un préréglage ou créez le vôtre",
         "current": "Thème actuel",
         "reset": "Réinitialiser",
+        "actions": {
+          "expand": "Afficher",
+          "collapse": "Réduire"
+        },
         "presets": {
           "title": "Préréglages",
           "subtitle": "Changez rapidement de palette de couleurs"

@@ -498,11 +498,22 @@
         "title": "Tipp: Als App installieren",
         "message": "Für Offline-Downloads und Push-Benachrichtigungen installiere RecallFlow als PWA."
       },
+      "language": {
+        "subtitle": "Wähle die Sprache der App",
+        "current": {
+          "title": "Sprache",
+          "subtitle": "Diese Einstellung gilt für die gesamte App"
+        }
+      },
       "theme": {
         "title": "Design-Themes",
         "subtitle": "Wähle ein Farbschema oder erstelle dein eigenes",
         "current": "Aktuelles Theme",
         "reset": "Zurücksetzen",
+        "actions": {
+          "expand": "Öffnen",
+          "collapse": "Einklappen"
+        },
         "presets": {
           "title": "Vordefinierte Themes",
           "subtitle": "Schnell zwischen Farbschemata wechseln"

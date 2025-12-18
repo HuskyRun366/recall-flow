@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { PushNotificationService } from '../../core/services/push-notification.service';
@@ -7,11 +7,16 @@ import { NetworkStatusService } from '../../core/services/network-status.service
 import { PwaDetectionService } from '../../core/services/pwa-detection.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ThemeSettingsComponent } from './components/theme-settings/theme-settings.component';
+import { ColorThemeService } from '../../core/services/color-theme.service';
+import { ThemeService } from '../../core/services/theme.service';
+import { LanguageSwitcherComponent } from '../../shared/components/language-switcher/language-switcher.component';
+
+const STORAGE_THEME_SETTINGS_EXPANDED = 'quiz-app-theme-settings-expanded';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, TranslateModule, ThemeSettingsComponent],
+  imports: [CommonModule, TranslateModule, ThemeSettingsComponent, LanguageSwitcherComponent],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss'
 })
@@ -21,6 +26,8 @@ export class SettingsComponent {
   private networkStatus = inject(NetworkStatusService);
   private pwaDetection = inject(PwaDetectionService);
   private authService = inject(AuthService);
+  private colorThemes = inject(ColorThemeService);
+  private themeService = inject(ThemeService);
 
   // PWA Detection
   isPWA = this.pwaDetection.isPWA;
@@ -59,6 +66,20 @@ export class SettingsComponent {
     return this.preloadedQuizzes().size;
   });
 
+  // Theme (palette) section collapse state
+  isThemeSettingsExpanded = signal(this.loadThemeSettingsExpanded());
+
+  activeColorTheme = this.colorThemes.activeTheme;
+  currentMode = this.themeService.theme;
+  themePreviewGradient = computed(() => this.colorThemes.getPreviewGradient(this.activeColorTheme(), this.currentMode()));
+
+  constructor() {
+    effect(() => {
+      if (typeof localStorage === 'undefined') return;
+      localStorage.setItem(STORAGE_THEME_SETTINGS_EXPANDED, String(this.isThemeSettingsExpanded()));
+    });
+  }
+
   async enableNotifications(): Promise<void> {
     this.isEnabling.set(true);
 
@@ -92,5 +113,17 @@ export class SettingsComponent {
 
   async preloadQuizzesForOffline(): Promise<void> {
     await this.offlinePreloadService.preloadAllQuizzes();
+  }
+
+  toggleThemeSettings(): void {
+    this.isThemeSettingsExpanded.update((v) => !v);
+  }
+
+  private loadThemeSettingsExpanded(): boolean {
+    if (typeof localStorage === 'undefined') return false;
+    const raw = localStorage.getItem(STORAGE_THEME_SETTINGS_EXPANDED);
+    if (raw === 'true') return true;
+    if (raw === 'false') return false;
+    return false;
   }
 }

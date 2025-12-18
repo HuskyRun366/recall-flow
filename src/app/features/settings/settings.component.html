@@ -24,27 +24,97 @@
     </div>
   }
 
+  <!-- Language Settings Section -->
+  <div class="settings-section">
+    <div class="section-header">
+      <div class="section-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22a10 10 0 1 1 10-10 10 10 0 0 1-10 10Z"/>
+          <path d="M2 12h20"/>
+          <path d="M12 2a15.3 15.3 0 0 1 0 20"/>
+          <path d="M12 2a15.3 15.3 0 0 0 0 20"/>
+        </svg>
+      </div>
+      <div>
+        <h2>{{ 'settings.language' | translate }}</h2>
+        <p class="section-description">{{ 'settings.page.language.subtitle' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <div class="setting-item">
+        <div class="setting-info">
+          <div class="setting-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 4h7"/>
+              <path d="M9 4v2a6 6 0 0 1-6 6"/>
+              <path d="M5 12h7"/>
+              <path d="M17 20l3-8 3 8"/>
+              <path d="M18 18h4"/>
+            </svg>
+          </div>
+          <div>
+            <strong>{{ 'settings.page.language.current.title' | translate }}</strong>
+            <p>{{ 'settings.page.language.current.subtitle' | translate }}</p>
+          </div>
+        </div>
+
+        <app-language-switcher />
+      </div>
+    </div>
+  </div>
+
   <!-- Theme Settings Section -->
   <div class="settings-section">
     <div class="section-header">
       <div class="section-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="13.5" cy="6.5" r=".5"/>
-          <circle cx="17.5" cy="10.5" r=".5"/>
-          <circle cx="8.5" cy="7.5" r=".5"/>
-          <circle cx="6.5" cy="12.5" r=".5"/>
-          <path d="M12 22a10 10 0 0 1 0-20 10 10 0 0 1 0 20Z"/>
-          <path d="M12 2a10 10 0 0 0 0 20 4 4 0 0 0 0-8 4 4 0 0 1 0-8Z"/>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22a10 10 0 1 1 10-10c0 5-4 1-4 6 0 1.1-.9 2-2 2h-4Z"/>
+          <circle cx="13.5" cy="6.5" r="1"/>
+          <circle cx="17.5" cy="10.5" r="1"/>
+          <circle cx="8.5" cy="7.5" r="1"/>
+          <circle cx="6.5" cy="12.5" r="1"/>
         </svg>
       </div>
       <div>
         <h2>{{ 'settings.page.theme.title' | translate }}</h2>
         <p class="section-description">{{ 'settings.page.theme.subtitle' | translate }}</p>
       </div>
+
+      <button
+        class="section-toggle"
+        type="button"
+        (click)="toggleThemeSettings()"
+        [attr.aria-expanded]="isThemeSettingsExpanded()"
+        [attr.aria-label]="(isThemeSettingsExpanded() ? 'settings.page.theme.actions.collapse' : 'settings.page.theme.actions.expand') | translate">
+        <svg class="chevron" [class.open]="isThemeSettingsExpanded()" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
     </div>
 
-    <div class="settings-card">
-      <app-theme-settings></app-theme-settings>
+    <div class="settings-card" [class.compact]="!isThemeSettingsExpanded()">
+      @if (isThemeSettingsExpanded()) {
+        <app-theme-settings></app-theme-settings>
+      } @else {
+        <button class="theme-summary" type="button" (click)="toggleThemeSettings()">
+          <div class="summary-preview" [style.background]="themePreviewGradient()"></div>
+          <div class="summary-info">
+            <strong>{{ 'settings.page.theme.current' | translate }}</strong>
+            <div class="summary-name">
+              @if (activeColorTheme().labelKey) {
+                {{ activeColorTheme().labelKey! | translate }}
+              } @else {
+                {{ activeColorTheme().name }}
+              }
+            </div>
+          </div>
+          <span class="summary-action">{{ 'settings.page.theme.actions.expand' | translate }}</span>
+          <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+      }
     </div>
   </div>
 

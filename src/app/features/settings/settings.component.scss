@@ -99,6 +99,35 @@
       color: var(--color-text-secondary);
       font-size: 0.95rem;
     }
+
+    .section-toggle {
+      margin-left: auto;
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text-secondary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all $transition-fast;
+
+      &:hover {
+        background: var(--color-background);
+        border-color: var(--color-primary);
+        color: var(--color-text-primary);
+        transform: translateY(-1px);
+      }
+
+      .chevron {
+        transition: transform $transition-fast;
+
+        &.open {
+          transform: rotate(180deg);
+        }
+      }
+    }
   }
 }
 
@@ -109,6 +138,73 @@
   border-radius: 16px;
   padding: $spacing-xl;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  &.compact {
+    padding: $spacing-lg;
+  }
+
+  .theme-summary {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    padding: $spacing-md;
+    border-radius: 14px;
+    border: 1px solid var(--color-border);
+    background: var(--color-background);
+    text-align: left;
+    transition: all $transition-fast;
+
+    &:hover {
+      border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+      box-shadow: $shadow-sm;
+      transform: translateY(-1px);
+    }
+
+    .summary-preview {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      box-shadow: $shadow-sm;
+      flex-shrink: 0;
+    }
+
+    .summary-info {
+      flex: 1;
+      min-width: 0;
+
+      strong {
+        display: block;
+        color: var(--color-text-secondary);
+        font-size: 0.85rem;
+        margin-bottom: 2px;
+      }
+
+      .summary-name {
+        color: var(--color-text-primary);
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .summary-action {
+      color: var(--color-primary);
+      font-weight: 600;
+      font-size: 0.9rem;
+      white-space: nowrap;
+
+      @media (max-width: 520px) {
+        display: none;
+      }
+    }
+
+    .chevron {
+      flex-shrink: 0;
+      color: var(--color-text-secondary);
+    }
+  }
 }
 
 // Setting Item
