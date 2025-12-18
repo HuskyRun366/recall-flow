@@ -210,11 +210,11 @@
 .mobile-menu-btn {
   display: none;
   position: relative;
-  min-width: $touch-target-min;
-  min-height: $touch-target-min;
+  width: 44px;
+  height: 44px;
   align-items: center;
   justify-content: center;
-  border-radius: $radius-md;
+  border-radius: 50%;
   border: 1px solid var(--color-border);
   background: var(--color-background);
   cursor: pointer;
@@ -224,44 +224,75 @@
   &:hover {
     background: var(--color-surface-elevated);
     border-color: var(--color-primary);
+    transform: scale(1.05);
+
+    .staggered-lines span {
+      background: var(--color-primary);
+    }
   }
 
   &:active {
     transform: scale(0.95);
   }
 
-  .hamburger {
-    position: relative;
-    width: 20px;
-    height: 14px;
+  // Staggered Lines Icon (3 lines with different widths)
+  .staggered-lines {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 4px;
+    width: 18px;
+    height: 14px;
   }
 
-  span {
+  .staggered-lines span {
     display: block;
-    width: 100%;
     height: 2px;
     background: var(--color-text-primary);
     border-radius: 2px;
-    transition: all 0.3s ease;
-    transform-origin: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: right center;
+
+    // Different widths for dynamic look
+    &:nth-child(1) {
+      width: 18px;
+    }
+
+    &:nth-child(2) {
+      width: 14px;
+    }
+
+    &:nth-child(3) {
+      width: 10px;
+    }
   }
 
-  // Animated hamburger to X transformation
+  // Animated lines to X transformation
   &.open {
-    span:nth-child(1) {
-      transform: translateY(6px) rotate(45deg);
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+
+    .staggered-lines {
+      align-items: center;
     }
 
-    span:nth-child(2) {
-      opacity: 0;
-      transform: scaleX(0);
-    }
+    .staggered-lines span {
+      background: white;
+      width: 18px;
 
-    span:nth-child(3) {
-      transform: translateY(-6px) rotate(-45deg);
+      &:nth-child(1) {
+        transform: translateY(6px) rotate(45deg);
+      }
+
+      &:nth-child(2) {
+        opacity: 0;
+        transform: scaleX(0);
+      }
+
+      &:nth-child(3) {
+        transform: translateY(-6px) rotate(-45deg);
+      }
     }
   }
 

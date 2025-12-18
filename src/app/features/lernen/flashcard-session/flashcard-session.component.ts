@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, inject, DestroyRef, HostListener } from '@angular/core';
+import { Component, OnInit, signal, computed, inject, DestroyRef, HostListener, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -33,6 +33,8 @@ export class FlashcardSessionComponent implements OnInit {
   private progressService = inject(FlashcardProgressService);
   private authService = inject(AuthService);
   private destroyRef = inject(DestroyRef);
+
+  @ViewChild(FlashcardComponent) flashcardComponent?: FlashcardComponent;
 
   deck = signal<FlashcardDeck | null>(null);
   cards = signal<FlashcardWithProgress[]>([]);
@@ -229,30 +231,22 @@ export class FlashcardSessionComponent implements OnInit {
     if (this.isLoading() || this.isCompleted()) return;
 
     const card = this.currentCard();
-    if (!card) return;
+    if (!card || !this.flashcardComponent) return;
 
     // Space or Enter to flip
     if (event.key === ' ' || event.key === 'Enter') {
       event.preventDefault();
-      const flashcardElement = document.querySelector('app-flashcard');
-      if (flashcardElement) {
-        (flashcardElement as any).flip();
-      }
+      this.flashcardComponent.flip();
     }
 
     // Arrow keys for known/unknown (only when flipped)
-    const flashcardComponent = document.querySelector('app-flashcard');
-    if (flashcardComponent) {
-      const isFlipped = (flashcardComponent as any).isFlipped?.();
-
-      if (isFlipped) {
-        if (event.key === 'ArrowRight' || event.key === 'y' || event.key === 'Y') {
-          event.preventDefault();
-          this.handleAnswer(true);
-        } else if (event.key === 'ArrowLeft' || event.key === 'n' || event.key === 'N') {
-          event.preventDefault();
-          this.handleAnswer(false);
-        }
+    if (this.flashcardComponent.isFlipped()) {
+      if (event.key === 'ArrowRight' || event.key === 'y' || event.key === 'Y') {
+        event.preventDefault();
+        this.flashcardComponent.markAsKnown(); // This resets flip state and emits event
+      } else if (event.key === 'ArrowLeft' || event.key === 'n' || event.key === 'N') {
+        event.preventDefault();
+        this.flashcardComponent.markAsUnknown(); // This resets flip state and emits event
       }
     }
   }
