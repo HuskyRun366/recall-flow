@@ -244,6 +244,105 @@
   color: var(--color-text-secondary);
 }
 
+// Reviews Section
+.reviews-card {
+  margin-top: $spacing-xl;
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-lg;
+
+    h2 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+  }
+
+  .rating-summary {
+    margin-bottom: $spacing-lg;
+    padding-bottom: $spacing-lg;
+    border-bottom: 1px solid var(--color-border);
+
+    .rating-average {
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+
+      .rating-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--color-text-primary);
+      }
+    }
+  }
+
+  .reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  .review-item {
+    padding: $spacing-md;
+    background: var(--color-surface-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: $radius-md;
+
+    .review-header {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      margin-bottom: $spacing-sm;
+
+      .reviewer-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .reviewer-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        .reviewer-name {
+          font-weight: 600;
+          font-size: 0.95rem;
+        }
+
+        .review-date {
+          font-size: 0.8rem;
+          color: var(--color-text-secondary);
+        }
+      }
+    }
+
+    .review-comment {
+      margin: 0;
+      color: var(--color-text-primary);
+      line-height: 1.5;
+    }
+  }
+
+  .empty-reviews {
+    text-align: center;
+    padding: $spacing-xl;
+    color: var(--color-text-secondary);
+
+    p {
+      margin: 0;
+    }
+
+    .hint {
+      margin-top: $spacing-sm;
+      font-size: 0.9rem;
+    }
+  }
+}
+
 @media (max-width: 640px) {
   .quiz-detail-page { padding: $spacing-xl $spacing-md; }
 

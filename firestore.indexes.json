@@ -311,6 +311,20 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "themes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "visibility",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "metadata.totalInstalls",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": []

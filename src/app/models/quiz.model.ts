@@ -15,12 +15,6 @@ export type ContentCategory =
 
 export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced';
 
-export interface ForkedFromInfo {
-  id: string;
-  title: string;
-  ownerName: string;
-}
-
 export interface QuizMetadata {
   totalParticipants: number;
   totalCompletions: number;
@@ -41,7 +35,6 @@ export interface Quiz {
   category?: ContentCategory;
   difficulty?: DifficultyLevel;
   language?: string; // ISO 639-1 code: 'de', 'en', 'es', 'fr'
-  forkedFrom?: ForkedFromInfo;
   averageRating?: number; // 0-5, denormalized from reviews
   ratingCount?: number;
 }

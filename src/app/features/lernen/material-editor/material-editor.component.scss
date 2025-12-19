@@ -427,16 +427,20 @@
   }
 
   .codemirror-container {
-    min-height: 400px;
-    max-height: 600px;
+    min-height: 500px;
+    max-height: 800px;
     overflow: auto;
+    background: var(--color-surface);
+    border-radius: $radius-md;
 
     .cm-editor {
       height: 100%;
-      min-height: 400px;
+      min-height: 500px;
 
       &.cm-focused {
         outline: none;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        border-radius: $radius-md;
       }
     }
 

@@ -36,17 +36,7 @@
       <span>{{ typeLabel() | translate }}</span>
     </div>
 
-    @if (forkedFrom()) {
-      <span class="forked-badge" [title]="'discover.forkedFrom' | translate : { title: forkedFrom()!.title }">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-          <circle cx="12" cy="18" r="3"/>
-          <circle cx="6" cy="6" r="3"/>
-          <circle cx="18" cy="6" r="3"/>
-          <path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9"/>
-          <path d="M12 12v3"/>
-        </svg>
-      </span>
-    } @else if (themePreviewGradient()) {
+    @if (themePreviewGradient()) {
       <div class="theme-preview" [style.background]="themePreviewGradient()"></div>
     }
   </div>
@@ -81,6 +71,16 @@
     />
   </div>
 
+  <!-- Rating Actions Row -->
+  @if (canRate()) {
+    <div class="rating-actions">
+      <button class="btn-rate" (click)="onRate($event)">
+        <span class="icon">⭐</span>
+        <span>{{ 'discover.rating.rate' | translate }}</span>
+      </button>
+    </div>
+  }
+
   <div class="card-stats">
     <div class="stat">
       <span class="stat-value">{{ itemCount() }}</span>
@@ -94,25 +94,21 @@
 
   <div class="card-actions">
     <span class="view-link">{{ 'discover.viewDetails' | translate }}</span>
-    @if (showForkButton()) {
-      <button class="fork-btn" (click)="onFork($event)" [title]="actionLabelKey() | translate">
-        @if (item().type === 'theme') {
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-            <path d="M12 3v12"/>
-            <path d="m7 10 5 5 5-5"/>
-            <path d="M5 21h14"/>
-          </svg>
-        } @else {
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-            <circle cx="12" cy="18" r="3"/>
-            <circle cx="6" cy="6" r="3"/>
-            <circle cx="18" cy="6" r="3"/>
-            <path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9"/>
-            <path d="M12 12v3"/>
-          </svg>
-        }
-        {{ actionLabelKey() | translate }}
-      </button>
-    }
+    <button class="add-btn" (click)="onAdd($event)">
+      @if (item().type === 'theme') {
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <path d="M12 3v12"/>
+          <path d="m7 10 5 5 5-5"/>
+          <path d="M5 21h14"/>
+        </svg>
+        {{ 'settings.page.theme.marketplace.install' | translate }}
+      } @else {
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        {{ 'common.add' | translate }}
+      }
+    </button>
   </div>
 </a>

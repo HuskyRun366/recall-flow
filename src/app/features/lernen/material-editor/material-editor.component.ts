@@ -96,9 +96,22 @@ export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit
 
   ngAfterViewInit(): void {
     // Initialize CodeMirror editor after view is ready
+    // Use longer timeout to ensure DOM is fully rendered
     setTimeout(() => {
-      this.initializeCodeMirror();
-    }, 100);
+      if (this.editorContainer?.nativeElement) {
+        console.log('Initializing CodeMirror editor...');
+        this.initializeCodeMirror();
+      } else {
+        console.warn('Editor container not found, retrying...');
+        setTimeout(() => {
+          if (this.editorContainer?.nativeElement) {
+            this.initializeCodeMirror();
+          } else {
+            console.error('Editor container still not found after retry');
+          }
+        }, 300);
+      }
+    }, 200);
   }
 
   ngOnDestroy(): void {
@@ -108,10 +121,20 @@ export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   private initializeCodeMirror(): void {
-    if (!this.editorContainer?.nativeElement) return;
+    if (!this.editorContainer?.nativeElement) {
+      console.warn('Cannot initialize CodeMirror: container not found');
+      return;
+    }
+
+    // Destroy existing editor if any
+    if (this.editorView) {
+      this.editorView.destroy();
+    }
 
     const isDark = this.themeService.theme() === 'dark';
     const initialContent = this.htmlContent();
+
+    console.log('Creating CodeMirror instance with content length:', initialContent.length);
 
     this.editorView = new EditorView({
       state: EditorState.create({
@@ -125,6 +148,7 @@ export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit
     });
 
     this.editorReady.set(true);
+    console.log('CodeMirror editor initialized successfully');
   }
 
   private updateEditorTheme(isDark: boolean): void {
@@ -147,7 +171,12 @@ export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   private updateEditorContent(content: string): void {
-    if (!this.editorView) return;
+    if (!this.editorView) {
+      // Editor not yet initialized, store content and wait
+      console.log('Editor not ready, content will be loaded on initialization');
+      this.htmlContent.set(content);
+      return;
+    }
 
     this.editorView.dispatch({
       changes: {
@@ -156,6 +185,7 @@ export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit
         insert: content
       }
     });
+    console.log('Editor content updated');
   }
 
   private initializeForm(): void {

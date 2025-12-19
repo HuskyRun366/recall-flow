@@ -13,6 +13,23 @@ export interface ChangelogItem {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '2.3',
+    date: new Date('2025-12-19'),
+    title: 'Discover & Bewertungssystem',
+    changes: [
+      { type: 'feature', text: 'Neues Bewertungssystem: Nutzer können Quizze, Kartensets und Materialien mit Sternen und Kommentaren bewerten' },
+      { type: 'feature', text: 'Review-Dialog mit Löschen-Funktion für eigene Bewertungen' },
+      { type: 'feature', text: 'Discover-Seite zeigt jetzt Bewertungen und ermöglicht direktes Hinzufügen von Inhalten' },
+      { type: 'feature', text: 'Theme-Editor erweitert: Hintergrundfarben für Hell- und Dunkel-Modus einstellbar' },
+      { type: 'improvement', text: 'Fork-System durch einfacheres "Hinzufügen"-System ersetzt - Inhalte werden direkt zur eigenen Sammlung hinzugefügt' },
+      { type: 'improvement', text: 'Marketplace-Themes werden jetzt aus Firestore geladen statt hardcoded' },
+      { type: 'improvement', text: 'Quiz/Deck/Material-Listen zeigen nur noch enrolled Inhalte statt aller öffentlichen' },
+      { type: 'improvement', text: 'Verbesserte Firestore Rules für Reviews (Teilnehmer-Prüfung)' },
+      { type: 'improvement', text: 'Material-Editor: CodeMirror Initialisierung robuster gemacht' },
+      { type: 'bugfix', text: 'Language Switcher Mobile-Optimierung (Bottom-Sheet auf kleinen Bildschirmen)' }
+    ]
+  },
+  {
     version: '2.2',
     date: new Date('2025-12-18'),
     title: 'Custom Themes & Settings Verbesserungen',

@@ -44,13 +44,26 @@
     </div>
 
     <div class="dialog-actions">
-      <button class="btn-secondary" (click)="onClose()" [disabled]="isSubmitting()">
+      @if (existingReview()) {
+        <button
+          class="btn-danger"
+          (click)="deleteReview()"
+          [disabled]="isDeleting() || isSubmitting()"
+        >
+          @if (isDeleting()) {
+            {{ 'common.deleting' | translate }}
+          } @else {
+            {{ 'common.delete' | translate }}
+          }
+        </button>
+      }
+      <button class="btn-secondary" (click)="onClose()" [disabled]="isSubmitting() || isDeleting()">
         {{ 'common.cancel' | translate }}
       </button>
       <button
         class="btn-primary"
         (click)="submit()"
-        [disabled]="rating() === 0 || isSubmitting()"
+        [disabled]="rating() === 0 || isSubmitting() || isDeleting()"
       >
         @if (isSubmitting()) {
           {{ 'discover.rating.submitting' | translate }}

@@ -155,8 +155,36 @@
         }
       </div>
     </div>
+
+    <!-- Ratings & Reviews Section -->
+    <div class="card reviews-card" *ngIf="deck()!.visibility === 'public'">
+      <div class="card-header">
+        <h2>{{ 'discover.rating.title' | translate }}</h2>
+        <button class="btn btn-secondary" *ngIf="isEnrolled() || canEdit()" (click)="openReviewDialog()">
+          {{ userReview() ? ('discover.rating.editReview' | translate) : ('discover.rating.writeReview' | translate) }}
+        </button>
+      </div>
+
+      <div class="rating-summary">
+        <div class="rating-average">
+          <span class="rating-value">{{ (deck()!.averageRating || 0) | number:'1.1-1' }}</span>
+          <app-star-rating [rating]="deck()!.averageRating || 0" [count]="deck()!.ratingCount || 0" size="md" />
+        </div>
+      </div>
+    </div>
   </ng-container>
 </div>
+
+<!-- Review Dialog -->
+<app-review-dialog
+  *ngIf="showReviewDialog() && deck()"
+  [contentId]="deck()!.id"
+  [contentType]="'deck'"
+  [contentTitle]="deck()!.title"
+  [existingReview]="userReview()"
+  (close)="closeReviewDialog()"
+  (submitted)="onReviewSubmitted()"
+/>
 
 <ng-template #loading>
   <div class="loading-state">

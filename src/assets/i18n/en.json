@@ -7,6 +7,7 @@
     "saving": "Saving...",
     "cancel": "Cancel",
     "delete": "Delete",
+    "deleting": "Deleting...",
     "edit": "Edit",
     "create": "Create",
     "back": "Back",
@@ -527,6 +528,8 @@
           "namePlaceholder": "e.g. \"My Theme\"",
           "primaryLabel": "Primary",
           "accentLabel": "Accent",
+          "backgroundLightLabel": "Background (Light Mode)",
+          "backgroundDarkLabel": "Background (Dark Mode)",
           "save": "Save",
           "update": "Update",
           "preview": "Preview",
@@ -1169,7 +1172,12 @@
     "users": "Users",
     "installs": "Installs",
     "viewDetails": "View Details",
-    "forkedFrom": "Forked from {{title}}",
+    "addFailed": "Failed to add content. Please try again.",
+    "added": {
+      "quiz": "Added quiz \"{{title}}\" to your collection",
+      "deck": "Added deck \"{{title}}\" to your collection",
+      "material": "Added material \"{{title}}\" to your collection"
+    },
     "featured": {
       "title": "Featured",
       "subtitle": "Hand-picked by our team"
@@ -1223,7 +1231,6 @@
       "by": "by",
       "questions": "questions",
       "cards": "cards",
-      "forkedFrom": "Forked from",
       "noRatings": "No ratings yet"
     },
     "rating": {
@@ -1240,25 +1247,21 @@
       "updateReview": "Update review",
       "reviewPlaceholder": "Share your experience with this content...",
       "thankYou": "Thank you for your review!",
+      "rate": "Rate this",
+      "yourRating": "Your rating",
+      "comment": "Comment",
+      "commentPlaceholder": "Share your thoughts... (Optional)",
+      "submit": "Submit",
+      "submitting": "Submitting...",
+      "delete": "Delete review",
+      "deleteConfirm": "Are you sure you want to delete this review?",
+      "deleted": "Review deleted",
       "stars": {
         "1": "Poor",
         "2": "Fair",
         "3": "Good",
         "4": "Very Good",
         "5": "Excellent"
-      }
-    },
-    "fork": {
-      "button": "Fork",
-      "buttonTooltip": "Create your own copy",
-      "success": "Successfully forked!",
-      "error": "Failed to fork content",
-      "dialog": {
-        "title": "Fork this content",
-        "description": "Create your own copy that you can edit and customize.",
-        "newTitle": "New title",
-        "confirm": "Create fork",
-        "cancel": "Cancel"
       }
     },
     "metadata": {

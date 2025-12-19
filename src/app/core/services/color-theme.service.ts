@@ -70,12 +70,16 @@ const PRESET_THEMES: readonly ColorTheme[] = [
     palette: {
       primary: '#0277bd',
       accent: '#00bcd4',
-      background: '#f2fbff'
+      background: '#f2fbff',
+      editorBackground: '#fafeff',
+      editorLineNumbers: '#6db3d4'
     },
     darkPalette: {
       background: '#07141c',
       surface: '#0d1e28',
-      surfaceElevated: '#102633'
+      surfaceElevated: '#102633',
+      editorBackground: '#0a1720',
+      editorLineNumbers: '#4a8ba8'
     }
   },
   {
@@ -86,12 +90,16 @@ const PRESET_THEMES: readonly ColorTheme[] = [
     palette: {
       primary: '#2e7d32',
       accent: '#8bc34a',
-      background: '#f6fff6'
+      background: '#f6fff6',
+      editorBackground: '#fbfefb',
+      editorLineNumbers: '#6fa873'
     },
     darkPalette: {
       background: '#06140a',
       surface: '#0b1d0f',
-      surfaceElevated: '#102717'
+      surfaceElevated: '#102717',
+      editorBackground: '#081a0d',
+      editorLineNumbers: '#4a8450'
     }
   },
   {
@@ -102,12 +110,16 @@ const PRESET_THEMES: readonly ColorTheme[] = [
     palette: {
       primary: '#ec407a',
       accent: '#ff7043',
-      background: '#fff6f2'
+      background: '#fff6f2',
+      editorBackground: '#fffbf9',
+      editorLineNumbers: '#e88090'
     },
     darkPalette: {
       background: '#1a0b10',
       surface: '#241018',
-      surfaceElevated: '#2e1520'
+      surfaceElevated: '#2e1520',
+      editorBackground: '#1c0d12',
+      editorLineNumbers: '#b85070'
     }
   },
   {
@@ -141,57 +153,7 @@ const PRESET_THEMES: readonly ColorTheme[] = [
   }
 ] as const;
 
-const COMMUNITY_THEMES: readonly Omit<StoredColorThemeV1, 'id'>[] = [
-  {
-    version: 1,
-    name: 'Midnight Neon',
-    source: 'community',
-    originId: 'midnight-neon',
-    palette: {
-      primary: '#00e5ff',
-      accent: '#ff4081',
-      background: '#0b1020',
-      surface: '#121a2f',
-      surfaceElevated: '#192544'
-    },
-    darkPalette: {
-      background: '#050812',
-      surface: '#0b1020',
-      surfaceElevated: '#121a2f'
-    }
-  },
-  {
-    version: 1,
-    name: 'Paper Mint',
-    source: 'community',
-    originId: 'paper-mint',
-    palette: {
-      primary: '#00897b',
-      accent: '#7c4dff',
-      background: '#fbfffd',
-      surface: '#ffffff',
-      surfaceElevated: '#ffffff'
-    }
-  },
-  {
-    version: 1,
-    name: 'Cherry Cola',
-    source: 'community',
-    originId: 'cherry-cola',
-    palette: {
-      primary: '#b71c1c',
-      accent: '#ff6f00',
-      background: '#fff7f2',
-      surface: '#ffffff',
-      surfaceElevated: '#ffffff'
-    },
-    darkPalette: {
-      background: '#140707',
-      surface: '#1e0a0a',
-      surfaceElevated: '#2a0f0f'
-    }
-  }
-] as const;
+const COMMUNITY_THEMES: readonly Omit<StoredColorThemeV1, 'id'>[] = [] as const;
 
 function safeJsonParse<T>(value: string | null): T | null {
   if (!value) return null;
@@ -341,7 +303,7 @@ export class ColorThemeService {
     return didUpdate;
   }
 
-  upsertCustomTheme(input: { id: string; name: string; primary: string; accent: string; visibility?: 'public' | 'private' }): void {
+  upsertCustomTheme(input: { id: string; name: string; primary: string; accent: string; backgroundLight?: string; backgroundDark?: string; visibility?: 'public' | 'private' }): void {
     const id = input.id.trim();
     const name = input.name.trim();
     if (!id || !name) return;
@@ -364,9 +326,13 @@ export class ColorThemeService {
         palette: {
           ...(existing?.palette ?? {}),
           primary,
-          accent
+          accent,
+          ...(input.backgroundLight ? { background: input.backgroundLight } : {})
         },
-        darkPalette: existing?.darkPalette
+        darkPalette: {
+          ...(existing?.darkPalette ?? {}),
+          ...(input.backgroundDark ? { background: input.backgroundDark } : {})
+        }
       };
 
       if (existingIndex >= 0) {
@@ -384,6 +350,11 @@ export class ColorThemeService {
     }
   }
 
+  isThemeInstalled(themeId: string): boolean {
+    const themes = this.customThemes();
+    return themes.some(t => t.id === themeId || t.originId === themeId);
+  }
+
   installCommunityTheme(originId: string): string | null {
     const theme = COMMUNITY_THEMES.find((t) => t.originId === originId);
     if (!theme) return null;
@@ -395,6 +366,33 @@ export class ColorThemeService {
     const stored: StoredColorThemeV1 = {
       ...theme,
       id
+    };
+
+    this.storedThemesSignal.update((themes) => [stored, ...themes]);
+    this.activeThemeIdSignal.set(id);
+    return id;
+  }
+
+  /**
+   * Install a marketplace theme (from the Discover page)
+   */
+  installMarketplaceTheme(theme: { id: string; title: string; palette: ThemePalette; darkPalette?: Partial<ThemePalette> }): string {
+    const installed = this.storedThemesSignal().find((t) => t.originId === theme.id);
+    if (installed) {
+      // Already installed, just activate it
+      this.activeThemeIdSignal.set(installed.id);
+      return installed.id;
+    }
+
+    const id = generateId();
+    const stored: StoredColorThemeV1 = {
+      version: 1,
+      id,
+      name: theme.title,
+      source: 'community',
+      originId: theme.id,
+      palette: theme.palette,
+      darkPalette: theme.darkPalette
     };
 
     this.storedThemesSignal.update((themes) => [stored, ...themes]);
@@ -569,16 +567,32 @@ export class ColorThemeService {
     if (primaryRgb) vars['--color-primary-rgb'] = rgbToCss(primaryRgb);
     if (accentRgb) vars['--color-accent-rgb'] = rgbToCss(accentRgb);
 
+    const shouldComputeOnColors = theme.source !== 'preset';
+
     if (palette.background) vars['--color-background'] = palette.background;
     if (palette.surface) vars['--color-surface'] = palette.surface;
     if (palette.surfaceElevated) vars['--color-surface-elevated'] = palette.surfaceElevated;
+
+    // Check if textPrimary was explicitly set for current mode
+    const textPrimaryWasExplicitForDark = mode === 'dark' && typeof theme.darkPalette?.textPrimary === 'string';
+    const textPrimaryWasExplicitForLight = mode === 'light' && typeof theme.palette?.textPrimary === 'string';
+    const textPrimaryWasExplicit = textPrimaryWasExplicitForDark || textPrimaryWasExplicitForLight;
+
+    // Auto-compute text colors based on background if not explicitly set
+    if (palette.background && !textPrimaryWasExplicit && shouldComputeOnColors) {
+      const readableTextColor = this.pickReadableTextColor(palette.background);
+      if (readableTextColor) {
+        vars['--color-text-primary'] = readableTextColor;
+        // Set secondary text color with 70% opacity of primary text color
+        const isLightText = readableTextColor === '#ffffff';
+        vars['--color-text-secondary'] = isLightText ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)';
+      }
+    }
 
     if (palette.textPrimary) vars['--color-text-primary'] = palette.textPrimary;
     if (palette.textSecondary) vars['--color-text-secondary'] = palette.textSecondary;
     if (palette.textDisabled) vars['--color-text-disabled'] = palette.textDisabled;
     if (palette.textHint) vars['--color-text-hint'] = palette.textHint;
-
-    const shouldComputeOnColors = theme.source !== 'preset';
 
     const explicitOnPrimary = typeof palette.onPrimary === 'string' ? normalizeHexColor(palette.onPrimary) : null;
     const explicitOnAccent = typeof palette.onAccent === 'string' ? normalizeHexColor(palette.onAccent) : null;

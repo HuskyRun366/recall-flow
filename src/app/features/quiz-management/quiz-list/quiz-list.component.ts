@@ -129,18 +129,11 @@ export class QuizListComponent implements OnInit {
           console.error('Error loading user quiz refs:', error);
           return of([] as UserQuizReference[]);
         })
-      ),
-      this.firestoreService.getPublicQuizzes().pipe(
-        timeout(QUERY_TIMEOUT),
-        catchError(error => {
-          console.error('Error loading public quizzes:', error);
-          return of([] as Quiz[]);
-        })
       )
     ]).pipe(
       timeout(TOTAL_TIMEOUT),
       takeUntilDestroyed(this.destroyRef),
-      switchMap(([owned, userQuizRefs, publicQuizzes]) => {
+      switchMap(([owned, userQuizRefs]) => {
         this.ownedQuizzes.set(owned.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()));
         this.userQuizRefs.set(userQuizRefs);
 
@@ -176,12 +169,11 @@ export class QuizListComponent implements OnInit {
           timeout(QUERY_TIMEOUT),
           map(([coAuthorQuizzes, participantQuizzes]) => ({
             coAuthorQuizzes,
-            participantQuizzes,
-            publicQuizzes
+            participantQuizzes
           })),
           catchError(error => {
             console.error('Error loading co-author/participant quizzes:', error);
-            return of({ coAuthorQuizzes: [] as Quiz[], participantQuizzes: [] as Quiz[], publicQuizzes });
+            return of({ coAuthorQuizzes: [] as Quiz[], participantQuizzes: [] as Quiz[] });
           })
         );
       }),
@@ -189,17 +181,14 @@ export class QuizListComponent implements OnInit {
         console.error('Critical error in quiz loading:', error);
         this.error.set('Failed to load quizzes. Please refresh the page.');
         this.isLoading.set(false);
-        return of({ coAuthorQuizzes: [] as Quiz[], participantQuizzes: [] as Quiz[], publicQuizzes: [] as Quiz[] });
+        return of({ coAuthorQuizzes: [] as Quiz[], participantQuizzes: [] as Quiz[] });
       })
     ).subscribe({
-      next: ({ coAuthorQuizzes, participantQuizzes, publicQuizzes }) => {
+      next: ({ coAuthorQuizzes, participantQuizzes }) => {
         this.coAuthoredQuizzes.set(coAuthorQuizzes.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()));
 
-        const publicQuizIds = new Set(publicQuizzes.map(q => q.id));
-        const uniqueParticipantQuizzes = participantQuizzes.filter(q => !publicQuizIds.has(q.id));
-
-        const allPublicQuizzes = [...publicQuizzes, ...uniqueParticipantQuizzes];
-        this.publicQuizzes.set(allPublicQuizzes.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()));
+        // Only show quizzes where user is enrolled as participant (not all public quizzes)
+        this.publicQuizzes.set(participantQuizzes.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()));
 
         this.isLoading.set(false);
       },

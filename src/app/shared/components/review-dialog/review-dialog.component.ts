@@ -1,7 +1,7 @@
 import { Component, input, output, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Review, ContentType } from '../../../models';
 import { ReviewService } from '../../../core/services/review.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -19,6 +19,7 @@ export class ReviewDialogComponent implements OnInit {
   private reviewService = inject(ReviewService);
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
+  private translateService = inject(TranslateService);
 
   contentId = input.required<string>();
   contentType = input.required<ContentType>();
@@ -31,6 +32,7 @@ export class ReviewDialogComponent implements OnInit {
   rating = signal(0);
   comment = signal('');
   isSubmitting = signal(false);
+  isDeleting = signal(false);
 
   ngOnInit(): void {
     const existing = this.existingReview();
@@ -78,6 +80,33 @@ export class ReviewDialogComponent implements OnInit {
       this.toastService.error('Failed to submit review');
     } finally {
       this.isSubmitting.set(false);
+    }
+  }
+
+  async deleteReview(): Promise<void> {
+    const existing = this.existingReview();
+    if (!existing) return;
+
+    const confirmed = confirm(this.translateService.instant('discover.rating.deleteConfirm'));
+    if (!confirmed) return;
+
+    this.isDeleting.set(true);
+
+    try {
+      await this.reviewService.deleteReview(
+        existing.id,
+        this.contentId(),
+        this.contentType()
+      );
+
+      this.toastService.success('discover.rating.deleted');
+      this.submitted.emit();
+      this.close.emit();
+    } catch (error) {
+      console.error('Failed to delete review:', error);
+      this.toastService.error('Failed to delete review');
+    } finally {
+      this.isDeleting.set(false);
     }
   }
 

@@ -137,18 +137,11 @@ export class MaterialListComponent implements OnInit {
           console.error('Error loading user material refs:', error);
           return of([] as UserMaterialReference[]);
         })
-      ),
-      this.materialService.getPublicMaterials().pipe(
-        timeout(QUERY_TIMEOUT),
-        catchError(error => {
-          console.error('Error loading public materials:', error);
-          return of([] as LearningMaterial[]);
-        })
       )
     ]).pipe(
       timeout(TOTAL_TIMEOUT),
       takeUntilDestroyed(this.destroyRef),
-      switchMap(([owned, userMaterialRefs, publicMaterials]) => {
+      switchMap(([owned, userMaterialRefs]) => {
         this.ownedMaterials.set(owned.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()));
         this.userMaterialRefs.set(userMaterialRefs);
 
@@ -182,12 +175,11 @@ export class MaterialListComponent implements OnInit {
           timeout(QUERY_TIMEOUT),
           map(([coAuthorMaterials, studentMaterials]) => ({
             coAuthorMaterials,
-            studentMaterials,
-            publicMaterials
+            studentMaterials
           })),
           catchError(error => {
             console.error('Error loading co-author/student materials:', error);
-            return of({ coAuthorMaterials: [] as LearningMaterial[], studentMaterials: [] as LearningMaterial[], publicMaterials });
+            return of({ coAuthorMaterials: [] as LearningMaterial[], studentMaterials: [] as LearningMaterial[] });
           })
         );
       }),
@@ -195,17 +187,14 @@ export class MaterialListComponent implements OnInit {
         console.error('Critical error in material loading:', error);
         this.error.set('Failed to load materials. Please refresh the page.');
         this.isLoading.set(false);
-        return of({ coAuthorMaterials: [] as LearningMaterial[], studentMaterials: [] as LearningMaterial[], publicMaterials: [] as LearningMaterial[] });
+        return of({ coAuthorMaterials: [] as LearningMaterial[], studentMaterials: [] as LearningMaterial[] });
       })
     ).subscribe({
-      next: ({ coAuthorMaterials, studentMaterials, publicMaterials }) => {
+      next: ({ coAuthorMaterials, studentMaterials }) => {
         this.coAuthoredMaterials.set(coAuthorMaterials.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()));
 
-        const publicMaterialIds = new Set(publicMaterials.map(m => m.id));
-        const uniqueStudentMaterials = studentMaterials.filter(m => !publicMaterialIds.has(m.id));
-
-        const allPublicMaterials = [...publicMaterials, ...uniqueStudentMaterials];
-        this.publicMaterials.set(allPublicMaterials.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()));
+        // Only show materials where user is enrolled as student (not all public materials)
+        this.publicMaterials.set(studentMaterials.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()));
 
         this.isLoading.set(false);
       },

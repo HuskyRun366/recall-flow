@@ -1,4 +1,4 @@
-import { ContentCategory, DifficultyLevel, ForkedFromInfo } from './quiz.model';
+import { ContentCategory, DifficultyLevel } from './quiz.model';
 
 export interface LearningMaterial {
   id: string;
@@ -20,7 +20,6 @@ export interface LearningMaterial {
   category?: ContentCategory;
   difficulty?: DifficultyLevel;
   language?: string; // ISO 639-1 code: 'de', 'en', 'es', 'fr'
-  forkedFrom?: ForkedFromInfo;
   averageRating?: number; // 0-5, denormalized from reviews
   ratingCount?: number;
 }

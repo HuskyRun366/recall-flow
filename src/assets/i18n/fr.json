@@ -7,6 +7,7 @@
     "saving": "Enregistrement...",
     "cancel": "Annuler",
     "delete": "Supprimer",
+    "deleting": "Suppression...",
     "edit": "Modifier",
     "create": "Créer",
     "back": "Retour",
@@ -515,7 +516,9 @@
           "nameLabel": "Nom",
           "namePlaceholder": "ex. « Mon thème »",
           "primaryLabel": "Couleur principale",
-          "accentLabel": "Couleur d’accent",
+          "accentLabel": "Couleur d'accent",
+          "backgroundLightLabel": "Arrière-plan (Mode Clair)",
+          "backgroundDarkLabel": "Arrière-plan (Mode Sombre)",
           "save": "Enregistrer",
           "update": "Mettre à jour",
           "preview": "Aperçu",
@@ -1145,7 +1148,12 @@
     "users": "Utilisateurs",
     "installs": "Installations",
     "viewDetails": "Voir les détails",
-    "forkedFrom": "Copié de {{title}}",
+    "addFailed": "Échec de l'ajout du contenu. Veuillez réessayer.",
+    "added": {
+      "quiz": "Quiz \"{{title}}\" ajouté à votre collection",
+      "deck": "Paquet \"{{title}}\" ajouté à votre collection",
+      "material": "Matériel \"{{title}}\" ajouté à votre collection"
+    },
     "featured": {
       "title": "En vedette",
       "subtitle": "Sélectionnés par notre équipe"
@@ -1199,7 +1207,6 @@
       "by": "par",
       "questions": "questions",
       "cards": "cartes",
-      "forkedFrom": "Copié de",
       "noRatings": "Pas encore d'évaluations"
     },
     "rating": {
@@ -1216,25 +1223,21 @@
       "updateReview": "Mettre à jour l'avis",
       "reviewPlaceholder": "Partagez votre expérience avec ce contenu...",
       "thankYou": "Merci pour votre avis !",
+      "rate": "Évaluer",
+      "yourRating": "Votre note",
+      "comment": "Commentaire",
+      "commentPlaceholder": "Partagez vos pensées... (Optionnel)",
+      "submit": "Envoyer",
+      "submitting": "Envoi en cours...",
+      "delete": "Supprimer l'avis",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cet avis ?",
+      "deleted": "Avis supprimé",
       "stars": {
         "1": "Médiocre",
         "2": "Passable",
         "3": "Bon",
         "4": "Très bon",
         "5": "Excellent"
-      }
-    },
-    "fork": {
-      "button": "Copier",
-      "buttonTooltip": "Créer votre propre copie",
-      "success": "Copie réussie !",
-      "error": "Échec de la copie du contenu",
-      "dialog": {
-        "title": "Copier ce contenu",
-        "description": "Créez votre propre copie que vous pouvez modifier et personnaliser.",
-        "newTitle": "Nouveau titre",
-        "confirm": "Créer une copie",
-        "cancel": "Annuler"
       }
     },
     "metadata": {

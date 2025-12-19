@@ -283,20 +283,34 @@ export class MarketplaceService {
       return of([]);
     }
 
-    let themes = this.getMarketplaceThemeItems();
+    const themesRef = collection(this.firestore, 'themes');
+    const constraints: any[] = [
+      where('visibility', '==', 'public'),
+      limit(limitCount)
+    ];
 
-    if (params.query) {
-      const searchLower = params.query.toLowerCase();
-      themes = themes.filter((item) => {
-        const theme = item.content as MarketplaceTheme;
-        return (
-          theme.title.toLowerCase().includes(searchLower) ||
-          theme.description.toLowerCase().includes(searchLower)
-        );
-      });
-    }
+    const q = query(themesRef, ...constraints);
 
-    return of(themes.slice(0, limitCount));
+    return from(
+      runInInjectionContext(this.injector, () => getDocs(q))
+    ).pipe(
+      map(snapshot => {
+        let themes = snapshot.docs.map(doc => this.convertThemeTimestamps(doc.data() as any));
+
+        if (params.query) {
+          const searchLower = params.query.toLowerCase();
+          themes = themes.filter(theme =>
+            theme.title.toLowerCase().includes(searchLower) ||
+            (theme.description && theme.description.toLowerCase().includes(searchLower))
+          );
+        }
+
+        return themes.map(theme => ({
+          type: 'theme' as ContentType,
+          content: theme
+        }));
+      })
+    );
   }
 
   private getTopContent(
@@ -308,25 +322,28 @@ export class MarketplaceService {
     const searches: Observable<MarketplaceItem[]>[] = [];
 
     contentTypes.forEach(type => {
-      if (type === 'theme') {
-        searches.push(of(this.getMarketplaceThemeItems().slice(0, limitCount)));
-        return;
-      }
-
       const collectionName = this.getCollectionName(type);
       const contentRef = collection(this.firestore, collectionName);
 
       let orderField: string;
       switch (chartType) {
         case 'popular':
-          orderField = type === 'quiz' ? 'metadata.totalParticipants' : 'metadata.totalStudents';
+          if (type === 'theme') {
+            orderField = 'metadata.totalInstalls';
+          } else {
+            orderField = type === 'quiz' ? 'metadata.totalParticipants' : 'metadata.totalStudents';
+          }
           break;
         case 'recent':
           orderField = 'createdAt';
           break;
         case 'trending':
         default:
-          orderField = type === 'quiz' ? 'metadata.totalParticipants' : 'metadata.totalStudents';
+          if (type === 'theme') {
+            orderField = 'metadata.totalInstalls';
+          } else {
+            orderField = type === 'quiz' ? 'metadata.totalParticipants' : 'metadata.totalStudents';
+          }
       }
 
       const q = query(
@@ -463,29 +480,5 @@ export class MarketplaceService {
       createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,
       updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : data.updatedAt
     };
-  }
-
-  private getMarketplaceThemeItems(): MarketplaceItem[] {
-    const community = this.colorThemes.communityThemes() as readonly Omit<StoredColorThemeV1, 'id'>[];
-    const now = new Date();
-
-    return community.map((t) => ({
-      type: 'theme' as ContentType,
-      content: {
-        id: t.originId ?? t.name,
-        originId: t.originId,
-        title: t.name,
-        description: '',
-        ownerId: 'community',
-        visibility: 'public',
-        createdAt: now,
-        updatedAt: now,
-        palette: t.palette,
-        darkPalette: t.darkPalette,
-        metadata: { totalInstalls: 0 },
-        averageRating: 0,
-        ratingCount: 0
-      } satisfies MarketplaceTheme
-    }));
   }
 }

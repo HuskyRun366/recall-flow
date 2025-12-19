@@ -120,6 +120,28 @@
             <span class="hex">{{ accentColor() }}</span>
           </div>
         </div>
+
+        <div class="row colors">
+          <div class="color-field">
+            <label for="backgroundLightColor">{{ 'settings.page.theme.custom.backgroundLightLabel' | translate }}</label>
+            <input
+              id="backgroundLightColor"
+              type="color"
+              [ngModel]="backgroundLightColor()"
+              (ngModelChange)="backgroundLightColor.set($event)" />
+            <span class="hex">{{ backgroundLightColor() }}</span>
+          </div>
+
+          <div class="color-field">
+            <label for="backgroundDarkColor">{{ 'settings.page.theme.custom.backgroundDarkLabel' | translate }}</label>
+            <input
+              id="backgroundDarkColor"
+              type="color"
+              [ngModel]="backgroundDarkColor()"
+              (ngModelChange)="backgroundDarkColor.set($event)" />
+            <span class="hex">{{ backgroundDarkColor() }}</span>
+          </div>
+        </div>
       </div>
 
       <div class="preview-card">

@@ -8,8 +8,11 @@ import { FlashcardProgressService } from '../../../core/services/flashcard-progr
 import { DeckParticipantService } from '../../../core/services/deck-participant.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
-import { FlashcardDeck, Flashcard, CardProgress, DeckParticipant } from '../../../models';
+import { ReviewService } from '../../../core/services/review.service';
+import { FlashcardDeck, Flashcard, CardProgress, DeckParticipant, Review } from '../../../models';
 import { StatCardComponent, BadgeComponent, LevelBadgeComponent } from '../../../shared/components';
+import { StarRatingComponent } from '../../../shared/components/star-rating/star-rating.component';
+import { ReviewDialogComponent } from '../../../shared/components/review-dialog/review-dialog.component';
 import { PullToRefreshDirective } from '../../../shared/directives/pull-to-refresh.directive';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -24,7 +27,7 @@ interface FlashcardWithProgress {
 @Component({
   selector: 'app-deck-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule, StatCardComponent, BadgeComponent, LevelBadgeComponent, PullToRefreshDirective],
+  imports: [CommonModule, RouterModule, TranslateModule, StatCardComponent, BadgeComponent, LevelBadgeComponent, PullToRefreshDirective, StarRatingComponent, ReviewDialogComponent],
   templateUrl: './deck-detail.component.html',
   styleUrls: ['./deck-detail.component.scss']
 })
@@ -37,6 +40,7 @@ export class DeckDetailComponent implements OnInit {
   private participantService = inject(DeckParticipantService);
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
+  private reviewService = inject(ReviewService);
 
   deck = signal<FlashcardDeck | null>(null);
   flashcards = signal<FlashcardWithProgress[]>([]);
@@ -50,6 +54,12 @@ export class DeckDetailComponent implements OnInit {
   canEdit = signal(false);
   copySuccess = signal(false);
   exportSuccess = signal(false);
+
+  // Review-related signals
+  reviews = signal<Review[]>([]);
+  userReview = signal<Review | null>(null);
+  showReviewDialog = signal(false);
+  isLoadingReviews = signal(false);
 
   requiresEnrollment = computed(() => {
     const d = this.deck();
@@ -84,6 +94,7 @@ export class DeckDetailComponent implements OnInit {
         this.loadFlashcards(id);
         this.loadEnrollment(id);
         this.loadCoAuthors(id);
+        this.loadReviews(id);
 
         // Check edit permission
         const userId = this.currentUser()?.uid;
@@ -359,5 +370,47 @@ export class DeckDetailComponent implements OnInit {
         this.isLoading.set(false);
       }
     });
+  }
+
+  // Review methods
+  private loadReviews(deckId: string): void {
+    this.isLoadingReviews.set(true);
+    this.reviewService.getReviewsForContent(deckId, 'deck').subscribe({
+      next: (reviews: Review[]) => {
+        this.reviews.set(reviews);
+        const userId = this.currentUser()?.uid;
+        if (userId) {
+          const myReview = reviews.find((r: Review) => r.userId === userId);
+          this.userReview.set(myReview || null);
+        }
+        this.isLoadingReviews.set(false);
+      },
+      error: (err: unknown) => {
+        console.error('Failed to load reviews:', err);
+        this.isLoadingReviews.set(false);
+      }
+    });
+  }
+
+  openReviewDialog(): void {
+    this.showReviewDialog.set(true);
+  }
+
+  closeReviewDialog(): void {
+    this.showReviewDialog.set(false);
+  }
+
+  onReviewSubmitted(): void {
+    const deckId = this.deck()?.id;
+    if (deckId) {
+      this.loadReviews(deckId);
+      // Reload deck to get updated averageRating
+      this.deckService.getDeckById(deckId).subscribe({
+        next: (d) => {
+          if (d) this.deck.set(d);
+        }
+      });
+    }
+    this.closeReviewDialog();
   }
 }

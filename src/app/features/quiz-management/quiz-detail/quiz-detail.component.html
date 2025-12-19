@@ -109,8 +109,55 @@
       </div>
       </div>
     </div>
+
+    <!-- Ratings & Reviews Section -->
+    <div class="card reviews-card" *ngIf="quiz()!.visibility === 'public'">
+      <div class="card-header">
+        <h2>{{ 'discover.rating.title' | translate }}</h2>
+        <button class="btn btn-secondary" *ngIf="isEnrolled() || canEdit()" (click)="openReviewDialog()">
+          {{ userReview() ? ('discover.rating.editReview' | translate) : ('discover.rating.writeReview' | translate) }}
+        </button>
+      </div>
+
+      <div class="rating-summary">
+        <div class="rating-average">
+          <span class="rating-value">{{ (quiz()!.averageRating || 0) | number:'1.1-1' }}</span>
+          <app-star-rating [rating]="quiz()!.averageRating || 0" [count]="quiz()!.ratingCount || 0" size="md" />
+        </div>
+      </div>
+
+      <div class="reviews-list" *ngIf="reviews().length > 0">
+        <div class="review-item" *ngFor="let review of reviews()">
+          <div class="review-header">
+            <img [src]="review.userPhotoUrl || 'assets/default-avatar.svg'" [alt]="review.userDisplayName" class="reviewer-avatar" />
+            <div class="reviewer-info">
+              <span class="reviewer-name">{{ review.userDisplayName }}</span>
+              <span class="review-date">{{ review.createdAt | date:'mediumDate' }}</span>
+            </div>
+            <app-star-rating [rating]="review.rating" size="sm" />
+          </div>
+          <p class="review-comment" *ngIf="review.comment">{{ review.comment }}</p>
+        </div>
+      </div>
+
+      <div class="empty-reviews" *ngIf="reviews().length === 0 && !isLoadingReviews()">
+        <p>{{ 'discover.rating.noReviews' | translate }}</p>
+        <p class="hint">{{ 'discover.rating.beFirst' | translate }}</p>
+      </div>
+    </div>
   </ng-container>
 </div>
+
+<!-- Review Dialog -->
+<app-review-dialog
+  *ngIf="showReviewDialog() && quiz()"
+  [contentId]="quiz()!.id"
+  [contentType]="'quiz'"
+  [contentTitle]="quiz()!.title"
+  [existingReview]="userReview()"
+  (close)="closeReviewDialog()"
+  (submitted)="onReviewSubmitted()"
+/>
 
 <ng-template #loading>
   <div class="loading-state">

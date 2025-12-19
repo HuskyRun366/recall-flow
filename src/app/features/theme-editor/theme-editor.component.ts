@@ -39,6 +39,8 @@ export class ThemeEditorComponent {
   visibility = signal<ThemeVisibility>('private');
   primaryColor = signal('#2196f3');
   accentColor = signal('#ff9800');
+  backgroundLightColor = signal('#ffffff');
+  backgroundDarkColor = signal('#121212');
 
   isLoading = signal(true);
   isSaving = signal(false);
@@ -50,6 +52,8 @@ export class ThemeEditorComponent {
     visibility: ThemeVisibility;
     primary: string;
     accent: string;
+    backgroundLight: string;
+    backgroundDark: string;
   } | null>(null);
 
   previewGradient = computed(() => {
@@ -64,7 +68,9 @@ export class ThemeEditorComponent {
       this.description() !== base.description ||
       this.visibility() !== base.visibility ||
       this.primaryColor() !== base.primary ||
-      this.accentColor() !== base.accent
+      this.accentColor() !== base.accent ||
+      this.backgroundLightColor() !== base.backgroundLight ||
+      this.backgroundDarkColor() !== base.backgroundDark
     );
   });
 
@@ -86,6 +92,10 @@ export class ThemeEditorComponent {
         this.title.set(local.name);
         this.primaryColor.set(local.palette.primary);
         this.accentColor.set(local.palette.accent);
+        const lightBg = local.palette.background || '#ffffff';
+        const darkBg = local.darkPalette?.background || local.palette.background || '#121212';
+        this.backgroundLightColor.set(lightBg);
+        this.backgroundDarkColor.set(darkBg);
       }
     }
     this.isLoading.set(false);
@@ -94,7 +104,9 @@ export class ThemeEditorComponent {
       description: this.description(),
       visibility: this.visibility(),
       primary: this.primaryColor(),
-      accent: this.accentColor()
+      accent: this.accentColor(),
+      backgroundLight: this.backgroundLightColor(),
+      backgroundDark: this.backgroundDarkColor()
     });
   }
 
@@ -126,12 +138,19 @@ export class ThemeEditorComponent {
           this.primaryColor.set(theme.palette.primary);
           this.accentColor.set(theme.palette.accent);
 
+          const lightBg = theme.palette.background || '#ffffff';
+          const darkBg = theme.darkPalette?.background || theme.palette.background || '#121212';
+          this.backgroundLightColor.set(lightBg);
+          this.backgroundDarkColor.set(darkBg);
+
           this.baseline.set({
             title: this.title(),
             description: this.description(),
             visibility: this.visibility(),
             primary: this.primaryColor(),
-            accent: this.accentColor()
+            accent: this.accentColor(),
+            backgroundLight: this.backgroundLightColor(),
+            backgroundDark: this.backgroundDarkColor()
           });
 
           this.isLoading.set(false);
@@ -171,7 +190,11 @@ export class ThemeEditorComponent {
             visibility: this.visibility(),
             palette: {
               primary: this.primaryColor(),
-              accent: this.accentColor()
+              accent: this.accentColor(),
+              background: this.backgroundLightColor()
+            },
+            darkPalette: {
+              background: this.backgroundDarkColor()
             }
           })
         );
@@ -181,6 +204,8 @@ export class ThemeEditorComponent {
           name: title,
           primary: this.primaryColor(),
           accent: this.accentColor(),
+          backgroundLight: this.backgroundLightColor(),
+          backgroundDark: this.backgroundDarkColor(),
           visibility: this.visibility()
         });
         this.colorThemes.setActiveThemeId(id);
@@ -205,7 +230,11 @@ export class ThemeEditorComponent {
           visibility: this.visibility(),
           palette: {
             primary: this.primaryColor(),
-            accent: this.accentColor()
+            accent: this.accentColor(),
+            background: this.backgroundLightColor()
+          },
+          darkPalette: {
+            background: this.backgroundDarkColor()
           }
         })
       );
@@ -215,6 +244,8 @@ export class ThemeEditorComponent {
         name: title,
         primary: this.primaryColor(),
         accent: this.accentColor(),
+        backgroundLight: this.backgroundLightColor(),
+        backgroundDark: this.backgroundDarkColor(),
         visibility: this.visibility()
       });
 
@@ -223,7 +254,9 @@ export class ThemeEditorComponent {
         description: this.description(),
         visibility: this.visibility(),
         primary: this.primaryColor(),
-        accent: this.accentColor()
+        accent: this.accentColor(),
+        backgroundLight: this.backgroundLightColor(),
+        backgroundDark: this.backgroundDarkColor()
       });
 
       this.toastService.success('Saved');

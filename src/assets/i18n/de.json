@@ -7,6 +7,7 @@
     "saving": "Speichere...",
     "cancel": "Abbrechen",
     "delete": "Löschen",
+    "deleting": "Löschen...",
     "edit": "Bearbeiten",
     "create": "Erstellen",
     "back": "Zurück",
@@ -527,6 +528,8 @@
           "namePlaceholder": "z.B. „Mein Theme“",
           "primaryLabel": "Primärfarbe",
           "accentLabel": "Akzentfarbe",
+          "backgroundLightLabel": "Hintergrund (Hell-Modus)",
+          "backgroundDarkLabel": "Hintergrund (Dunkel-Modus)",
           "save": "Speichern",
           "update": "Aktualisieren",
           "preview": "Vorschau",
@@ -1169,7 +1172,12 @@
     "users": "Nutzer",
     "installs": "Installationen",
     "viewDetails": "Details ansehen",
-    "forkedFrom": "Kopiert von {{title}}",
+    "addFailed": "Inhalt konnte nicht hinzugefügt werden. Bitte versuchen Sie es erneut.",
+    "added": {
+      "quiz": "Quiz \"{{title}}\" zu Ihrer Sammlung hinzugefügt",
+      "deck": "Kartensatz \"{{title}}\" zu Ihrer Sammlung hinzugefügt",
+      "material": "Lernmaterial \"{{title}}\" zu Ihrer Sammlung hinzugefügt"
+    },
     "featured": {
       "title": "Empfohlen",
       "subtitle": "Handverlesen von unserem Team"
@@ -1223,7 +1231,6 @@
       "by": "von",
       "questions": "Fragen",
       "cards": "Karten",
-      "forkedFrom": "Kopiert von",
       "noRatings": "Noch keine Bewertungen"
     },
     "rating": {
@@ -1240,25 +1247,21 @@
       "updateReview": "Rezension aktualisieren",
       "reviewPlaceholder": "Teile deine Erfahrung mit diesem Inhalt...",
       "thankYou": "Danke für deine Rezension!",
+      "rate": "Bewerten",
+      "yourRating": "Deine Bewertung",
+      "comment": "Kommentar",
+      "commentPlaceholder": "Teile deine Gedanken... (Optional)",
+      "submit": "Absenden",
+      "submitting": "Wird gesendet...",
+      "delete": "Rezension löschen",
+      "deleteConfirm": "Möchtest du diese Rezension wirklich löschen?",
+      "deleted": "Rezension wurde gelöscht",
       "stars": {
         "1": "Schlecht",
         "2": "Ausreichend",
         "3": "Gut",
         "4": "Sehr gut",
         "5": "Ausgezeichnet"
-      }
-    },
-    "fork": {
-      "button": "Kopieren",
-      "buttonTooltip": "Eigene Kopie erstellen",
-      "success": "Erfolgreich kopiert!",
-      "error": "Kopieren fehlgeschlagen",
-      "dialog": {
-        "title": "Inhalt kopieren",
-        "description": "Erstelle deine eigene Kopie, die du bearbeiten und anpassen kannst.",
-        "newTitle": "Neuer Titel",
-        "confirm": "Kopie erstellen",
-        "cancel": "Abbrechen"
       }
     },
     "metadata": {

@@ -7,6 +7,7 @@
     "saving": "Guardando...",
     "cancel": "Cancelar",
     "delete": "Eliminar",
+    "deleting": "Eliminando...",
     "edit": "Editar",
     "create": "Crear",
     "back": "Atrás",
@@ -516,6 +517,8 @@
           "namePlaceholder": "p. ej. \"Mi tema\"",
           "primaryLabel": "Primario",
           "accentLabel": "Acento",
+          "backgroundLightLabel": "Fondo (Modo Claro)",
+          "backgroundDarkLabel": "Fondo (Modo Oscuro)",
           "save": "Guardar",
           "update": "Actualizar",
           "preview": "Vista previa",
@@ -1145,7 +1148,12 @@
     "users": "Usuarios",
     "installs": "Instalaciones",
     "viewDetails": "Ver detalles",
-    "forkedFrom": "Copiado de {{title}}",
+    "addFailed": "Error al agregar contenido. Por favor, inténtelo de nuevo.",
+    "added": {
+      "quiz": "Quiz \"{{title}}\" agregado a su colección",
+      "deck": "Mazo \"{{title}}\" agregado a su colección",
+      "material": "Material \"{{title}}\" agregado a su colección"
+    },
     "featured": {
       "title": "Destacados",
       "subtitle": "Seleccionados por nuestro equipo"
@@ -1199,7 +1207,6 @@
       "by": "por",
       "questions": "preguntas",
       "cards": "tarjetas",
-      "forkedFrom": "Copiado de",
       "noRatings": "Sin valoraciones aún"
     },
     "rating": {
@@ -1216,25 +1223,21 @@
       "updateReview": "Actualizar reseña",
       "reviewPlaceholder": "Comparte tu experiencia con este contenido...",
       "thankYou": "¡Gracias por tu reseña!",
+      "rate": "Calificar",
+      "yourRating": "Tu calificación",
+      "comment": "Comentario",
+      "commentPlaceholder": "Comparte tus pensamientos... (Opcional)",
+      "submit": "Enviar",
+      "submitting": "Enviando...",
+      "delete": "Eliminar reseña",
+      "deleteConfirm": "¿Estás seguro de que deseas eliminar esta reseña?",
+      "deleted": "Reseña eliminada",
       "stars": {
         "1": "Malo",
         "2": "Regular",
         "3": "Bueno",
         "4": "Muy bueno",
         "5": "Excelente"
-      }
-    },
-    "fork": {
-      "button": "Copiar",
-      "buttonTooltip": "Crear tu propia copia",
-      "success": "¡Copiado correctamente!",
-      "error": "Error al copiar el contenido",
-      "dialog": {
-        "title": "Copiar este contenido",
-        "description": "Crea tu propia copia que puedes editar y personalizar.",
-        "newTitle": "Nuevo título",
-        "confirm": "Crear copia",
-        "cancel": "Cancelar"
       }
     },
     "metadata": {

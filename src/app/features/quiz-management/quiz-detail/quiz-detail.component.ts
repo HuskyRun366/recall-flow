@@ -7,15 +7,18 @@ import { QuestionService } from '../../../core/services/question.service';
 import { ParticipantService } from '../../../core/services/participant.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
-import { Quiz, Question } from '../../../models';
+import { ReviewService } from '../../../core/services/review.service';
+import { Quiz, Question, Review } from '../../../models';
 import { StatCardComponent } from '../../../shared/components';
+import { StarRatingComponent } from '../../../shared/components/star-rating/star-rating.component';
+import { ReviewDialogComponent } from '../../../shared/components/review-dialog/review-dialog.component';
 
 type EnrollState = 'idle' | 'loading' | 'removing';
 
 @Component({
   selector: 'app-quiz-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule, StatCardComponent],
+  imports: [CommonModule, RouterModule, TranslateModule, StatCardComponent, StarRatingComponent, ReviewDialogComponent],
   templateUrl: './quiz-detail.component.html',
   styleUrls: ['./quiz-detail.component.scss']
 })
@@ -27,6 +30,7 @@ export class QuizDetailComponent implements OnInit {
   private participantService = inject(ParticipantService);
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
+  private reviewService = inject(ReviewService);
 
   quiz = signal<Quiz | null>(null);
   questions = signal<Question[]>([]);
@@ -39,6 +43,12 @@ export class QuizDetailComponent implements OnInit {
   canEdit = signal(false);
   copySuccess = signal(false);
   exportSuccess = signal(false);
+
+  // Review-related signals
+  reviews = signal<Review[]>([]);
+  userReview = signal<Review | null>(null);
+  showReviewDialog = signal(false);
+  isLoadingReviews = signal(false);
 
   requiresEnrollment = computed(() => {
     const q = this.quiz();
@@ -72,6 +82,7 @@ export class QuizDetailComponent implements OnInit {
         this.quiz.set(q);
         this.loadQuestions(id);
         this.loadEnrollment(id);
+        this.loadReviews(id);
 
         // Check edit permission
         const userId = this.currentUser()?.uid;
@@ -285,5 +296,46 @@ export class QuizDetailComponent implements OnInit {
     // Success-Feedback (2 Sekunden)
     this.exportSuccess.set(true);
     setTimeout(() => this.exportSuccess.set(false), 2000);
+  }
+
+  // Review methods
+  private loadReviews(quizId: string): void {
+    this.isLoadingReviews.set(true);
+    this.reviewService.getReviewsForContent(quizId, 'quiz').subscribe({
+      next: (reviews: Review[]) => {
+        this.reviews.set(reviews);
+        const userId = this.currentUser()?.uid;
+        if (userId) {
+          const myReview = reviews.find((r: Review) => r.userId === userId);
+          this.userReview.set(myReview || null);
+        }
+        this.isLoadingReviews.set(false);
+      },
+      error: (err: unknown) => {
+        console.error('Failed to load reviews:', err);
+        this.isLoadingReviews.set(false);
+      }
+    });
+  }
+
+  openReviewDialog(): void {
+    this.showReviewDialog.set(true);
+  }
+
+  closeReviewDialog(): void {
+    this.showReviewDialog.set(false);
+  }
+
+  onReviewSubmitted(): void {
+    const quizId = this.quiz()?.id;
+    if (quizId) {
+      this.loadReviews(quizId);
+      // Reload quiz to get updated averageRating
+      this.firestoreService.getQuizById(quizId).subscribe({
+        next: (q) => {
+          if (q) this.quiz.set(q);
+        }
+      });
+    }
   }
 }

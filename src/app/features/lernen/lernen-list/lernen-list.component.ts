@@ -141,18 +141,11 @@ export class LernenListComponent implements OnInit {
           console.error('Error loading user deck refs:', error);
           return of([] as UserDeckReference[]);
         })
-      ),
-      this.deckService.getPublicDecks().pipe(
-        timeout(QUERY_TIMEOUT),
-        catchError(error => {
-          console.error('Error loading public decks:', error);
-          return of([] as FlashcardDeck[]);
-        })
       )
     ]).pipe(
       timeout(TOTAL_TIMEOUT),
       takeUntilDestroyed(this.destroyRef),
-      switchMap(([owned, userDeckRefs, publicDecks]) => {
+      switchMap(([owned, userDeckRefs]) => {
         this.ownedDecks.set(owned.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()));
         this.userDeckRefs.set(userDeckRefs);
 
@@ -187,12 +180,11 @@ export class LernenListComponent implements OnInit {
           timeout(QUERY_TIMEOUT),
           map(([coAuthorDecks, participantDecks]) => ({
             coAuthorDecks,
-            participantDecks,
-            publicDecks
+            participantDecks
           })),
           catchError(error => {
             console.error('Error loading co-author/participant decks:', error);
-            return of({ coAuthorDecks: [] as FlashcardDeck[], participantDecks: [] as FlashcardDeck[], publicDecks });
+            return of({ coAuthorDecks: [] as FlashcardDeck[], participantDecks: [] as FlashcardDeck[] });
           })
         );
       }),
@@ -200,17 +192,14 @@ export class LernenListComponent implements OnInit {
         console.error('Critical error in deck loading:', error);
         this.error.set('Failed to load decks. Please refresh the page.');
         this.isLoading.set(false);
-        return of({ coAuthorDecks: [] as FlashcardDeck[], participantDecks: [] as FlashcardDeck[], publicDecks: [] as FlashcardDeck[] });
+        return of({ coAuthorDecks: [] as FlashcardDeck[], participantDecks: [] as FlashcardDeck[] });
       })
     ).subscribe({
-      next: ({ coAuthorDecks, participantDecks, publicDecks }) => {
+      next: ({ coAuthorDecks, participantDecks }) => {
         this.coAuthoredDecks.set(coAuthorDecks.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()));
 
-        const publicDeckIds = new Set(publicDecks.map(d => d.id));
-        const uniqueParticipantDecks = participantDecks.filter(d => !publicDeckIds.has(d.id));
-
-        const allPublicDecks = [...publicDecks, ...uniqueParticipantDecks];
-        this.publicDecks.set(allPublicDecks.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()));
+        // Only show decks where user is enrolled as student (not all public decks)
+        this.publicDecks.set(participantDecks.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()));
 
         this.isLoading.set(false);
       },

@@ -2,7 +2,7 @@ import { Component, input, output, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { MarketplaceItem, MarketplaceTheme, Quiz, FlashcardDeck, LearningMaterial, ForkedFromInfo } from '../../../models';
+import { MarketplaceItem, MarketplaceTheme, Quiz, FlashcardDeck, LearningMaterial } from '../../../models';
 import { StarRatingComponent } from '../star-rating/star-rating.component';
 
 @Component({
@@ -14,9 +14,11 @@ import { StarRatingComponent } from '../star-rating/star-rating.component';
 })
 export class MarketplaceCardComponent {
   item = input.required<MarketplaceItem>();
-  showForkButton = input<boolean>(true);
+  isEnrolled = input<boolean>(false);
+  currentUserId = input<string | undefined>(undefined);
 
-  fork = output<MarketplaceItem>();
+  add = output<MarketplaceItem>();
+  rate = output<MarketplaceItem>();
 
   contentLink = computed(() => {
     const item = this.item();
@@ -132,27 +134,31 @@ export class MarketplaceCardComponent {
     return (item.content as Quiz | FlashcardDeck | LearningMaterial).language ?? null;
   });
 
-  forkedFrom = computed<ForkedFromInfo | null>(() => {
-    const item = this.item();
-    if (item.type === 'theme') return null;
-    return (item.content as Quiz | FlashcardDeck | LearningMaterial).forkedFrom ?? null;
-  });
-
   themePreviewGradient = computed(() => {
     if (this.item().type !== 'theme') return null;
     const theme = this.item().content as MarketplaceTheme;
     return `linear-gradient(135deg, ${theme.palette.primary}, ${theme.palette.accent})`;
   });
 
-  actionLabelKey = computed(() => {
-    return this.item().type === 'theme'
-      ? 'settings.page.theme.marketplace.install'
-      : 'discover.fork.button';
+  canRate = computed(() => {
+    const enrolled = this.isEnrolled();
+    const userId = this.currentUserId();
+    const content = this.item().content;
+
+    // User muss angemeldet und enrolled sein
+    // User kann nicht sein eigenes Content raten
+    return enrolled && userId && userId !== content.ownerId;
   });
 
-  onFork(event: Event): void {
+  onAdd(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
-    this.fork.emit(this.item());
+    this.add.emit(this.item());
+  }
+
+  onRate(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.rate.emit(this.item());
   }
 }

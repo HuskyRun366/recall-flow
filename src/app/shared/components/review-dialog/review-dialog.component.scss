@@ -149,20 +149,22 @@
 
 .dialog-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: $spacing-md;
   padding: $spacing-lg $spacing-xl;
   border-top: 1px solid var(--color-border);
 }
 
 .btn-primary,
-.btn-secondary {
-  padding: $spacing-sm $spacing-lg;
+.btn-secondary,
+.btn-danger {
+  padding: $spacing-sm $spacing-md;
   border-radius: $radius-md;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: all $transition-fast;
+  white-space: nowrap;
 
   &:disabled {
     opacity: 0.6;
@@ -189,6 +191,17 @@
   &:hover:not(:disabled) {
     background: var(--color-surface-elevated);
     border-color: var(--color-text-tertiary);
+  }
+}
+
+.btn-danger {
+  background: var(--color-danger, #ef4444);
+  border: none;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background: var(--color-danger-dark, #dc2626);
+    transform: translateY(-1px);
   }
 }
 
