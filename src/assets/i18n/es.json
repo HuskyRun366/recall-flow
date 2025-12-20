@@ -581,6 +581,11 @@
         "downloading": "Descargando {{current}} de {{total}}...",
         "offlineHint": "Estás sin conexión. Conéctate a Internet para descargar contenido.",
         "downloadAll": "Descargar todo",
+        "resetCache": "Restablecer caché sin conexión",
+        "resetting": "Restableciendo...",
+        "resetConfirm": "¿Restablecer el caché sin conexión? La app se recargará.",
+        "resetDone": "Caché restablecido. Recargando la app.",
+        "resetFailed": "No se pudo restablecer el caché.",
         "info": "El contenido descargado está disponible sin conexión en este dispositivo.",
         "labels": {
           "quizzes": "Cuestionarios",

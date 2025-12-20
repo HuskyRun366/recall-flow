@@ -39,6 +39,27 @@ export const appConfig: ApplicationConfig = {
     // Firestore with offline persistence enabled (fallbacks for PWA/iOS quirks)
     provideFirestore(() => {
       const app = getApp();
+      const isIOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent || '');
+      const isStandalone =
+        typeof window !== 'undefined' &&
+        (window.matchMedia?.('(display-mode: standalone)').matches || (navigator as any).standalone === true);
+
+      // iOS PWA: use single-tab persistence (more reliable than multi-tab on iOS).
+      if (isIOS && isStandalone) {
+        try {
+          return initializeFirestore(app, {
+            localCache: persistentLocalCache({
+              tabManager: persistentSingleTabManager({ forceOwnership: true })
+            })
+          });
+        } catch (error) {
+          console.warn('⚠️ iOS PWA single-tab persistence unavailable, using memory cache:', error);
+          return initializeFirestore(app, {
+            localCache: memoryLocalCache()
+          });
+        }
+      }
+
       try {
         return initializeFirestore(app, {
           localCache: persistentLocalCache({

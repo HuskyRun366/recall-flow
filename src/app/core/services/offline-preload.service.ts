@@ -1,5 +1,5 @@
 import { Injectable, inject, signal, Injector, runInInjectionContext } from '@angular/core';
-import { Firestore, collection, query, where, getDocs, doc, getDoc } from '@angular/fire/firestore';
+import { Firestore, collection, query, where, getDocs, doc, getDoc, clearIndexedDbPersistence } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 import { NetworkStatusService } from './network-status.service';
 
@@ -53,6 +53,8 @@ export class OfflinePreloadService {
     }
 
     this.isPreloading.set(true);
+    // Avoid brief null/undefined progress states in the UI.
+    this.preloadProgress.set({ current: 0, total: 0 });
     console.log('Starting offline preload...');
 
     try {
@@ -102,9 +104,46 @@ export class OfflinePreloadService {
 
       this.preloadProgress.set({ current: 0, total: totalItems });
 
-      const preloadedQuizMap = new Map<string, PreloadStatus>();
-      const preloadedDeckMap = new Map<string, PreloadStatus>();
-      const preloadedMaterialMap = new Map<string, PreloadStatus>();
+      const preloadedQuizMap = new Map(this.preloadedQuizzes());
+      const preloadedDeckMap = new Map(this.preloadedDecks());
+      const preloadedMaterialMap = new Map(this.preloadedMaterials());
+
+      // Seed maps with all available IDs so totals show even before download finishes
+      allQuizIds.forEach(id => {
+        if (!preloadedQuizMap.has(id)) {
+          preloadedQuizMap.set(id, {
+            id,
+            title: 'Quiz',
+            isPreloaded: false,
+            itemCount: 0
+          });
+        }
+      });
+      allDeckIds.forEach(id => {
+        if (!preloadedDeckMap.has(id)) {
+          preloadedDeckMap.set(id, {
+            id,
+            title: 'Deck',
+            isPreloaded: false,
+            itemCount: 0
+          });
+        }
+      });
+      allMaterialIds.forEach(id => {
+        if (!preloadedMaterialMap.has(id)) {
+          preloadedMaterialMap.set(id, {
+            id,
+            title: 'Material',
+            isPreloaded: false,
+            itemCount: 0
+          });
+        }
+      });
+
+      // Update signals early so the UI shows total counts immediately
+      this.preloadedQuizzes.set(preloadedQuizMap);
+      this.preloadedDecks.set(preloadedDeckMap);
+      this.preloadedMaterials.set(preloadedMaterialMap);
 
       console.log(
         `Found ${allQuizIds.length} quizzes, ${allDeckIds.length} decks, ${allMaterialIds.length} materials to preload.`
@@ -158,6 +197,7 @@ export class OfflinePreloadService {
         }
 
         this.preloadProgress.set({ current: currentIndex, total: totalItems });
+        this.preloadedQuizzes.set(new Map(preloadedQuizMap));
       }
 
       // Preload each deck and its flashcards
@@ -204,6 +244,7 @@ export class OfflinePreloadService {
         }
 
         this.preloadProgress.set({ current: currentIndex, total: totalItems });
+        this.preloadedDecks.set(new Map(preloadedDeckMap));
       }
 
       // Preload each learning material
@@ -246,6 +287,7 @@ export class OfflinePreloadService {
         }
 
         this.preloadProgress.set({ current: currentIndex, total: totalItems });
+        this.preloadedMaterials.set(new Map(preloadedMaterialMap));
       }
 
       // Update signals
@@ -356,5 +398,144 @@ export class OfflinePreloadService {
     this.preloadedQuizzes.set(this.loadPreloadStatusFromStorage(this.STORAGE_KEYS.quizzes));
     this.preloadedDecks.set(this.loadPreloadStatusFromStorage(this.STORAGE_KEYS.decks));
     this.preloadedMaterials.set(this.loadPreloadStatusFromStorage(this.STORAGE_KEYS.materials));
+  }
+
+  /**
+   * Refresh available content IDs so counts show even before downloading.
+   */
+  async refreshAvailableContentIds(): Promise<void> {
+    const currentUser = this.authService.currentUser();
+    if (!currentUser) {
+      return;
+    }
+
+    try {
+      const [
+        userQuizzesSnapshot,
+        ownedQuizzesSnapshot,
+        userDecksSnapshot,
+        ownedDecksSnapshot,
+        userMaterialsSnapshot,
+        ownedMaterialsSnapshot
+      ] = await Promise.all([
+        runInInjectionContext(this.injector, () =>
+          getDocs(collection(this.firestore, `users/${currentUser.uid}/userQuizzes`))
+        ),
+        runInInjectionContext(this.injector, () =>
+          getDocs(query(collection(this.firestore, 'quizzes'), where('ownerId', '==', currentUser.uid)))
+        ),
+        runInInjectionContext(this.injector, () =>
+          getDocs(collection(this.firestore, `users/${currentUser.uid}/userDecks`))
+        ),
+        runInInjectionContext(this.injector, () =>
+          getDocs(query(collection(this.firestore, 'flashcardDecks'), where('ownerId', '==', currentUser.uid)))
+        ),
+        runInInjectionContext(this.injector, () =>
+          getDocs(collection(this.firestore, `users/${currentUser.uid}/userMaterials`))
+        ),
+        runInInjectionContext(this.injector, () =>
+          getDocs(query(collection(this.firestore, 'learningMaterials'), where('ownerId', '==', currentUser.uid)))
+        )
+      ]);
+
+      const quizIds = new Set<string>();
+      const deckIds = new Set<string>();
+      const materialIds = new Set<string>();
+
+      const quizTitles = new Map<string, string>();
+      const deckTitles = new Map<string, string>();
+      const materialTitles = new Map<string, string>();
+
+      userQuizzesSnapshot.docs.forEach(doc => quizIds.add(doc.id));
+      ownedQuizzesSnapshot.docs.forEach(doc => {
+        quizIds.add(doc.id);
+        quizTitles.set(doc.id, (doc.data() as any)?.title || 'Quiz');
+      });
+
+      userDecksSnapshot.docs.forEach(doc => deckIds.add(doc.id));
+      ownedDecksSnapshot.docs.forEach(doc => {
+        deckIds.add(doc.id);
+        deckTitles.set(doc.id, (doc.data() as any)?.title || 'Deck');
+      });
+
+      userMaterialsSnapshot.docs.forEach(doc => materialIds.add(doc.id));
+      ownedMaterialsSnapshot.docs.forEach(doc => {
+        materialIds.add(doc.id);
+        materialTitles.set(doc.id, (doc.data() as any)?.title || 'Material');
+      });
+
+      const nextQuizMap = new Map<string, PreloadStatus>();
+      const nextDeckMap = new Map<string, PreloadStatus>();
+      const nextMaterialMap = new Map<string, PreloadStatus>();
+
+      const existingQuizMap = this.preloadedQuizzes();
+      const existingDeckMap = this.preloadedDecks();
+      const existingMaterialMap = this.preloadedMaterials();
+
+      quizIds.forEach(id => {
+        const existing = existingQuizMap.get(id);
+        nextQuizMap.set(id, {
+          id,
+          title: quizTitles.get(id) || existing?.title || 'Quiz',
+          isPreloaded: existing?.isPreloaded ?? false,
+          itemCount: existing?.itemCount ?? 0,
+          ...(existing?.lastPreloaded ? { lastPreloaded: existing.lastPreloaded } : {})
+        });
+      });
+
+      deckIds.forEach(id => {
+        const existing = existingDeckMap.get(id);
+        nextDeckMap.set(id, {
+          id,
+          title: deckTitles.get(id) || existing?.title || 'Deck',
+          isPreloaded: existing?.isPreloaded ?? false,
+          itemCount: existing?.itemCount ?? 0,
+          ...(existing?.lastPreloaded ? { lastPreloaded: existing.lastPreloaded } : {})
+        });
+      });
+
+      materialIds.forEach(id => {
+        const existing = existingMaterialMap.get(id);
+        nextMaterialMap.set(id, {
+          id,
+          title: materialTitles.get(id) || existing?.title || 'Material',
+          isPreloaded: existing?.isPreloaded ?? false,
+          itemCount: existing?.itemCount ?? 0,
+          ...(existing?.lastPreloaded ? { lastPreloaded: existing.lastPreloaded } : {})
+        });
+      });
+
+      this.preloadedQuizzes.set(nextQuizMap);
+      this.preloadedDecks.set(nextDeckMap);
+      this.preloadedMaterials.set(nextMaterialMap);
+
+      this.savePreloadStatusToStorage(this.STORAGE_KEYS.quizzes, nextQuizMap);
+      this.savePreloadStatusToStorage(this.STORAGE_KEYS.decks, nextDeckMap);
+      this.savePreloadStatusToStorage(this.STORAGE_KEYS.materials, nextMaterialMap);
+    } catch (error) {
+      console.error('Failed to refresh available content IDs:', error);
+    }
+  }
+
+  /**
+   * Clear offline cache and local preload state (useful when persistence gets stuck).
+   */
+  async resetOfflineCache(): Promise<void> {
+    try {
+      await clearIndexedDbPersistence(this.firestore);
+    } catch (error) {
+      console.warn('Failed to clear IndexedDB persistence (may be unavailable):', error);
+    }
+
+    this.preloadedQuizzes.set(new Map());
+    this.preloadedDecks.set(new Map());
+    this.preloadedMaterials.set(new Map());
+
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem(this.STORAGE_KEYS.quizzes);
+      localStorage.removeItem(this.STORAGE_KEYS.decks);
+      localStorage.removeItem(this.STORAGE_KEYS.materials);
+      localStorage.removeItem('last-preload-time');
+    }
   }
 }

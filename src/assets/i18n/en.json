@@ -592,6 +592,11 @@
         "downloading": "Downloading {{current}} of {{total}}...",
         "offlineHint": "You're offline. Connect to the internet to download content.",
         "downloadAll": "Download all",
+        "resetCache": "Reset offline cache",
+        "resetting": "Resetting...",
+        "resetConfirm": "Reset offline cache? The app will reload.",
+        "resetDone": "Cache reset. Reloading the app.",
+        "resetFailed": "Failed to reset cache.",
         "info": "Downloaded content is available offline on this device.",
         "labels": {
           "quizzes": "Quizzes",

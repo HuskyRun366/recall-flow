@@ -1,6 +1,6 @@
 import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PushNotificationService } from '../../core/services/push-notification.service';
 import { OfflinePreloadService } from '../../core/services/offline-preload.service';
 import { NetworkStatusService } from '../../core/services/network-status.service';
@@ -10,6 +10,7 @@ import { ThemeSettingsComponent } from './components/theme-settings/theme-settin
 import { ColorThemeService } from '../../core/services/color-theme.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { LanguageSwitcherComponent } from '../../shared/components/language-switcher/language-switcher.component';
+import { ToastService } from '../../core/services/toast.service';
 
 const STORAGE_THEME_SETTINGS_EXPANDED = 'quiz-app-theme-settings-expanded';
 
@@ -26,8 +27,10 @@ export class SettingsComponent {
   private networkStatus = inject(NetworkStatusService);
   private pwaDetection = inject(PwaDetectionService);
   private authService = inject(AuthService);
+  private toastService = inject(ToastService);
   private colorThemes = inject(ColorThemeService);
   private themeService = inject(ThemeService);
+  private translate = inject(TranslateService);
 
   // PWA Detection
   isPWA = this.pwaDetection.isPWA;
@@ -55,6 +58,7 @@ export class SettingsComponent {
   preloadedQuizzes = this.offlinePreloadService.preloadedQuizzes;
   preloadedDecks = this.offlinePreloadService.preloadedDecks;
   preloadedMaterials = this.offlinePreloadService.preloadedMaterials;
+  isResettingCache = signal(false);
 
   preloadedQuizCount = computed(() => this.countPreloaded(this.preloadedQuizzes()));
   preloadedDeckCount = computed(() => this.countPreloaded(this.preloadedDecks()));
@@ -74,6 +78,7 @@ export class SettingsComponent {
 
   // Theme (palette) section collapse state
   isThemeSettingsExpanded = signal(this.loadThemeSettingsExpanded());
+  private lastRefreshUserId = signal<string | null>(null);
 
   activeColorTheme = this.colorThemes.activeTheme;
   currentMode = this.themeService.theme;
@@ -83,6 +88,17 @@ export class SettingsComponent {
     effect(() => {
       if (typeof localStorage === 'undefined') return;
       localStorage.setItem(STORAGE_THEME_SETTINGS_EXPANDED, String(this.isThemeSettingsExpanded()));
+    });
+
+    effect(() => {
+      const user = this.authService.currentUser();
+      if (!user) {
+        this.lastRefreshUserId.set(null);
+        return;
+      }
+      if (this.lastRefreshUserId() === user.uid) return;
+      this.lastRefreshUserId.set(user.uid);
+      void this.offlinePreloadService.refreshAvailableContentIds();
     });
   }
 
@@ -119,6 +135,32 @@ export class SettingsComponent {
 
   async preloadQuizzesForOffline(): Promise<void> {
     await this.offlinePreloadService.preloadAllQuizzes();
+  }
+
+  async resetOfflineCache(): Promise<void> {
+    if (this.isResettingCache()) return;
+
+    const confirmed = confirm(
+      this.translate.instant('settings.page.offline.resetConfirm')
+    );
+    if (!confirmed) return;
+
+    this.isResettingCache.set(true);
+    try {
+      await this.offlinePreloadService.resetOfflineCache();
+      this.toastService.success(
+        this.translate.instant('settings.page.offline.resetDone'),
+        2000
+      );
+      setTimeout(() => window.location.reload(), 300);
+    } catch (error) {
+      console.error('Failed to reset offline cache:', error);
+      this.toastService.error(
+        this.translate.instant('settings.page.offline.resetFailed')
+      );
+    } finally {
+      this.isResettingCache.set(false);
+    }
   }
 
   toggleThemeSettings(): void {

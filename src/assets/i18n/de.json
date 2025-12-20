@@ -592,6 +592,11 @@
         "downloading": "Lade {{current}} von {{total}} herunter...",
         "offlineHint": "Du bist offline. Verbinde dich mit dem Internet, um Inhalte herunterzuladen.",
         "downloadAll": "Alles herunterladen",
+        "resetCache": "Offline-Cache zurücksetzen",
+        "resetting": "Zurücksetzen...",
+        "resetConfirm": "Offline-Cache wirklich zurücksetzen? Die App wird neu geladen.",
+        "resetDone": "Cache zurückgesetzt. App wird neu geladen.",
+        "resetFailed": "Cache konnte nicht zurückgesetzt werden.",
         "info": "Heruntergeladene Inhalte sind auf diesem Gerät offline verfügbar.",
         "labels": {
           "quizzes": "Quizzes",

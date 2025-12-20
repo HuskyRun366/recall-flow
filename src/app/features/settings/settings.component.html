@@ -321,7 +321,7 @@
             @if (isPreloading()) {
               <div class="preload-progress">
                 <div class="spinner-small"></div>
-                <span>{{ 'settings.page.offline.downloading' | translate:{ current: preloadProgress()?.current, total: preloadProgress()?.total } }}</span>
+                <span>{{ 'settings.page.offline.downloading' | translate:{ current: preloadProgress()?.current ?? 0, total: preloadProgress()?.total ?? 0 } }}</span>
               </div>
             } @else if (!isOnline()) {
               <div class="info-message">
@@ -344,6 +344,17 @@
                 {{ 'settings.page.offline.downloadAll' | translate }}
               </button>
             }
+
+            <button
+              class="btn btn-secondary btn-reset"
+              [disabled]="isResettingCache() || isPreloading()"
+              (click)="resetOfflineCache()">
+              @if (isResettingCache()) {
+                <span>{{ 'settings.page.offline.resetting' | translate }}</span>
+              } @else {
+                <span>{{ 'settings.page.offline.resetCache' | translate }}</span>
+              }
+            </button>
           </div>
 
           <!-- Info Text -->

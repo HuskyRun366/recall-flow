@@ -581,6 +581,11 @@
         "downloading": "Téléchargement {{current}} sur {{total}}...",
         "offlineHint": "Vous êtes hors ligne. Connectez-vous à Internet pour télécharger du contenu.",
         "downloadAll": "Tout télécharger",
+        "resetCache": "Réinitialiser le cache hors ligne",
+        "resetting": "Réinitialisation...",
+        "resetConfirm": "Réinitialiser le cache hors ligne ? L'app va se recharger.",
+        "resetDone": "Cache réinitialisé. Rechargement de l'app.",
+        "resetFailed": "Échec de la réinitialisation du cache.",
         "info": "Le contenu téléchargé est disponible hors ligne sur cet appareil.",
         "labels": {
           "quizzes": "Quiz",
