@@ -586,13 +586,18 @@
       },
       "offline": {
         "title": "Offline",
-        "subtitle": "Download quizzes for offline use",
+        "subtitle": "Download quizzes, flashcards, and materials for offline use",
         "pwaOnly": "Offline download is only available in the installed app (PWA).",
         "downloadedLabel": "downloaded",
         "downloading": "Downloading {{current}} of {{total}}...",
         "offlineHint": "You're offline. Connect to the internet to download content.",
         "downloadAll": "Download all",
         "info": "Downloaded content is available offline on this device.",
+        "labels": {
+          "quizzes": "Quizzes",
+          "flashcards": "Flashcards",
+          "materials": "Materials"
+        },
         "status": {
           "offline": "Offline",
           "online": "Online"

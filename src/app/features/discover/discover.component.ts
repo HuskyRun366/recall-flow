@@ -1,8 +1,9 @@
 import { Component, OnInit, inject, signal, computed, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { firstValueFrom } from 'rxjs';
 import {
   MarketplaceItem,
   TopChartType,
@@ -55,7 +56,6 @@ export class DiscoverComponent implements OnInit {
   private materialParticipantService = inject(MaterialParticipantService);
   private reviewService = inject(ReviewService);
   private translateService = inject(TranslateService);
-  private router = inject(Router);
   private destroyRef = inject(DestroyRef);
 
   // Filter state
@@ -79,7 +79,13 @@ export class DiscoverComponent implements OnInit {
   isLoadingChart = signal(true);
 
   // Enrollment state
-  enrollmentMap = signal<Map<string, boolean>>(new Map());
+  private enrollmentSets = signal<{
+    quizIds: Set<string>;
+    deckIds: Set<string>;
+    materialIds: Set<string>;
+  } | null>(null);
+  private enrollmentLoadPromise: Promise<void> | null = null;
+  private enrollmentUserId: string | null = null;
 
   // Review dialog state
   showReviewDialog = signal(false);
@@ -114,6 +120,7 @@ export class DiscoverComponent implements OnInit {
   currentUserId = computed(() => this.authService.currentUser()?.uid);
 
   ngOnInit(): void {
+    void this.ensureEnrollmentSets();
     this.loadFeatured();
     this.loadTopChart('popular');
     this.performSearch();
@@ -139,10 +146,10 @@ export class DiscoverComponent implements OnInit {
     this.marketplaceService.getFeatured()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: async (items) => {
+        next: (items) => {
           this.featuredItems.set(items);
-          await this.loadEnrollments(items);
           this.isLoadingFeatured.set(false);
+          void this.ensureEnrollmentSets();
         },
         error: (err) => {
           console.error('Failed to load featured:', err);
@@ -170,10 +177,10 @@ export class DiscoverComponent implements OnInit {
     observable
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: async (items) => {
+        next: (items) => {
           this.topChartItems.set(items);
-          await this.loadEnrollments(items);
           this.isLoadingChart.set(false);
+          void this.ensureEnrollmentSets();
         },
         error: (err) => {
           console.error('Failed to load chart:', err);
@@ -213,10 +220,10 @@ export class DiscoverComponent implements OnInit {
     this.marketplaceService.searchMarketplace(params)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: async (items) => {
+        next: (items) => {
           this.searchResults.set(items);
-          await this.loadEnrollments(items);
           this.isLoadingSearch.set(false);
+          void this.ensureEnrollmentSets();
         },
         error: (err) => {
           console.error('Search failed:', err);
@@ -259,6 +266,7 @@ export class DiscoverComponent implements OnInit {
             this.toastService.success(
               this.translateService.instant('discover.added.quiz', { title: item.content.title })
             );
+            this.markEnrolled(item);
             break;
 
           case 'deck':
@@ -273,6 +281,7 @@ export class DiscoverComponent implements OnInit {
             this.toastService.success(
               this.translateService.instant('discover.added.deck', { title: item.content.title })
             );
+            this.markEnrolled(item);
             break;
 
           case 'material':
@@ -287,6 +296,7 @@ export class DiscoverComponent implements OnInit {
             this.toastService.success(
               this.translateService.instant('discover.added.material', { title: item.content.title })
             );
+            this.markEnrolled(item);
             break;
         }
       }
@@ -298,51 +308,86 @@ export class DiscoverComponent implements OnInit {
     }
   }
 
-  // Enrollment check methods
-  async checkEnrollment(item: MarketplaceItem): Promise<boolean> {
+  private async ensureEnrollmentSets(): Promise<void> {
     const userId = this.authService.currentUser()?.uid;
-    if (!userId) return false;
-
-    const contentId = item.content.id;
-    const type = item.type;
-
-    try {
-      switch (type) {
-        case 'quiz': {
-          const participant = await this.participantService.getParticipantAsync(contentId, userId);
-          return !!participant;
-        }
-        case 'deck': {
-          const participant = await this.deckParticipantService.getParticipantAsync(contentId, userId);
-          return !!participant;
-        }
-        case 'material': {
-          const participant = await this.materialParticipantService.getParticipantAsync(contentId, userId);
-          return !!participant;
-        }
-        case 'theme': {
-          return this.colorThemeService.isThemeInstalled(contentId);
-        }
-        default:
-          return false;
-      }
-    } catch (err) {
-      console.error('Enrollment check failed:', err);
-      return false;
+    if (!userId) {
+      this.enrollmentUserId = null;
+      this.enrollmentLoadPromise = null;
+      this.enrollmentSets.set(null);
+      return;
     }
+
+    if (this.enrollmentUserId === userId && this.enrollmentLoadPromise) {
+      await this.enrollmentLoadPromise;
+      return;
+    }
+
+    this.enrollmentUserId = userId;
+    this.enrollmentLoadPromise = (async () => {
+      const [userQuizzes, userDecks, userMaterials] = await Promise.all([
+        firstValueFrom(this.participantService.getUserQuizzes(userId)),
+        firstValueFrom(this.deckParticipantService.getUserDecks(userId)),
+        firstValueFrom(this.materialParticipantService.getUserMaterials(userId))
+      ]);
+
+      this.enrollmentSets.set({
+        quizIds: new Set(userQuizzes.map(quiz => quiz.quizId)),
+        deckIds: new Set(userDecks.map(deck => deck.deckId)),
+        materialIds: new Set(userMaterials.map(material => material.materialId))
+      });
+    })().catch(err => {
+      console.error('Failed to load enrollments:', err);
+      this.enrollmentSets.set(null);
+    });
+
+    await this.enrollmentLoadPromise;
   }
 
-  async loadEnrollments(items: MarketplaceItem[]): Promise<void> {
-    const map = new Map<string, boolean>();
-    for (const item of items) {
-      const enrolled = await this.checkEnrollment(item);
-      map.set(item.content.id, enrolled);
+  private markEnrolled(item: MarketplaceItem): void {
+    const sets = this.enrollmentSets();
+    if (!sets) return;
+
+    const next = {
+      quizIds: new Set(sets.quizIds),
+      deckIds: new Set(sets.deckIds),
+      materialIds: new Set(sets.materialIds)
+    };
+
+    switch (item.type) {
+      case 'quiz':
+        next.quizIds.add(item.content.id);
+        break;
+      case 'deck':
+        next.deckIds.add(item.content.id);
+        break;
+      case 'material':
+        next.materialIds.add(item.content.id);
+        break;
+      default:
+        return;
     }
-    this.enrollmentMap.set(map);
+
+    this.enrollmentSets.set(next);
   }
 
-  isItemEnrolled(itemId: string): boolean {
-    return this.enrollmentMap().get(itemId) || false;
+  isItemEnrolled(item: MarketplaceItem): boolean {
+    if (item.type === 'theme') {
+      return this.colorThemeService.isThemeInstalled(item.content.id);
+    }
+
+    const sets = this.enrollmentSets();
+    if (!sets) return false;
+
+    switch (item.type) {
+      case 'quiz':
+        return sets.quizIds.has(item.content.id);
+      case 'deck':
+        return sets.deckIds.has(item.content.id);
+      case 'material':
+        return sets.materialIds.has(item.content.id);
+      default:
+        return false;
+    }
   }
 
   async onRateItem(item: MarketplaceItem): Promise<void> {

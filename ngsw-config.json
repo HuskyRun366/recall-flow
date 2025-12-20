@@ -4,7 +4,8 @@
   "assetGroups": [
     {
       "name": "app",
-      "installMode": "prefetch",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
       "resources": {
         "files": [
           "/favicon.ico",
@@ -31,33 +32,6 @@
           "/assets/**",
           "/*.(eot|svg|cur|jpg|png|webp|gif|otf|ttf|woff|woff2|ani)"
         ]
-      }
-    }
-  ],
-  "dataGroups": [
-    {
-      "name": "firebase-data",
-      "urls": [
-        "https://firestore.googleapis.com/**",
-        "https://identitytoolkit.googleapis.com/**"
-      ],
-      "cacheConfig": {
-        "maxSize": 200,
-        "maxAge": "7d",
-        "timeout": "8s",
-        "strategy": "performance"
-      }
-    },
-    {
-      "name": "api-cache",
-      "urls": [
-        "https://*.googleapis.com/**"
-      ],
-      "cacheConfig": {
-        "maxSize": 100,
-        "maxAge": "1d",
-        "timeout": "8s",
-        "strategy": "performance"
       }
     }
   ],

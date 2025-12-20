@@ -45,6 +45,10 @@
               "src/styles.scss"
             ],
             "scripts": [],
+            "allowedCommonJsDependencies": [
+              "jszip",
+              "sql.js"
+            ],
             "externalDependencies": ["fs", "path", "crypto"]
           },
           "configurations": {

@@ -586,13 +586,18 @@
       },
       "offline": {
         "title": "Offline",
-        "subtitle": "Quizzes für Offline-Nutzung herunterladen",
+        "subtitle": "Quizzes, Decks und Materialien für Offline-Nutzung herunterladen",
         "pwaOnly": "Offline-Download ist nur in der installierten App (PWA) verfügbar.",
         "downloadedLabel": "heruntergeladen",
         "downloading": "Lade {{current}} von {{total}} herunter...",
         "offlineHint": "Du bist offline. Verbinde dich mit dem Internet, um Inhalte herunterzuladen.",
         "downloadAll": "Alles herunterladen",
         "info": "Heruntergeladene Inhalte sind auf diesem Gerät offline verfügbar.",
+        "labels": {
+          "quizzes": "Quizzes",
+          "flashcards": "Decks",
+          "materials": "Materialien"
+        },
         "status": {
           "offline": "Offline",
           "online": "Online"

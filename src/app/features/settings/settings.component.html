@@ -237,15 +237,56 @@
         <div class="download-section">
           <!-- Download Status -->
           <div class="download-status">
-            <div class="status-item">
-              <div class="status-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M9 11H3v9h6v-9Z M21 11h-6v9h6v-9Z M15 5H9v14h6V5Z"/>
-                </svg>
+            <div class="status-items">
+              <div class="status-item">
+                <div class="status-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                </div>
+                <div class="status-info">
+                  <div class="status-value">{{ preloadedQuizCount() }} / {{ totalQuizzesCount() }}</div>
+                  <div class="status-label">
+                    {{ 'settings.page.offline.labels.quizzes' | translate }}
+                    · {{ 'settings.page.offline.downloadedLabel' | translate }}
+                  </div>
+                </div>
               </div>
-              <div class="status-info">
-                <div class="status-value">{{ preloadedCount() }} / {{ totalQuizzesCount() }}</div>
-                <div class="status-label">{{ 'settings.page.offline.downloadedLabel' | translate }}</div>
+
+              <div class="status-item">
+                <div class="status-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                    <line x1="2" y1="10" x2="22" y2="10"/>
+                  </svg>
+                </div>
+                <div class="status-info">
+                  <div class="status-value">{{ preloadedDeckCount() }} / {{ totalDecksCount() }}</div>
+                  <div class="status-label">
+                    {{ 'settings.page.offline.labels.flashcards' | translate }}
+                    · {{ 'settings.page.offline.downloadedLabel' | translate }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="status-item">
+                <div class="status-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                  </svg>
+                </div>
+                <div class="status-info">
+                  <div class="status-value">{{ preloadedMaterialCount() }} / {{ totalMaterialsCount() }}</div>
+                  <div class="status-label">
+                    {{ 'settings.page.offline.labels.materials' | translate }}
+                    · {{ 'settings.page.offline.downloadedLabel' | translate }}
+                  </div>
+                </div>
               </div>
             </div>
 

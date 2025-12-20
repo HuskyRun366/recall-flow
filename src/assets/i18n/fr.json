@@ -575,13 +575,18 @@
       },
       "offline": {
         "title": "Hors ligne",
-        "subtitle": "Télécharger les quiz pour une utilisation hors ligne",
+        "subtitle": "Télécharger les quiz, cartes et supports pour une utilisation hors ligne",
         "pwaOnly": "Le téléchargement hors ligne est disponible uniquement dans l'application installée (PWA).",
         "downloadedLabel": "téléchargé",
         "downloading": "Téléchargement {{current}} sur {{total}}...",
         "offlineHint": "Vous êtes hors ligne. Connectez-vous à Internet pour télécharger du contenu.",
         "downloadAll": "Tout télécharger",
         "info": "Le contenu téléchargé est disponible hors ligne sur cet appareil.",
+        "labels": {
+          "quizzes": "Quiz",
+          "flashcards": "Cartes",
+          "materials": "Supports"
+        },
         "status": {
           "offline": "Hors ligne",
           "online": "En ligne"

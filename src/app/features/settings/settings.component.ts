@@ -53,18 +53,24 @@ export class SettingsComponent {
   preloadProgress = this.offlinePreloadService.preloadProgress;
   isOnline = this.networkStatus.isOnline;
   preloadedQuizzes = this.offlinePreloadService.preloadedQuizzes;
+  preloadedDecks = this.offlinePreloadService.preloadedDecks;
+  preloadedMaterials = this.offlinePreloadService.preloadedMaterials;
 
-  preloadedCount = computed(() => {
-    let count = 0;
-    this.preloadedQuizzes().forEach(status => {
-      if (status.isPreloaded) count++;
-    });
-    return count;
-  });
+  preloadedQuizCount = computed(() => this.countPreloaded(this.preloadedQuizzes()));
+  preloadedDeckCount = computed(() => this.countPreloaded(this.preloadedDecks()));
+  preloadedMaterialCount = computed(() => this.countPreloaded(this.preloadedMaterials()));
 
-  totalQuizzesCount = computed(() => {
-    return this.preloadedQuizzes().size;
-  });
+  totalQuizzesCount = computed(() => this.preloadedQuizzes().size);
+  totalDecksCount = computed(() => this.preloadedDecks().size);
+  totalMaterialsCount = computed(() => this.preloadedMaterials().size);
+
+  preloadedTotalCount = computed(() =>
+    this.preloadedQuizCount() + this.preloadedDeckCount() + this.preloadedMaterialCount()
+  );
+
+  totalItemsCount = computed(() =>
+    this.totalQuizzesCount() + this.totalDecksCount() + this.totalMaterialsCount()
+  );
 
   // Theme (palette) section collapse state
   isThemeSettingsExpanded = signal(this.loadThemeSettingsExpanded());
@@ -125,5 +131,13 @@ export class SettingsComponent {
     if (raw === 'true') return true;
     if (raw === 'false') return false;
     return false;
+  }
+
+  private countPreloaded(map: Map<string, { isPreloaded: boolean }>): number {
+    let count = 0;
+    map.forEach(status => {
+      if (status.isPreloaded) count++;
+    });
+    return count;
   }
 }

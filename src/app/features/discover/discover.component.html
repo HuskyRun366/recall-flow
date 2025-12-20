@@ -41,7 +41,7 @@
           @for (item of featuredItems(); track item.content.id) {
             <app-marketplace-card
               [item]="item"
-              [isEnrolled]="isItemEnrolled(item.content.id)"
+              [isEnrolled]="isItemEnrolled(item)"
               [currentUserId]="currentUserId()"
               (add)="onAdd($event)"
               (rate)="onRateItem($event)"
@@ -98,7 +98,7 @@
           @for (item of topChartItems(); track item.content.id) {
             <app-marketplace-card
               [item]="item"
-              [isEnrolled]="isItemEnrolled(item.content.id)"
+              [isEnrolled]="isItemEnrolled(item)"
               [currentUserId]="currentUserId()"
               (add)="onAdd($event)"
               (rate)="onRateItem($event)"
@@ -136,7 +136,7 @@
           @for (item of filteredResults(); track item.content.id) {
             <app-marketplace-card
               [item]="item"
-              [isEnrolled]="isItemEnrolled(item.content.id)"
+              [isEnrolled]="isItemEnrolled(item)"
               [currentUserId]="currentUserId()"
               (add)="onAdd($event)"
               (rate)="onRateItem($event)"
@@ -168,7 +168,7 @@
           @for (item of searchResults(); track item.content.id) {
             <app-marketplace-card
               [item]="item"
-              [isEnrolled]="isItemEnrolled(item.content.id)"
+              [isEnrolled]="isItemEnrolled(item)"
               [currentUserId]="currentUserId()"
               (add)="onAdd($event)"
               (rate)="onRateItem($event)"

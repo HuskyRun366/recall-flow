@@ -310,18 +310,26 @@
 
 .download-status {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: $spacing-lg;
   padding: $spacing-lg;
   background: var(--color-background);
   border-radius: 12px;
 
+  .status-items {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    gap: $spacing-lg;
+  }
+
   .status-item {
     display: flex;
     align-items: center;
     gap: $spacing-md;
     flex: 1;
+    min-width: 220px;
 
     .status-icon {
       display: flex;
@@ -468,6 +476,10 @@
   .download-status {
     flex-direction: column;
     align-items: flex-start;
+
+    .status-items {
+      width: 100%;
+    }
 
     .status-badge {
       align-self: flex-start;

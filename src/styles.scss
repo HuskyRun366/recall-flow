@@ -26,7 +26,18 @@ body {
   // iOS Safe Area Support - prevents Dynamic Island & notch overlap
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: 0;
+}
+
+// iOS PWA viewport fix (fills available height to avoid bottom bars)
+@supports (-webkit-touch-callout: none) {
+  html {
+    height: -webkit-fill-available;
+  }
+
+  body {
+    min-height: -webkit-fill-available;
+  }
 }
 
 h1, h2, h3, h4, h5, h6 {

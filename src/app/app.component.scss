@@ -25,6 +25,7 @@
   overflow-x: hidden;
   background: var(--color-background);
   isolation: isolate;
+  padding-bottom: env(safe-area-inset-bottom);
 
   &.route-transitioning {
     overflow: hidden;
@@ -32,6 +33,18 @@
 
   &:focus {
     outline: none;
+  }
+}
+
+@supports (height: 100dvh) {
+  #main-content {
+    min-height: calc(100dvh - 64px);
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  #main-content {
+    min-height: calc(-webkit-fill-available - 64px);
   }
 }
 

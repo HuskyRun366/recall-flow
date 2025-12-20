@@ -575,13 +575,18 @@
       },
       "offline": {
         "title": "Sin conexión",
-        "subtitle": "Descarga cuestionarios para usarlos sin conexión",
+        "subtitle": "Descarga cuestionarios, tarjetas y materiales para usarlos sin conexión",
         "pwaOnly": "La descarga sin conexión solo está disponible en la aplicación instalada (PWA).",
         "downloadedLabel": "descargado",
         "downloading": "Descargando {{current}} de {{total}}...",
         "offlineHint": "Estás sin conexión. Conéctate a Internet para descargar contenido.",
         "downloadAll": "Descargar todo",
         "info": "El contenido descargado está disponible sin conexión en este dispositivo.",
+        "labels": {
+          "quizzes": "Cuestionarios",
+          "flashcards": "Tarjetas",
+          "materials": "Materiales"
+        },
         "status": {
           "offline": "Sin conexión",
           "online": "En línea"
