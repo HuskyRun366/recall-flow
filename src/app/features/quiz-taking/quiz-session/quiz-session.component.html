@@ -134,12 +134,25 @@
           appSwipeGesture
           (swipeLeft)="nextQuestion()"
           (swipeRight)="previousQuestion()">
-	          <div class="question-header">
-	            <h2>{{ 'quizSession.questionNumber' | translate:{ number: currentIndex() + 1 } }}</h2>
-	            <span class="level-badge level-{{ currentQuestion()!.progress.level }}">
-	              {{ 'flashcard.level' | translate }} {{ currentQuestion()!.progress.level }}
-	            </span>
-	          </div>
+          <div class="question-header">
+            <h2>{{ 'quizSession.questionNumber' | translate:{ number: currentIndex() + 1 } }}</h2>
+            <span class="level-badge level-{{ currentQuestion()!.progress.level }}">
+              {{ 'flashcard.level' | translate }} {{ currentQuestion()!.progress.level }}
+            </span>
+          </div>
+          <div class="adaptive-meta" *ngIf="adaptiveInfo() as info">
+            <span class="adaptive-pill" [class.due]="info.isDue">
+              {{ info.isDue
+                ? ('quizSession.adaptive.dueNow' | translate)
+                : ('quizSession.adaptive.dueIn' | translate:{ days: info.dueInDays }) }}
+            </span>
+            <span class="adaptive-pill">
+              {{ 'quizSession.adaptive.forgetIn' | translate:{ days: info.forgetInDays } }}
+            </span>
+            <span class="adaptive-pill">
+              {{ 'quizSession.adaptive.difficulty' | translate:{ label: (info.difficultyLabelKey | translate) } }}
+            </span>
+          </div>
 
           <!-- Swipe hint for mobile users -->
           @if (showSwipeHint()) {

@@ -108,6 +108,21 @@
             {{ 'flashcard.level' | translate }} {{ currentCard()!.progress!.level }}
           </div>
         }
+        @if (adaptiveInfo(); as info) {
+          <div class="adaptive-meta">
+            <span class="adaptive-pill" [class.due]="info.isDue">
+              {{ info.isDue
+                ? ('session.adaptive.dueNow' | translate)
+                : ('session.adaptive.dueIn' | translate:{ days: info.dueInDays }) }}
+            </span>
+            <span class="adaptive-pill">
+              {{ 'session.adaptive.forgetIn' | translate:{ days: info.forgetInDays } }}
+            </span>
+            <span class="adaptive-pill">
+              {{ 'session.adaptive.difficulty' | translate:{ label: (info.difficultyLabelKey | translate) } }}
+            </span>
+          </div>
+        }
       </div>
     </div>
 

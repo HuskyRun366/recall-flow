@@ -114,6 +114,10 @@
 
   .header-right {
     flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
   }
 
   .current-level {
@@ -123,6 +127,29 @@
     font-weight: 600;
     color: white;
     white-space: nowrap;
+  }
+
+  .adaptive-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: flex-end;
+
+    .adaptive-pill {
+      padding: 0.25rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      background: var(--surface-alt, rgba(0, 0, 0, 0.06));
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
+
+      &.due {
+        background: rgba(255, 179, 0, 0.18);
+        color: var(--color-warning, #b26a00);
+        border-color: rgba(255, 179, 0, 0.35);
+      }
+    }
   }
 
   @media (max-width: 768px) {

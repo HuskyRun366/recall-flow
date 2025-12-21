@@ -372,6 +372,17 @@
       "flip": "to flip",
       "known": "for known",
       "unknown": "for unknown"
+    },
+    "adaptive": {
+      "dueNow": "Due now",
+      "dueIn": "Due in {{days}} days",
+      "forgetIn": "Likely forgotten in {{days}} days",
+      "difficulty": "Difficulty: {{label}}",
+      "difficultyLabels": {
+        "easy": "easy",
+        "medium": "medium",
+        "hard": "hard"
+      }
     }
   },
 
@@ -691,7 +702,7 @@
     },
     "flashcardMode": {
       "flashcard": "Flashcard",
-      "normal": "Normal",
+      "normal": "Quiz",
       "switchToFlashcard": "Switch to flashcard mode",
       "switchToNormal": "Switch to quiz mode"
     },
@@ -714,6 +725,17 @@
       "incorrect": "Incorrect",
       "greatJob": "Great job! You're now level {{level}}.",
       "reviewCorrect": "Review the correct answer and try again."
+    },
+    "adaptive": {
+      "dueNow": "Due now",
+      "dueIn": "Due in {{days}} days",
+      "forgetIn": "Likely forgotten in {{days}} days",
+      "difficulty": "Difficulty: {{label}}",
+      "difficultyLabels": {
+        "easy": "easy",
+        "medium": "medium",
+        "hard": "hard"
+      }
     }
   },
 

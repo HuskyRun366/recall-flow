@@ -18,6 +18,7 @@ import {
   ProgressLevel,
   ProgressSummary
 } from '../../models';
+import { AdaptiveLearningService } from './adaptive-learning.service';
 import { Observable, from } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -27,6 +28,7 @@ import { map } from 'rxjs/operators';
 export class ProgressService {
   private firestore = inject(Firestore);
   private injector = inject(Injector);
+  private adaptiveLearning = inject(AdaptiveLearningService);
 
   /**
    * Get user's progress for a quiz
@@ -96,13 +98,14 @@ export class ProgressService {
    */
   async initializeProgress(quizId: string, userId: string, questionIds: string[]): Promise<void> {
     const batch = writeBatch(this.firestore);
+    const now = Timestamp.now();
 
     // Create user quiz progress document
     const userQuizProgressDoc = doc(this.firestore, `quizProgress/${quizId}/userProgress/${userId}`);
     const userQuizProgressData: any = {
       userId,
       quizId,
-      lastAttemptAt: Timestamp.now(),
+      lastAttemptAt: now,
       completionRate: 0
     };
     batch.set(userQuizProgressDoc, userQuizProgressData);
@@ -116,9 +119,16 @@ export class ProgressService {
       const questionProgressData: any = {
         questionId,
         level: 0,
-        lastAttemptAt: Timestamp.now(),
+        lastAttemptAt: now,
         correctCount: 0,
-        incorrectCount: 0
+        incorrectCount: 0,
+        easeFactor: 2.5,
+        intervalDays: 0,
+        repetitions: 0,
+        nextReviewAt: now,
+        lastQuality: 0,
+        lastResponseMs: null,
+        difficulty: 0.5
       };
       batch.set(questionProgressDoc, questionProgressData);
     });
@@ -133,8 +143,9 @@ export class ProgressService {
     quizId: string,
     userId: string,
     questionId: string,
-    isCorrect: boolean
-  ): Promise<void> {
+    isCorrect: boolean,
+    responseTimeMs?: number
+  ): Promise<QuestionProgress> {
     // Get current progress
     const questionProgressDoc = doc(
       this.firestore,
@@ -142,19 +153,55 @@ export class ProgressService {
     );
 
     const docSnap = await runInInjectionContext(this.injector, () => getDoc(questionProgressDoc));
+    const now = new Date();
+    const nowTimestamp = Timestamp.fromDate(now);
+    const defaultProgress: QuestionProgress = {
+      questionId,
+      level: 0,
+      lastAttemptAt: now,
+      correctCount: 0,
+      incorrectCount: 0,
+      easeFactor: 2.5,
+      intervalDays: 0,
+      repetitions: 0,
+      nextReviewAt: now,
+      lastQuality: 0,
+      lastResponseMs: undefined,
+      difficulty: 0.5
+    };
 
     if (!docSnap.exists()) {
       // Initialize if doesn't exist
-      const questionProgressData: any = {
-        questionId,
+      const adaptiveUpdate = this.adaptiveLearning.calculateSm2Update(defaultProgress, isCorrect, responseTimeMs, now);
+      const newProgress: QuestionProgress = {
+        ...defaultProgress,
         level: isCorrect ? 1 : 0,
-        lastAttemptAt: Timestamp.now(),
+        lastAttemptAt: now,
         correctCount: isCorrect ? 1 : 0,
-        incorrectCount: isCorrect ? 0 : 1
+        incorrectCount: isCorrect ? 0 : 1,
+        easeFactor: adaptiveUpdate.easeFactor,
+        intervalDays: adaptiveUpdate.intervalDays,
+        repetitions: adaptiveUpdate.repetitions,
+        nextReviewAt: adaptiveUpdate.nextReviewAt,
+        lastQuality: adaptiveUpdate.lastQuality,
+        lastResponseMs: adaptiveUpdate.lastResponseMs,
+        difficulty: adaptiveUpdate.difficulty
       };
-      await setDoc(questionProgressDoc, questionProgressData);
+
+      await setDoc(questionProgressDoc, this.toFirestoreQuestionProgress(newProgress, nowTimestamp));
+
+      this.adaptiveLearning.recordAttempt({
+        userId,
+        progress: defaultProgress,
+        isCorrect,
+        responseTimeMs,
+        attemptedAt: now
+      });
+
+      await this.updateUserQuizProgressTimestamp(quizId, userId, nowTimestamp);
+      return newProgress;
     } else {
-      const currentProgress = docSnap.data() as any;
+      const currentProgress = this.convertQuestionTimestamps(docSnap.data());
 
       let newLevel: ProgressLevel;
       if (isCorrect) {
@@ -165,25 +212,35 @@ export class ProgressService {
         newLevel = 0;
       }
 
-      await updateDoc(questionProgressDoc, {
+      const adaptiveUpdate = this.adaptiveLearning.calculateSm2Update(currentProgress, isCorrect, responseTimeMs, now);
+      const nextProgress: QuestionProgress = {
+        ...currentProgress,
         level: newLevel,
-        lastAttemptAt: Timestamp.now(),
+        lastAttemptAt: now,
         correctCount: (currentProgress.correctCount || 0) + (isCorrect ? 1 : 0),
-        incorrectCount: (currentProgress.incorrectCount || 0) + (isCorrect ? 0 : 1)
-      });
-    }
+        incorrectCount: (currentProgress.incorrectCount || 0) + (isCorrect ? 0 : 1),
+        easeFactor: adaptiveUpdate.easeFactor,
+        intervalDays: adaptiveUpdate.intervalDays,
+        repetitions: adaptiveUpdate.repetitions,
+        nextReviewAt: adaptiveUpdate.nextReviewAt,
+        lastQuality: adaptiveUpdate.lastQuality,
+        lastResponseMs: adaptiveUpdate.lastResponseMs,
+        difficulty: adaptiveUpdate.difficulty
+      };
 
-    // Update user quiz progress timestamp
-    const userQuizProgressDoc = doc(this.firestore, `quizProgress/${quizId}/userProgress/${userId}`);
-    await setDoc(
-      userQuizProgressDoc,
-      {
+      await updateDoc(questionProgressDoc, this.toFirestoreQuestionProgress(nextProgress, nowTimestamp));
+
+      this.adaptiveLearning.recordAttempt({
         userId,
-        quizId,
-        lastAttemptAt: Timestamp.now()
-      },
-      { merge: true }
-    );
+        progress: currentProgress,
+        isCorrect,
+        responseTimeMs,
+        attemptedAt: now
+      });
+
+      await this.updateUserQuizProgressTimestamp(quizId, userId, nowTimestamp);
+      return nextProgress;
+    }
   }
 
   /**
@@ -300,7 +357,8 @@ export class ProgressService {
   private convertUserQuizTimestamps(data: any): UserQuizProgress {
     return {
       ...data,
-      lastAttemptAt: data.lastAttemptAt?.toDate() || new Date()
+      lastAttemptAt: data.lastAttemptAt?.toDate() || new Date(),
+      nextReviewAt: data.nextReviewAt?.toDate?.() || data.nextReviewAt
     };
   }
 
@@ -310,7 +368,34 @@ export class ProgressService {
   private convertQuestionTimestamps(data: any): QuestionProgress {
     return {
       ...data,
-      lastAttemptAt: data.lastAttemptAt?.toDate() || new Date()
+      lastAttemptAt: data.lastAttemptAt?.toDate() || new Date(),
+      nextReviewAt: data.nextReviewAt?.toDate?.() || data.nextReviewAt
     };
+  }
+
+  private toFirestoreQuestionProgress(progress: QuestionProgress, nowTimestamp: Timestamp): Record<string, any> {
+    return {
+      ...progress,
+      lastAttemptAt: nowTimestamp,
+      nextReviewAt: progress.nextReviewAt ? Timestamp.fromDate(progress.nextReviewAt) : nowTimestamp,
+      lastResponseMs: progress.lastResponseMs ?? null
+    };
+  }
+
+  private async updateUserQuizProgressTimestamp(
+    quizId: string,
+    userId: string,
+    timestamp: Timestamp
+  ): Promise<void> {
+    const userQuizProgressDoc = doc(this.firestore, `quizProgress/${quizId}/userProgress/${userId}`);
+    await setDoc(
+      userQuizProgressDoc,
+      {
+        userId,
+        quizId,
+        lastAttemptAt: timestamp
+      },
+      { merge: true }
+    );
   }
 }

@@ -1,13 +1,15 @@
-import { ProgressLevel } from './progress.model';
+import { AdaptiveProgress, ProgressLevel } from './progress.model';
 
 export interface UserDeckProgress {
   userId: string;
   deckId: string;
   lastStudyAt: Date;
   completionRate: number; // 0-100
+  nextReviewAt?: Date;
+  dueCount?: number;
 }
 
-export interface CardProgress {
+export interface CardProgress extends AdaptiveProgress {
   cardId: string;
   level: ProgressLevel; // 0-3 (same as quiz system)
   lastAttemptAt: Date;

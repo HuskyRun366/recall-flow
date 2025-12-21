@@ -9,8 +9,9 @@ import { QuestionService } from '../../../core/services/question.service';
 import { ProgressService } from '../../../core/services/progress.service';
 import { ParticipantService } from '../../../core/services/participant.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { AdaptiveLearningService } from '../../../core/services/adaptive-learning.service';
 import { KeyboardShortcutsService } from '../../../core/services/keyboard-shortcuts.service';
-import { Quiz, Question, QuestionProgress, ProgressLevel } from '../../../models';
+import { Quiz, Question, QuestionProgress } from '../../../models';
 import { MultipleChoiceComponent } from '../components/multiple-choice/multiple-choice.component';
 import { OrderingQuestionComponent } from '../components/ordering-question/ordering-question.component';
 import { MatchingQuestionComponent } from '../components/matching-question/matching-question.component';
@@ -18,7 +19,6 @@ import { FlashcardComponent } from '../components/flashcard/flashcard.component'
 import { SwipeGestureDirective } from '../../../shared/directives/swipe-gesture.directive';
 import { PullToRefreshDirective } from '../../../shared/directives/pull-to-refresh.directive';
 import { StatCardComponent } from '../../../shared/components';
-import { forkJoin, of } from 'rxjs';
 import { switchMap, map, catchError } from 'rxjs/operators';
 
 interface QuestionWithProgress {
@@ -49,12 +49,18 @@ export class QuizSessionComponent implements OnInit, OnDestroy {
   private progressService = inject(ProgressService);
   private participantService = inject(ParticipantService);
   private authService = inject(AuthService);
+  private adaptiveLearning = inject(AdaptiveLearningService);
   private titleService = inject(Title);
   private keyboardShortcuts = inject(KeyboardShortcutsService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
   private originalTitle = 'RecallFlow';
+  private questionStartAt = Date.now();
+  private lastQuestionId: string | null = null;
+  private repeatCounts = new Map<string, number>();
+  private readonly repeatLimit = 2;
+  private readonly repeatSpacing = 3;
 
   quiz = signal<Quiz | null>(null);
   questions = signal<Question[]>([]);
@@ -90,12 +96,42 @@ export class QuizSessionComponent implements OnInit, OnDestroy {
         this.titleService.setTitle(`${progressPercent}% (${current}/${total}) - ${quiz.title} | RecallFlow`);
       }
     });
+
+    // Track response time per question
+    effect(() => {
+      const current = this.currentQuestion();
+      const id = current?.question.id ?? null;
+      if (id && id !== this.lastQuestionId) {
+        this.lastQuestionId = id;
+        this.questionStartAt = Date.now();
+      }
+    });
   }
 
   currentQuestion = computed(() => {
     const questions = this.questionsWithProgress();
     const index = this.currentIndex();
     return index < questions.length ? questions[index] : null;
+  });
+
+  adaptiveInfo = computed(() => {
+    const current = this.currentQuestion();
+    if (!current) {
+      return null;
+    }
+
+    const userId = this.currentUser()?.uid;
+    const rawDueInDays = this.adaptiveLearning.getDaysUntilDue(current.progress);
+    const difficulty = current.progress.difficulty ?? 0.5;
+    const difficultyLabel = this.adaptiveLearning.getDifficultyLabel(difficulty);
+    const forgetInDays = this.adaptiveLearning.predictForgetInDays(current.progress, userId);
+
+    return {
+      dueInDays: Math.max(0, rawDueInDays),
+      isDue: rawDueInDays <= 0,
+      difficultyLabelKey: `quizSession.adaptive.difficultyLabels.${difficultyLabel}`,
+      forgetInDays
+    };
   });
 
   progress = computed(() => {
@@ -203,13 +239,22 @@ export class QuizSessionComponent implements OnInit, OnDestroy {
             level: 0 as const,
             lastAttemptAt: new Date(),
             correctCount: 0,
-            incorrectCount: 0
+            incorrectCount: 0,
+            easeFactor: 2.5,
+            intervalDays: 0,
+            repetitions: 0,
+            nextReviewAt: new Date(),
+            lastQuality: 0,
+            lastResponseMs: undefined,
+            difficulty: 0.5
           }
         }));
 
         // Store all questions for potential review mode
-        this.allQuestionsWithProgress.set(questionsWithProgress);
-        this.questionsWithProgress.set(this.shuffleArray(questionsWithProgress));
+        const prioritized = this.adaptiveLearning.sortByPriority(questionsWithProgress);
+        this.allQuestionsWithProgress.set(prioritized);
+        this.questionsWithProgress.set(prioritized);
+        this.repeatCounts.clear();
         this.isLoading.set(false);
       },
       error: (err) => {
@@ -280,43 +325,23 @@ export class QuizSessionComponent implements OnInit, OnDestroy {
 
     this.lastAnswerCorrect.set(isCorrect);
     this.showResult.set(true);
+    const responseTimeMs = Math.max(0, Date.now() - this.questionStartAt);
 
     try {
       // Update progress using the new service method
-      await this.progressService.updateQuestionProgress(
+      const updatedProgress = await this.progressService.updateQuestionProgress(
         quiz.id,
         userId,
         currentQ.question.id,
-        isCorrect
+        isCorrect,
+        responseTimeMs
       );
 
-      // Optimistically update local progress level for immediate UI feedback
-      const questions = this.questionsWithProgress();
-      const idx = this.currentIndex();
-      const prev = (questions[idx].progress.level ?? 0) as number;
-      const newLevel = (isCorrect ? Math.min(prev + 1, 3) : 0) as ProgressLevel;
-      questions[idx] = {
-        ...questions[idx],
-        progress: {
-          ...questions[idx].progress,
-          level: newLevel
-        }
-      };
-      this.questionsWithProgress.set([...questions]);
+      this.updateLocalProgress(currentQ.question.id, updatedProgress);
 
-      // Reload single question progress to get updated state
-      this.progressService.getSingleQuestionProgress(quiz.id, userId, currentQ.question.id).subscribe({
-        next: (updatedProgress) => {
-          if (updatedProgress) {
-            const questions = this.questionsWithProgress();
-            questions[this.currentIndex()].progress = updatedProgress;
-            this.questionsWithProgress.set([...questions]);
-          }
-        },
-        error: (err) => {
-          console.error('Error reloading progress:', err);
-        }
-      });
+      if (!isCorrect && !this.isReviewMode()) {
+        this.scheduleRepeat(currentQ);
+      }
     } catch (err) {
       console.error('Error updating progress:', err);
     }
@@ -370,7 +395,8 @@ export class QuizSessionComponent implements OnInit, OnDestroy {
     this.showCompletion.set(false);
     this.currentIndex.set(0);
     this.showResult.set(false);
-    this.questionsWithProgress.set(this.shuffleArray(wrongQuestions));
+    this.repeatCounts.clear();
+    this.questionsWithProgress.set(this.adaptiveLearning.sortByPriority(wrongQuestions));
 
     // Update title for review mode
     const quiz = this.quiz();
@@ -417,9 +443,7 @@ export class QuizSessionComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (updatedProgress) => {
         if (updatedProgress) {
-          const questions = this.questionsWithProgress();
-          questions[this.currentIndex()].progress = updatedProgress;
-          this.questionsWithProgress.set([...questions]);
+          this.updateLocalProgress(currentQ.question.id, updatedProgress);
           console.log('🔄 Fortschritt aktualisiert');
         }
       },
@@ -427,6 +451,32 @@ export class QuizSessionComponent implements OnInit, OnDestroy {
         console.error('Error refreshing progress:', err);
       }
     });
+  }
+
+  private updateLocalProgress(questionId: string, progress: QuestionProgress): void {
+    const updateList = (items: QuestionWithProgress[]) =>
+      items.map(item => item.question.id === questionId ? { ...item, progress } : item);
+
+    this.questionsWithProgress.set(updateList(this.questionsWithProgress()));
+    this.allQuestionsWithProgress.set(updateList(this.allQuestionsWithProgress()));
+  }
+
+  private scheduleRepeat(question: QuestionWithProgress): void {
+    const questionId = question.question.id;
+    const repeats = this.repeatCounts.get(questionId) ?? 0;
+    if (repeats >= this.repeatLimit) {
+      return;
+    }
+
+    this.repeatCounts.set(questionId, repeats + 1);
+
+    const questions = [...this.questionsWithProgress()];
+    const insertIndex = Math.min(this.currentIndex() + this.repeatSpacing, questions.length);
+    questions.splice(insertIndex, 0, {
+      ...question,
+      progress: { ...question.progress }
+    });
+    this.questionsWithProgress.set(questions);
   }
 
   ngOnDestroy(): void {

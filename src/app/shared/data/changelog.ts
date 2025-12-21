@@ -13,6 +13,27 @@ export interface ChangelogItem {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '2.4.1',
+    date: new Date('2025-12-21'),
+    title: 'Flashcard-Antworten & Lokalisierung',
+    changes: [
+      { type: 'bugfix', text: 'Mehrere richtige Antworten werden im Flashcard-Backside korrekt aufgelistet' },
+      { type: 'improvement', text: 'Flashcard/Quiz Labels in FR/ES präzisiert (z. B. "Carte", "Cuestionario")' },
+      { type: 'improvement', text: 'Umschalter-Labels für Flashcard/Quiz konsistenter in allen Sprachen' }
+    ]
+  },
+  {
+    version: '2.4',
+    date: new Date('2025-12-21'),
+    title: 'Adaptive Learning & ML Preview',
+    changes: [
+      { type: 'feature', text: 'Adaptive Learning mit SM-2 Scheduling, Schwierigkeitsanpassung und personalisierten Lernpfaden' },
+      { type: 'feature', text: 'ML-Preview für Vergessens-Prognose ("vermutlich vergessen in X Tagen")' },
+      { type: 'improvement', text: 'Quiz- und Flashcard-Sessions priorisieren fällige/schwierige Inhalte' },
+      { type: 'improvement', text: 'UI-Hinweise für Fälligkeit, Schwierigkeit und Vergessenszeit' }
+    ]
+  },
+  {
     version: '2.3',
     date: new Date('2025-12-19'),
     title: 'Discover & Bewertungssystem',

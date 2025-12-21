@@ -366,6 +366,17 @@
       "flip": "pour retourner",
       "known": "pour connu",
       "unknown": "pour inconnu"
+    },
+    "adaptive": {
+      "dueNow": "À revoir maintenant",
+      "dueIn": "À revoir dans {{days}} jours",
+      "forgetIn": "Probablement oublié dans {{days}} jours",
+      "difficulty": "Difficulté : {{label}}",
+      "difficultyLabels": {
+        "easy": "facile",
+        "medium": "moyenne",
+        "hard": "difficile"
+      }
     }
   },
   "materials": {
@@ -673,9 +684,9 @@
       "reviewWrong": "Revoir les réponses incorrectes ({{count}})"
     },
     "flashcardMode": {
-      "flashcard": "Flashcard",
-      "normal": "Normal",
-      "switchToFlashcard": "Passer en mode flashcard",
+      "flashcard": "Carte",
+      "normal": "Quiz",
+      "switchToFlashcard": "Passer en mode cartes",
       "switchToNormal": "Passer en mode quiz"
     },
     "multipleChoice": {
@@ -697,6 +708,17 @@
       "incorrect": "Incorrect",
       "greatJob": "Bravo ! Vous êtes maintenant au niveau {{level}}.",
       "reviewCorrect": "Revoyez la bonne réponse et réessayez."
+    },
+    "adaptive": {
+      "dueNow": "À revoir maintenant",
+      "dueIn": "À revoir dans {{days}} jours",
+      "forgetIn": "Probablement oublié dans {{days}} jours",
+      "difficulty": "Difficulté : {{label}}",
+      "difficultyLabels": {
+        "easy": "facile",
+        "medium": "moyenne",
+        "hard": "difficile"
+      }
     }
   },
   "importDialog": {

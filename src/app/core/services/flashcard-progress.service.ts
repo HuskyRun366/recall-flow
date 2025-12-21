@@ -18,6 +18,7 @@ import {
   ProgressLevel,
   DeckProgressSummary
 } from '../../models';
+import { AdaptiveLearningService } from './adaptive-learning.service';
 import { Observable, from } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -27,6 +28,7 @@ import { map } from 'rxjs/operators';
 export class FlashcardProgressService {
   private firestore = inject(Firestore);
   private injector = inject(Injector);
+  private adaptiveLearning = inject(AdaptiveLearningService);
 
   /**
    * Get user's progress for a deck
@@ -96,13 +98,14 @@ export class FlashcardProgressService {
    */
   async initializeProgress(deckId: string, userId: string, cardIds: string[]): Promise<void> {
     const batch = writeBatch(this.firestore);
+    const now = Timestamp.now();
 
     // Create user deck progress document
     const userDeckProgressDoc = doc(this.firestore, `flashcardProgress/${deckId}/userProgress/${userId}`);
     const userDeckProgressData: any = {
       userId,
       deckId,
-      lastStudyAt: Timestamp.now(),
+      lastStudyAt: now,
       completionRate: 0
     };
     batch.set(userDeckProgressDoc, userDeckProgressData);
@@ -116,9 +119,16 @@ export class FlashcardProgressService {
       const cardProgressData: any = {
         cardId,
         level: 0,
-        lastAttemptAt: Timestamp.now(),
+        lastAttemptAt: now,
         correctCount: 0,
-        incorrectCount: 0
+        incorrectCount: 0,
+        easeFactor: 2.5,
+        intervalDays: 0,
+        repetitions: 0,
+        nextReviewAt: now,
+        lastQuality: 0,
+        lastResponseMs: null,
+        difficulty: 0.5
       };
       batch.set(cardProgressDoc, cardProgressData);
     });
@@ -133,8 +143,9 @@ export class FlashcardProgressService {
     deckId: string,
     userId: string,
     cardId: string,
-    isCorrect: boolean
-  ): Promise<void> {
+    isCorrect: boolean,
+    responseTimeMs?: number
+  ): Promise<CardProgress> {
     // Get current progress
     const cardProgressDoc = doc(
       this.firestore,
@@ -142,19 +153,55 @@ export class FlashcardProgressService {
     );
 
     const docSnap = await runInInjectionContext(this.injector, () => getDoc(cardProgressDoc));
+    const now = new Date();
+    const nowTimestamp = Timestamp.fromDate(now);
+    const defaultProgress: CardProgress = {
+      cardId,
+      level: 0,
+      lastAttemptAt: now,
+      correctCount: 0,
+      incorrectCount: 0,
+      easeFactor: 2.5,
+      intervalDays: 0,
+      repetitions: 0,
+      nextReviewAt: now,
+      lastQuality: 0,
+      lastResponseMs: undefined,
+      difficulty: 0.5
+    };
 
     if (!docSnap.exists()) {
       // Initialize if doesn't exist
-      const cardProgressData: any = {
-        cardId,
+      const adaptiveUpdate = this.adaptiveLearning.calculateSm2Update(defaultProgress, isCorrect, responseTimeMs, now);
+      const newProgress: CardProgress = {
+        ...defaultProgress,
         level: isCorrect ? 1 : 0,
-        lastAttemptAt: Timestamp.now(),
+        lastAttemptAt: now,
         correctCount: isCorrect ? 1 : 0,
-        incorrectCount: isCorrect ? 0 : 1
+        incorrectCount: isCorrect ? 0 : 1,
+        easeFactor: adaptiveUpdate.easeFactor,
+        intervalDays: adaptiveUpdate.intervalDays,
+        repetitions: adaptiveUpdate.repetitions,
+        nextReviewAt: adaptiveUpdate.nextReviewAt,
+        lastQuality: adaptiveUpdate.lastQuality,
+        lastResponseMs: adaptiveUpdate.lastResponseMs,
+        difficulty: adaptiveUpdate.difficulty
       };
-      await setDoc(cardProgressDoc, cardProgressData);
+
+      await setDoc(cardProgressDoc, this.toFirestoreCardProgress(newProgress, nowTimestamp));
+
+      this.adaptiveLearning.recordAttempt({
+        userId,
+        progress: defaultProgress,
+        isCorrect,
+        responseTimeMs,
+        attemptedAt: now
+      });
+
+      await this.updateUserDeckProgressTimestamp(deckId, userId, nowTimestamp);
+      return newProgress;
     } else {
-      const currentProgress = docSnap.data() as any;
+      const currentProgress = this.convertCardTimestamps(docSnap.data());
 
       let newLevel: ProgressLevel;
       if (isCorrect) {
@@ -165,25 +212,35 @@ export class FlashcardProgressService {
         newLevel = 0;
       }
 
-      await updateDoc(cardProgressDoc, {
+      const adaptiveUpdate = this.adaptiveLearning.calculateSm2Update(currentProgress, isCorrect, responseTimeMs, now);
+      const nextProgress: CardProgress = {
+        ...currentProgress,
         level: newLevel,
-        lastAttemptAt: Timestamp.now(),
+        lastAttemptAt: now,
         correctCount: (currentProgress.correctCount || 0) + (isCorrect ? 1 : 0),
-        incorrectCount: (currentProgress.incorrectCount || 0) + (isCorrect ? 0 : 1)
-      });
-    }
+        incorrectCount: (currentProgress.incorrectCount || 0) + (isCorrect ? 0 : 1),
+        easeFactor: adaptiveUpdate.easeFactor,
+        intervalDays: adaptiveUpdate.intervalDays,
+        repetitions: adaptiveUpdate.repetitions,
+        nextReviewAt: adaptiveUpdate.nextReviewAt,
+        lastQuality: adaptiveUpdate.lastQuality,
+        lastResponseMs: adaptiveUpdate.lastResponseMs,
+        difficulty: adaptiveUpdate.difficulty
+      };
 
-    // Update user deck progress timestamp
-    const userDeckProgressDoc = doc(this.firestore, `flashcardProgress/${deckId}/userProgress/${userId}`);
-    await setDoc(
-      userDeckProgressDoc,
-      {
+      await updateDoc(cardProgressDoc, this.toFirestoreCardProgress(nextProgress, nowTimestamp));
+
+      this.adaptiveLearning.recordAttempt({
         userId,
-        deckId,
-        lastStudyAt: Timestamp.now()
-      },
-      { merge: true }
-    );
+        progress: currentProgress,
+        isCorrect,
+        responseTimeMs,
+        attemptedAt: now
+      });
+
+      await this.updateUserDeckProgressTimestamp(deckId, userId, nowTimestamp);
+      return nextProgress;
+    }
   }
 
   /**
@@ -308,7 +365,8 @@ export class FlashcardProgressService {
   private convertUserDeckTimestamps(data: any): UserDeckProgress {
     return {
       ...data,
-      lastStudyAt: data.lastStudyAt?.toDate() || new Date()
+      lastStudyAt: data.lastStudyAt?.toDate() || new Date(),
+      nextReviewAt: data.nextReviewAt?.toDate?.() || data.nextReviewAt
     };
   }
 
@@ -318,7 +376,34 @@ export class FlashcardProgressService {
   private convertCardTimestamps(data: any): CardProgress {
     return {
       ...data,
-      lastAttemptAt: data.lastAttemptAt?.toDate() || new Date()
+      lastAttemptAt: data.lastAttemptAt?.toDate() || new Date(),
+      nextReviewAt: data.nextReviewAt?.toDate?.() || data.nextReviewAt
     };
+  }
+
+  private toFirestoreCardProgress(progress: CardProgress, nowTimestamp: Timestamp): Record<string, any> {
+    return {
+      ...progress,
+      lastAttemptAt: nowTimestamp,
+      nextReviewAt: progress.nextReviewAt ? Timestamp.fromDate(progress.nextReviewAt) : nowTimestamp,
+      lastResponseMs: progress.lastResponseMs ?? null
+    };
+  }
+
+  private async updateUserDeckProgressTimestamp(
+    deckId: string,
+    userId: string,
+    timestamp: Timestamp
+  ): Promise<void> {
+    const userDeckProgressDoc = doc(this.firestore, `flashcardProgress/${deckId}/userProgress/${userId}`);
+    await setDoc(
+      userDeckProgressDoc,
+      {
+        userId,
+        deckId,
+        lastStudyAt: timestamp
+      },
+      { merge: true }
+    );
   }
 }

@@ -36,8 +36,16 @@ export class FlashcardComponent {
   getCorrectAnswer(): string {
     switch (this.question.type) {
       case 'multiple-choice':
-        const correctOption = this.question.options?.find(o => o.isCorrect);
-        return correctOption?.text || 'No correct answer found';
+        const correctOptions = (this.question.options ?? []).filter(o => o.isCorrect);
+        if (correctOptions.length === 0) {
+          return 'No correct answer found';
+        }
+        if (correctOptions.length === 1) {
+          return correctOptions[0].text;
+        }
+        return correctOptions
+          .map((option, idx) => `${idx + 1}. ${option.text}`)
+          .join('\n');
 
       case 'ordering':
         if (!this.question.orderItems) return 'No order items';

@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, inject, DestroyRef, HostListener, ViewChild } from '@angular/core';
+import { Component, OnInit, signal, computed, inject, DestroyRef, HostListener, ViewChild, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -7,6 +7,7 @@ import { FlashcardDeckService } from '../../../core/services/flashcard-deck.serv
 import { FlashcardService } from '../../../core/services/flashcard.service';
 import { FlashcardProgressService } from '../../../core/services/flashcard-progress.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { AdaptiveLearningService } from '../../../core/services/adaptive-learning.service';
 import { FlashcardComponent } from '../../quiz-taking/components/flashcard/flashcard.component';
 import { StatCardComponent } from '../../../shared/components';
 import { FlashcardDeck, Flashcard, Question, CardProgress } from '../../../models';
@@ -15,7 +16,7 @@ import { switchMap, catchError, map } from 'rxjs/operators';
 
 interface FlashcardWithProgress {
   flashcard: Flashcard;
-  progress: CardProgress | null;
+  progress: CardProgress;
   question: Question; // Converted format for FlashcardComponent
 }
 
@@ -33,7 +34,13 @@ export class FlashcardSessionComponent implements OnInit {
   private cardService = inject(FlashcardService);
   private progressService = inject(FlashcardProgressService);
   private authService = inject(AuthService);
+  private adaptiveLearning = inject(AdaptiveLearningService);
   private destroyRef = inject(DestroyRef);
+  private cardStartAt = Date.now();
+  private lastCardId: string | null = null;
+  private repeatCounts = new Map<string, number>();
+  private readonly repeatLimit = 2;
+  private readonly repeatSpacing = 3;
 
   @ViewChild(FlashcardComponent) flashcardComponent?: FlashcardComponent;
 
@@ -54,6 +61,26 @@ export class FlashcardSessionComponent implements OnInit {
     return cardsList[index] || null;
   });
 
+  adaptiveInfo = computed(() => {
+    const card = this.currentCard();
+    if (!card) {
+      return null;
+    }
+
+    const userId = this.currentUser()?.uid;
+    const rawDueInDays = this.adaptiveLearning.getDaysUntilDue(card.progress);
+    const difficulty = card.progress.difficulty ?? 0.5;
+    const difficultyLabel = this.adaptiveLearning.getDifficultyLabel(difficulty);
+    const forgetInDays = this.adaptiveLearning.predictForgetInDays(card.progress, userId);
+
+    return {
+      dueInDays: Math.max(0, rawDueInDays),
+      isDue: rawDueInDays <= 0,
+      difficultyLabelKey: `session.adaptive.difficultyLabels.${difficultyLabel}`,
+      forgetInDays
+    };
+  });
+
   progress = computed(() => {
     const total = this.cards().length;
     const current = this.currentCardIndex();
@@ -66,6 +93,17 @@ export class FlashcardSessionComponent implements OnInit {
   totalCards = computed(() => this.cards().length);
   correctAnswers = signal(0);
   incorrectAnswers = signal(0);
+
+  constructor() {
+    effect(() => {
+      const current = this.currentCard();
+      const id = current?.flashcard.id ?? null;
+      if (id && id !== this.lastCardId) {
+        this.lastCardId = id;
+        this.cardStartAt = Date.now();
+      }
+    });
+  }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -118,11 +156,30 @@ export class FlashcardSessionComponent implements OnInit {
 
             return forkJoin(progressObservables).pipe(
               map(progressList => {
-                return flashcards.map((flashcard, index) => ({
-                  flashcard,
-                  progress: progressList[index],
-                  question: this.convertToQuestion(flashcard)
-                }));
+                const cards = flashcards.map((flashcard, index) => {
+                  const progress = progressList[index] || {
+                    cardId: flashcard.id,
+                    level: 0,
+                    lastAttemptAt: new Date(),
+                    correctCount: 0,
+                    incorrectCount: 0,
+                    easeFactor: 2.5,
+                    intervalDays: 0,
+                    repetitions: 0,
+                    nextReviewAt: new Date(),
+                    lastQuality: 0,
+                    lastResponseMs: undefined,
+                    difficulty: 0.5
+                  };
+
+                  return {
+                    flashcard,
+                    progress,
+                    question: this.convertToQuestion(flashcard)
+                  };
+                });
+
+                return this.adaptiveLearning.sortByPriority(cards);
               })
             );
           })
@@ -136,6 +193,8 @@ export class FlashcardSessionComponent implements OnInit {
     ).subscribe({
       next: (cardsWithProgress) => {
         this.cards.set(cardsWithProgress);
+        this.currentCardIndex.set(0);
+        this.repeatCounts.clear();
         this.isLoading.set(false);
       },
       error: (err) => {
@@ -173,6 +232,8 @@ export class FlashcardSessionComponent implements OnInit {
 
     if (!card || !userId || !deckId) return;
 
+    const responseTimeMs = Math.max(0, Date.now() - this.cardStartAt);
+
     // Update statistics
     if (isCorrect) {
       this.correctAnswers.update(count => count + 1);
@@ -182,12 +243,19 @@ export class FlashcardSessionComponent implements OnInit {
 
     try {
       // Update progress in Firestore
-      await this.progressService.updateCardProgress(
+      const updatedProgress = await this.progressService.updateCardProgress(
         deckId,
         userId,
         card.flashcard.id,
-        isCorrect
+        isCorrect,
+        responseTimeMs
       );
+
+      this.updateLocalProgress(card.flashcard.id, updatedProgress);
+
+      if (!isCorrect) {
+        this.scheduleRepeat(card);
+      }
 
       // Move to next card
       await this.nextCard();
@@ -213,6 +281,7 @@ export class FlashcardSessionComponent implements OnInit {
     this.correctAnswers.set(0);
     this.incorrectAnswers.set(0);
     this.isCompleted.set(false);
+    this.repeatCounts.clear();
   }
 
   goToDeck(): void {
@@ -265,5 +334,30 @@ export class FlashcardSessionComponent implements OnInit {
   getSuccessRate(): number {
     const total = this.correctAnswers() + this.incorrectAnswers();
     return total > 0 ? Math.round((this.correctAnswers() / total) * 100) : 0;
+  }
+
+  private updateLocalProgress(cardId: string, progress: CardProgress): void {
+    const next = this.cards().map(card =>
+      card.flashcard.id === cardId ? { ...card, progress } : card
+    );
+    this.cards.set(next);
+  }
+
+  private scheduleRepeat(card: FlashcardWithProgress): void {
+    const cardId = card.flashcard.id;
+    const repeats = this.repeatCounts.get(cardId) ?? 0;
+    if (repeats >= this.repeatLimit) {
+      return;
+    }
+
+    this.repeatCounts.set(cardId, repeats + 1);
+
+    const cards = [...this.cards()];
+    const insertIndex = Math.min(this.currentCardIndex() + this.repeatSpacing, cards.length);
+    cards.splice(insertIndex, 0, {
+      ...card,
+      progress: { ...card.progress }
+    });
+    this.cards.set(cards);
   }
 }
