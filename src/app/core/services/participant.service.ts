@@ -12,7 +12,8 @@ import {
   where,
   Timestamp,
   writeBatch,
-  CollectionReference
+  CollectionReference,
+  increment
 } from '@angular/fire/firestore';
 import { Observable, from, map } from 'rxjs';
 import { QuizParticipant, UserQuizReference, ParticipantRole, InvitationStatus } from '../../models';
@@ -35,10 +36,16 @@ export class ParticipantService {
     invitedBy?: string,
     status: InvitationStatus = 'pending'
   ): Promise<void> {
+    const participantDoc = doc(this.firestore, `quizParticipants/${quizId}/participants/${userId}`);
+    const existingSnap = await runInInjectionContext(this.injector, () => getDoc(participantDoc));
+    const existing = existingSnap.exists() ? (existingSnap.data() as QuizParticipant) : null;
+    const shouldIncrement =
+      this.shouldCountInTotals(role, status) &&
+      !this.shouldCountInTotals(existing?.role, existing?.status);
+
     const batch = writeBatch(this.firestore);
 
     // Add to quizParticipants collection
-    const participantDoc = doc(this.firestore, `quizParticipants/${quizId}/participants/${userId}`);
     const participantData: QuizParticipant = {
       userId,
       email,
@@ -60,6 +67,10 @@ export class ParticipantService {
     batch.set(userQuizDoc, userQuizData);
 
     await batch.commit();
+
+    if (shouldIncrement) {
+      await this.updateParticipantCount(quizId, 1);
+    }
   }
 
   /**
@@ -67,19 +78,40 @@ export class ParticipantService {
    */
   async acceptInvitation(quizId: string, userId: string): Promise<void> {
     const participantDoc = doc(this.firestore, `quizParticipants/${quizId}/participants/${userId}`);
-    await updateDoc(participantDoc, {
-      status: 'accepted'
-    });
+    const existingSnap = await runInInjectionContext(this.injector, () => getDoc(participantDoc));
+    if (!existingSnap.exists()) return;
+
+    const existing = existingSnap.data() as QuizParticipant;
+    if (existing.status === 'accepted') return;
+
+    await updateDoc(participantDoc, { status: 'accepted' });
+
+    if (this.shouldCountInTotals(existing.role, 'accepted')) {
+      await this.updateParticipantCount(quizId, 1);
+    }
   }
 
   /**
    * Remove a participant from a quiz
    */
   async removeParticipant(quizId: string, userId: string): Promise<void> {
+    const participantDoc = doc(this.firestore, `quizParticipants/${quizId}/participants/${userId}`);
+    const existingSnap = await runInInjectionContext(this.injector, () => getDoc(participantDoc));
+    const existing = existingSnap.exists() ? (existingSnap.data() as QuizParticipant) : null;
+    const shouldDecrement = this.shouldCountInTotals(existing?.role, existing?.status);
+
     const batch = writeBatch(this.firestore);
 
+    if (shouldDecrement) {
+      const currentCount = await this.getCurrentParticipantCount(quizId);
+      if (currentCount > 0) {
+        batch.update(doc(this.firestore, `quizzes/${quizId}`), {
+          'metadata.totalParticipants': increment(-1)
+        });
+      }
+    }
+
     // Remove from quizParticipants
-    const participantDoc = doc(this.firestore, `quizParticipants/${quizId}/participants/${userId}`);
     batch.delete(participantDoc);
 
     // Remove from user's userQuizzes
@@ -93,17 +125,70 @@ export class ParticipantService {
    * Update participant role
    */
   async updateParticipantRole(quizId: string, userId: string, newRole: ParticipantRole): Promise<void> {
+    const participantDoc = doc(this.firestore, `quizParticipants/${quizId}/participants/${userId}`);
+    const existingSnap = await runInInjectionContext(this.injector, () => getDoc(participantDoc));
+    if (!existingSnap.exists()) return;
+
+    const existing = existingSnap.data() as QuizParticipant;
+    if (existing.role === newRole) return;
+
+    const wasCounted = this.shouldCountInTotals(existing.role, existing.status);
+    const willCount = this.shouldCountInTotals(newRole, existing.status);
+    const delta = willCount && !wasCounted ? 1 : (!willCount && wasCounted ? -1 : 0);
+
     const batch = writeBatch(this.firestore);
 
     // Update in quizParticipants
-    const participantDoc = doc(this.firestore, `quizParticipants/${quizId}/participants/${userId}`);
     batch.update(participantDoc, { role: newRole });
 
     // Update in user's userQuizzes
     const userQuizDoc = doc(this.firestore, `users/${userId}/userQuizzes/${quizId}`);
     batch.update(userQuizDoc, { role: newRole });
 
+    if (delta !== 0) {
+      if (delta < 0) {
+        const currentCount = await this.getCurrentParticipantCount(quizId);
+        if (currentCount > 0) {
+          batch.update(doc(this.firestore, `quizzes/${quizId}`), {
+            'metadata.totalParticipants': increment(delta)
+          });
+        }
+      } else {
+        batch.update(doc(this.firestore, `quizzes/${quizId}`), {
+          'metadata.totalParticipants': increment(delta)
+        });
+      }
+    }
+
     await batch.commit();
+  }
+
+  private shouldCountInTotals(role?: ParticipantRole, status?: InvitationStatus): boolean {
+    return role === 'participant' && status === 'accepted';
+  }
+
+  private async updateParticipantCount(quizId: string, delta: number): Promise<void> {
+    if (!quizId || !Number.isFinite(delta) || delta === 0) return;
+    try {
+      await updateDoc(doc(this.firestore, `quizzes/${quizId}`), {
+        'metadata.totalParticipants': increment(delta)
+      });
+    } catch (error) {
+      console.warn('Failed to update quiz participant count:', error);
+    }
+  }
+
+  private async getCurrentParticipantCount(quizId: string): Promise<number> {
+    try {
+      const quizDoc = doc(this.firestore, `quizzes/${quizId}`);
+      const snap = await runInInjectionContext(this.injector, () => getDoc(quizDoc));
+      if (!snap.exists()) return 0;
+      const raw = snap.data()?.['metadata']?.['totalParticipants'];
+      return typeof raw === 'number' && Number.isFinite(raw) ? raw : 0;
+    } catch (error) {
+      console.warn('Failed to read quiz participant count:', error);
+      return 0;
+    }
   }
 
   /**

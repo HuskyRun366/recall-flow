@@ -34,6 +34,23 @@ service cloud.firestore {
              exists(/databases/$(database)/documents/quizParticipants/$(quizId)/participants/$(request.auth.uid));
     }
 
+    function isQuizParticipant(quizId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/quizParticipants/$(quizId)/participants/$(request.auth.uid));
+    }
+
+    function isValidQuizParticipantCountUpdate(quizId) {
+      return isQuizParticipant(quizId) &&
+        request.resource.data.diff(resource.data).changedKeys().hasOnly(['metadata']) &&
+        request.resource.data.metadata.diff(resource.data.metadata).changedKeys().hasOnly(['totalParticipants']) &&
+        request.resource.data.metadata.totalParticipants is int &&
+        request.resource.data.metadata.totalParticipants >= 0 &&
+        (
+          request.resource.data.metadata.totalParticipants == resource.data.metadata.totalParticipants + 1 ||
+          request.resource.data.metadata.totalParticipants == resource.data.metadata.totalParticipants - 1
+        );
+    }
+
     // Users collection
     match /users/{userId} {
       allow read: if isAuthenticated();  // Allow reading user profiles for co-author lookup
@@ -76,7 +93,7 @@ service cloud.firestore {
                      (isAuthenticated() && resource.data.ownerId == request.auth.uid) ||
                      (isAuthenticated() && exists(/databases/$(database)/documents/quizParticipants/$(quizId)/participants/$(request.auth.uid)));
       allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
-      allow update: if canEditQuiz(quizId);
+      allow update: if canEditQuiz(quizId) || isValidQuizParticipantCountUpdate(quizId);
       allow delete: if isQuizOwner(quizId);
     }
 
@@ -144,6 +161,23 @@ service cloud.firestore {
              exists(/databases/$(database)/documents/deckParticipants/$(deckId)/participants/$(request.auth.uid));
     }
 
+    function isDeckParticipant(deckId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/deckParticipants/$(deckId)/participants/$(request.auth.uid));
+    }
+
+    function isValidDeckStudentCountUpdate(deckId) {
+      return isDeckParticipant(deckId) &&
+        request.resource.data.diff(resource.data).changedKeys().hasOnly(['metadata']) &&
+        request.resource.data.metadata.diff(resource.data.metadata).changedKeys().hasOnly(['totalStudents']) &&
+        request.resource.data.metadata.totalStudents is int &&
+        request.resource.data.metadata.totalStudents >= 0 &&
+        (
+          request.resource.data.metadata.totalStudents == resource.data.metadata.totalStudents + 1 ||
+          request.resource.data.metadata.totalStudents == resource.data.metadata.totalStudents - 1
+        );
+    }
+
     // User's deck references (denormalized for user queries)
     match /users/{userId}/userDecks/{deckId} {
       allow read: if isOwner(userId);
@@ -160,7 +194,7 @@ service cloud.firestore {
                      (isAuthenticated() && resource.data.ownerId == request.auth.uid) ||
                      (isAuthenticated() && exists(/databases/$(database)/documents/deckParticipants/$(deckId)/participants/$(request.auth.uid)));
       allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
-      allow update: if canEditDeck(deckId);
+      allow update: if canEditDeck(deckId) || isValidDeckStudentCountUpdate(deckId);
       allow delete: if isDeckOwner(deckId);
     }
 
@@ -228,6 +262,23 @@ service cloud.firestore {
              exists(/databases/$(database)/documents/materialParticipants/$(materialId)/participants/$(request.auth.uid));
     }
 
+    function isMaterialParticipant(materialId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/materialParticipants/$(materialId)/participants/$(request.auth.uid));
+    }
+
+    function isValidMaterialStudentCountUpdate(materialId) {
+      return isMaterialParticipant(materialId) &&
+        request.resource.data.diff(resource.data).changedKeys().hasOnly(['metadata']) &&
+        request.resource.data.metadata.diff(resource.data.metadata).changedKeys().hasOnly(['totalStudents']) &&
+        request.resource.data.metadata.totalStudents is int &&
+        request.resource.data.metadata.totalStudents >= 0 &&
+        (
+          request.resource.data.metadata.totalStudents == resource.data.metadata.totalStudents + 1 ||
+          request.resource.data.metadata.totalStudents == resource.data.metadata.totalStudents - 1
+        );
+    }
+
     // User's material references (denormalized for user queries)
     match /users/{userId}/userMaterials/{materialId} {
       allow read: if isOwner(userId);
@@ -244,7 +295,7 @@ service cloud.firestore {
                      (isAuthenticated() && resource.data.ownerId == request.auth.uid) ||
                      (isAuthenticated() && exists(/databases/$(database)/documents/materialParticipants/$(materialId)/participants/$(request.auth.uid)));
       allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
-      allow update: if canEditMaterial(materialId);
+      allow update: if canEditMaterial(materialId) || isValidMaterialStudentCountUpdate(materialId);
       allow delete: if isMaterialOwner(materialId);
     }
 
@@ -269,6 +320,18 @@ service cloud.firestore {
     // THEMES RULES
     // =============================================
 
+    function isValidThemeInstallUpdate() {
+      return isAuthenticated() &&
+        request.resource.data.diff(resource.data).changedKeys().hasOnly(['metadata']) &&
+        request.resource.data.metadata.diff(resource.data.metadata).changedKeys().hasOnly(['totalInstalls']) &&
+        request.resource.data.metadata.totalInstalls is int &&
+        request.resource.data.metadata.totalInstalls >= 0 &&
+        (
+          request.resource.data.metadata.totalInstalls == resource.data.metadata.totalInstalls + 1 ||
+          request.resource.data.metadata.totalInstalls == resource.data.metadata.totalInstalls - 1
+        );
+    }
+
     match /themes/{themeId} {
       allow read: if resource.data.visibility == 'public' || isOwner(resource.data.ownerId);
 
@@ -276,10 +339,12 @@ service cloud.firestore {
                        request.resource.data.ownerId == request.auth.uid &&
                        request.resource.data.visibility in ['public', 'private'];
 
-      allow update: if isAuthenticated() &&
-                       resource.data.ownerId == request.auth.uid &&
-                       request.resource.data.ownerId == request.auth.uid &&
-                       request.resource.data.visibility in ['public', 'private'];
+      allow update: if (
+        isAuthenticated() &&
+        resource.data.ownerId == request.auth.uid &&
+        request.resource.data.ownerId == request.auth.uid &&
+        request.resource.data.visibility in ['public', 'private']
+      ) || isValidThemeInstallUpdate();
 
       allow delete: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
     }

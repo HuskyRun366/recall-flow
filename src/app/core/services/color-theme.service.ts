@@ -1,6 +1,9 @@
 import { Injectable, computed, effect, signal, inject } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { Theme, ThemeService } from './theme.service';
 import { adjustHexLightness, hexToRgb, normalizeHexColor, rgbToCss } from '../../shared/utils/color-utils';
+import { ThemeDocumentService } from './theme-document.service';
+import { MarketplaceTheme } from '../../models';
 
 export type ColorThemeSource = 'preset' | 'custom' | 'community';
 
@@ -176,6 +179,7 @@ function generateId(): string {
 })
 export class ColorThemeService {
   private themeService = inject(ThemeService);
+  private themeDocs = inject(ThemeDocumentService);
 
   private appliedVarNames = new Set<string>();
 
@@ -398,6 +402,48 @@ export class ColorThemeService {
     this.storedThemesSignal.update((themes) => [stored, ...themes]);
     this.activeThemeIdSignal.set(id);
     return id;
+  }
+
+  /**
+   * Refresh installed marketplace themes from Firestore so updates propagate on reload.
+   */
+  async refreshMarketplaceThemes(): Promise<void> {
+    const installed = this.storedThemesSignal()
+      .filter((t) => t.source === 'community' && typeof t.originId === 'string');
+
+    if (installed.length === 0) return;
+
+    const originIds = Array.from(new Set(installed.map((t) => t.originId!)));
+
+    const results = await Promise.allSettled(
+      originIds.map(async (originId) => {
+        const theme = await firstValueFrom(this.themeDocs.getThemeById(originId));
+        return { originId, theme };
+      })
+    );
+
+    const updates = new Map<string, MarketplaceTheme>();
+    results.forEach((result) => {
+      if (result.status !== 'fulfilled') return;
+      const { originId, theme } = result.value;
+      if (theme) updates.set(originId, theme);
+    });
+
+    if (updates.size === 0) return;
+
+    this.storedThemesSignal.update((themes) =>
+      themes.map((theme) => {
+        if (theme.source !== 'community' || !theme.originId) return theme;
+        const updated = updates.get(theme.originId);
+        if (!updated) return theme;
+        return {
+          ...theme,
+          name: updated.title,
+          palette: updated.palette,
+          darkPalette: updated.darkPalette
+        };
+      })
+    );
   }
 
   exportThemeAsJson(id: string): string | null {

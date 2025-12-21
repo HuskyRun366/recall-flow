@@ -539,7 +539,10 @@
           "title": "Theme marketplace",
           "subtitle": "Install community themes",
           "install": "Install",
-          "installed": "Installed"
+          "installed": "Installed",
+          "uninstall": "Remove",
+          "uninstallConfirm": "Remove \"{{name}}\" from your themes?",
+          "uninstalled": "\"{{name}}\" removed."
         },
         "importExport": {
           "title": "Import & export",

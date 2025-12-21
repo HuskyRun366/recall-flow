@@ -312,7 +312,12 @@ export class MaterialListComponent implements OnInit {
       lastAccessedAt: new Date()
     };
 
+    const previousPublicMaterials = this.publicMaterials();
     this.userMaterialRefs.update(refs => [...refs, optimisticRef]);
+    this.publicMaterials.update(materials => {
+      if (materials.some(m => m.id === material.id)) return materials;
+      return [...materials, material].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+    });
     this.updateEnrollmentState(material.id, 'loading');
 
     try {
@@ -330,6 +335,7 @@ export class MaterialListComponent implements OnInit {
     } catch (err) {
       console.error('Error enrolling in material:', err);
       this.userMaterialRefs.update(refs => refs.filter(ref => ref.materialId !== material.id));
+      this.publicMaterials.set(previousPublicMaterials);
       this.updateEnrollmentState(material.id, 'error');
       this.toastService.error('Lernunterlage konnte nicht hinzugefügt werden');
     }
@@ -342,8 +348,10 @@ export class MaterialListComponent implements OnInit {
     }
 
     const previousRefs = this.userMaterialRefs();
+    const previousPublicMaterials = this.publicMaterials();
 
     this.userMaterialRefs.update(refs => refs.filter(ref => ref.materialId !== material.id));
+    this.publicMaterials.update(materials => materials.filter(m => m.id !== material.id));
     this.updateEnrollmentState(material.id, 'removing');
 
     try {
@@ -354,6 +362,7 @@ export class MaterialListComponent implements OnInit {
     } catch (err) {
       console.error('Error removing material enrollment:', err);
       this.userMaterialRefs.set(previousRefs);
+      this.publicMaterials.set(previousPublicMaterials);
       this.updateEnrollmentState(material.id, 'error');
       this.toastService.error('Lernunterlage konnte nicht entfernt werden');
     }

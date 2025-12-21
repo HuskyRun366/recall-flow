@@ -528,7 +528,10 @@
           "title": "Marketplace des thèmes",
           "subtitle": "Installez des thèmes de la communauté",
           "install": "Installer",
-          "installed": "Installé"
+          "installed": "Installé",
+          "uninstall": "Supprimer",
+          "uninstallConfirm": "Supprimer « {{name}} » de vos thèmes ?",
+          "uninstalled": "« {{name}} » supprimé."
         },
         "importExport": {
           "title": "Import & export",

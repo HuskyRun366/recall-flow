@@ -24,6 +24,7 @@ import { DeckParticipantService } from '../../core/services/deck-participant.ser
 import { MaterialParticipantService } from '../../core/services/material-participant.service';
 import { ReviewService } from '../../core/services/review.service';
 import { Review } from '../../models';
+import { ThemeDocumentService } from '../../core/services/theme-document.service';
 import { SearchBarComponent } from '../../shared/components/search-bar/search-bar.component';
 import { MarketplaceCardComponent } from '../../shared/components/marketplace-card/marketplace-card.component';
 import { FilterPanelComponent } from '../../shared/components/filter-panel/filter-panel.component';
@@ -57,6 +58,7 @@ export class DiscoverComponent implements OnInit {
   private reviewService = inject(ReviewService);
   private translateService = inject(TranslateService);
   private destroyRef = inject(DestroyRef);
+  private themeDocs = inject(ThemeDocumentService);
 
   // Filter state
   searchTerm = signal('');
@@ -243,7 +245,15 @@ export class DiscoverComponent implements OnInit {
       if (item.type === 'theme') {
         // Install theme
         const theme = item.content as MarketplaceTheme;
+        const alreadyInstalled = this.colorThemeService.isThemeInstalled(theme.id);
         this.colorThemeService.installMarketplaceTheme(theme);
+        if (!alreadyInstalled) {
+          try {
+            await this.themeDocs.updateInstallCount(theme.id, 1);
+          } catch (err) {
+            console.warn('Failed to update theme install count:', err);
+          }
+        }
         this.toastService.success(
           this.translateService.instant('settings.page.theme.marketplace.installed', { name: theme.title })
         );

@@ -528,7 +528,10 @@
           "title": "Tienda de temas",
           "subtitle": "Instala temas de la comunidad",
           "install": "Instalar",
-          "installed": "Instalado"
+          "installed": "Instalado",
+          "uninstall": "Eliminar",
+          "uninstallConfirm": "¿Eliminar \"{{name}}\" de tus temas?",
+          "uninstalled": "\"{{name}}\" eliminado."
         },
         "importExport": {
           "title": "Importar y exportar",

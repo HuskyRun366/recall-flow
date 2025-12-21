@@ -12,7 +12,8 @@ import {
   where,
   Timestamp,
   writeBatch,
-  CollectionReference
+  CollectionReference,
+  increment
 } from '@angular/fire/firestore';
 import { Observable, from, map } from 'rxjs';
 import { DeckParticipant, UserDeckReference } from '../../models';
@@ -38,10 +39,16 @@ export class DeckParticipantService {
     invitedBy?: string,
     status: InvitationStatus = 'pending'
   ): Promise<void> {
+    const participantDoc = doc(this.firestore, `deckParticipants/${deckId}/participants/${userId}`);
+    const existingSnap = await runInInjectionContext(this.injector, () => getDoc(participantDoc));
+    const existing = existingSnap.exists() ? (existingSnap.data() as DeckParticipant) : null;
+    const shouldIncrement =
+      this.shouldCountInTotals(role, status) &&
+      !this.shouldCountInTotals(existing?.role, existing?.status);
+
     const batch = writeBatch(this.firestore);
 
     // Add to deckParticipants collection
-    const participantDoc = doc(this.firestore, `deckParticipants/${deckId}/participants/${userId}`);
     const participantData: DeckParticipant = {
       userId,
       email,
@@ -63,6 +70,10 @@ export class DeckParticipantService {
     batch.set(userDeckDoc, userDeckData);
 
     await batch.commit();
+
+    if (shouldIncrement) {
+      await this.updateStudentCount(deckId, 1);
+    }
   }
 
   /**
@@ -70,19 +81,40 @@ export class DeckParticipantService {
    */
   async acceptInvitation(deckId: string, userId: string): Promise<void> {
     const participantDoc = doc(this.firestore, `deckParticipants/${deckId}/participants/${userId}`);
-    await updateDoc(participantDoc, {
-      status: 'accepted'
-    });
+    const existingSnap = await runInInjectionContext(this.injector, () => getDoc(participantDoc));
+    if (!existingSnap.exists()) return;
+
+    const existing = existingSnap.data() as DeckParticipant;
+    if (existing.status === 'accepted') return;
+
+    await updateDoc(participantDoc, { status: 'accepted' });
+
+    if (this.shouldCountInTotals(existing.role, 'accepted')) {
+      await this.updateStudentCount(deckId, 1);
+    }
   }
 
   /**
    * Remove a participant from a deck
    */
   async removeParticipant(deckId: string, userId: string): Promise<void> {
+    const participantDoc = doc(this.firestore, `deckParticipants/${deckId}/participants/${userId}`);
+    const existingSnap = await runInInjectionContext(this.injector, () => getDoc(participantDoc));
+    const existing = existingSnap.exists() ? (existingSnap.data() as DeckParticipant) : null;
+    const shouldDecrement = this.shouldCountInTotals(existing?.role, existing?.status);
+
     const batch = writeBatch(this.firestore);
 
+    if (shouldDecrement) {
+      const currentCount = await this.getCurrentStudentCount(deckId);
+      if (currentCount > 0) {
+        batch.update(doc(this.firestore, `flashcardDecks/${deckId}`), {
+          'metadata.totalStudents': increment(-1)
+        });
+      }
+    }
+
     // Remove from deckParticipants
-    const participantDoc = doc(this.firestore, `deckParticipants/${deckId}/participants/${userId}`);
     batch.delete(participantDoc);
 
     // Remove from user's userDecks
@@ -96,17 +128,70 @@ export class DeckParticipantService {
    * Update participant role
    */
   async updateParticipantRole(deckId: string, userId: string, newRole: DeckParticipantRole): Promise<void> {
+    const participantDoc = doc(this.firestore, `deckParticipants/${deckId}/participants/${userId}`);
+    const existingSnap = await runInInjectionContext(this.injector, () => getDoc(participantDoc));
+    if (!existingSnap.exists()) return;
+
+    const existing = existingSnap.data() as DeckParticipant;
+    if (existing.role === newRole) return;
+
+    const wasCounted = this.shouldCountInTotals(existing.role, existing.status);
+    const willCount = this.shouldCountInTotals(newRole, existing.status);
+    const delta = willCount && !wasCounted ? 1 : (!willCount && wasCounted ? -1 : 0);
+
     const batch = writeBatch(this.firestore);
 
     // Update in deckParticipants
-    const participantDoc = doc(this.firestore, `deckParticipants/${deckId}/participants/${userId}`);
     batch.update(participantDoc, { role: newRole });
 
     // Update in user's userDecks
     const userDeckDoc = doc(this.firestore, `users/${userId}/userDecks/${deckId}`);
     batch.update(userDeckDoc, { role: newRole });
 
+    if (delta !== 0) {
+      if (delta < 0) {
+        const currentCount = await this.getCurrentStudentCount(deckId);
+        if (currentCount > 0) {
+          batch.update(doc(this.firestore, `flashcardDecks/${deckId}`), {
+            'metadata.totalStudents': increment(delta)
+          });
+        }
+      } else {
+        batch.update(doc(this.firestore, `flashcardDecks/${deckId}`), {
+          'metadata.totalStudents': increment(delta)
+        });
+      }
+    }
+
     await batch.commit();
+  }
+
+  private shouldCountInTotals(role?: DeckParticipantRole, status?: InvitationStatus): boolean {
+    return role === 'student' && status === 'accepted';
+  }
+
+  private async updateStudentCount(deckId: string, delta: number): Promise<void> {
+    if (!deckId || !Number.isFinite(delta) || delta === 0) return;
+    try {
+      await updateDoc(doc(this.firestore, `flashcardDecks/${deckId}`), {
+        'metadata.totalStudents': increment(delta)
+      });
+    } catch (error) {
+      console.warn('Failed to update deck student count:', error);
+    }
+  }
+
+  private async getCurrentStudentCount(deckId: string): Promise<number> {
+    try {
+      const deckDoc = doc(this.firestore, `flashcardDecks/${deckId}`);
+      const snap = await runInInjectionContext(this.injector, () => getDoc(deckDoc));
+      if (!snap.exists()) return 0;
+      const raw = snap.data()?.['metadata']?.['totalStudents'];
+      return typeof raw === 'number' && Number.isFinite(raw) ? raw : 0;
+    } catch (error) {
+      console.warn('Failed to read deck student count:', error);
+      return 0;
+    }
   }
 
   /**

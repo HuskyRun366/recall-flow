@@ -539,7 +539,10 @@
           "title": "Theme-Marktplatz",
           "subtitle": "Installiere Community-Themes",
           "install": "Installieren",
-          "installed": "Installiert"
+          "installed": "Installiert",
+          "uninstall": "Entfernen",
+          "uninstallConfirm": "„{{name}}“ aus deinen Themes entfernen?",
+          "uninstalled": "„{{name}}“ entfernt."
         },
         "importExport": {
           "title": "Import & Export",

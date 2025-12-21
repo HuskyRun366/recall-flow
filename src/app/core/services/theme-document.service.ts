@@ -13,12 +13,13 @@ import {
   orderBy,
   limit,
   serverTimestamp,
-  Timestamp
+  Timestamp,
+  increment
 } from '@angular/fire/firestore';
 import { Observable, from } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MarketplaceTheme, ThemeVisibility } from '../../models';
-import { ThemePalette } from './color-theme.service';
+import type { ThemePalette } from './color-theme.service';
 
 @Injectable({
   providedIn: 'root'
@@ -68,6 +69,28 @@ export class ThemeDocumentService {
     return from(updateDoc(themeRef, updateData));
   }
 
+  async updateInstallCount(themeId: string, delta: number): Promise<void> {
+    if (!themeId || !Number.isFinite(delta) || delta === 0) return;
+    const themeRef = doc(this.firestore, `${this.THEME_COLLECTION}/${themeId}`);
+
+    if (delta < 0) {
+      try {
+        const snap = await runInInjectionContext(this.injector, () => getDoc(themeRef));
+        if (!snap.exists()) return;
+        const raw = (snap.data() as any)?.metadata?.totalInstalls;
+        const current = typeof raw === 'number' && Number.isFinite(raw) ? raw : 0;
+        if (current <= 0) return;
+      } catch (error) {
+        console.warn('Failed to read theme install count:', error);
+        return;
+      }
+    }
+
+    await updateDoc(themeRef, {
+      'metadata.totalInstalls': increment(delta)
+    });
+  }
+
   deleteTheme(themeId: string): Observable<void> {
     const themeRef = doc(this.firestore, `${this.THEME_COLLECTION}/${themeId}`);
     return from(deleteDoc(themeRef));
@@ -109,4 +132,3 @@ export class ThemeDocumentService {
     };
   }
 }
-

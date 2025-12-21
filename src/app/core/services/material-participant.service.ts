@@ -12,7 +12,8 @@ import {
   where,
   Timestamp,
   writeBatch,
-  CollectionReference
+  CollectionReference,
+  increment
 } from '@angular/fire/firestore';
 import { Observable, from, map } from 'rxjs';
 import { MaterialParticipant, UserMaterialReference } from '../../models';
@@ -38,10 +39,16 @@ export class MaterialParticipantService {
     invitedBy?: string,
     status: InvitationStatus = 'pending'
   ): Promise<void> {
+    const participantDoc = doc(this.firestore, `materialParticipants/${materialId}/participants/${userId}`);
+    const existingSnap = await runInInjectionContext(this.injector, () => getDoc(participantDoc));
+    const existing = existingSnap.exists() ? (existingSnap.data() as MaterialParticipant) : null;
+    const shouldIncrement =
+      this.shouldCountInTotals(role, status) &&
+      !this.shouldCountInTotals(existing?.role, existing?.status);
+
     const batch = writeBatch(this.firestore);
 
     // Add to materialParticipants collection
-    const participantDoc = doc(this.firestore, `materialParticipants/${materialId}/participants/${userId}`);
     const participantData: MaterialParticipant = {
       userId,
       email,
@@ -63,6 +70,10 @@ export class MaterialParticipantService {
     batch.set(userMaterialDoc, userMaterialData);
 
     await batch.commit();
+
+    if (shouldIncrement) {
+      await this.updateStudentCount(materialId, 1);
+    }
   }
 
   /**
@@ -70,19 +81,40 @@ export class MaterialParticipantService {
    */
   async acceptInvitation(materialId: string, userId: string): Promise<void> {
     const participantDoc = doc(this.firestore, `materialParticipants/${materialId}/participants/${userId}`);
-    await updateDoc(participantDoc, {
-      status: 'accepted'
-    });
+    const existingSnap = await runInInjectionContext(this.injector, () => getDoc(participantDoc));
+    if (!existingSnap.exists()) return;
+
+    const existing = existingSnap.data() as MaterialParticipant;
+    if (existing.status === 'accepted') return;
+
+    await updateDoc(participantDoc, { status: 'accepted' });
+
+    if (this.shouldCountInTotals(existing.role, 'accepted')) {
+      await this.updateStudentCount(materialId, 1);
+    }
   }
 
   /**
    * Remove a participant from a material
    */
   async removeParticipant(materialId: string, userId: string): Promise<void> {
+    const participantDoc = doc(this.firestore, `materialParticipants/${materialId}/participants/${userId}`);
+    const existingSnap = await runInInjectionContext(this.injector, () => getDoc(participantDoc));
+    const existing = existingSnap.exists() ? (existingSnap.data() as MaterialParticipant) : null;
+    const shouldDecrement = this.shouldCountInTotals(existing?.role, existing?.status);
+
     const batch = writeBatch(this.firestore);
 
+    if (shouldDecrement) {
+      const currentCount = await this.getCurrentStudentCount(materialId);
+      if (currentCount > 0) {
+        batch.update(doc(this.firestore, `learningMaterials/${materialId}`), {
+          'metadata.totalStudents': increment(-1)
+        });
+      }
+    }
+
     // Remove from materialParticipants
-    const participantDoc = doc(this.firestore, `materialParticipants/${materialId}/participants/${userId}`);
     batch.delete(participantDoc);
 
     // Remove from user's userMaterials
@@ -96,17 +128,70 @@ export class MaterialParticipantService {
    * Update participant role
    */
   async updateParticipantRole(materialId: string, userId: string, newRole: MaterialParticipantRole): Promise<void> {
+    const participantDoc = doc(this.firestore, `materialParticipants/${materialId}/participants/${userId}`);
+    const existingSnap = await runInInjectionContext(this.injector, () => getDoc(participantDoc));
+    if (!existingSnap.exists()) return;
+
+    const existing = existingSnap.data() as MaterialParticipant;
+    if (existing.role === newRole) return;
+
+    const wasCounted = this.shouldCountInTotals(existing.role, existing.status);
+    const willCount = this.shouldCountInTotals(newRole, existing.status);
+    const delta = willCount && !wasCounted ? 1 : (!willCount && wasCounted ? -1 : 0);
+
     const batch = writeBatch(this.firestore);
 
     // Update in materialParticipants
-    const participantDoc = doc(this.firestore, `materialParticipants/${materialId}/participants/${userId}`);
     batch.update(participantDoc, { role: newRole });
 
     // Update in user's userMaterials
     const userMaterialDoc = doc(this.firestore, `users/${userId}/userMaterials/${materialId}`);
     batch.update(userMaterialDoc, { role: newRole });
 
+    if (delta !== 0) {
+      if (delta < 0) {
+        const currentCount = await this.getCurrentStudentCount(materialId);
+        if (currentCount > 0) {
+          batch.update(doc(this.firestore, `learningMaterials/${materialId}`), {
+            'metadata.totalStudents': increment(delta)
+          });
+        }
+      } else {
+        batch.update(doc(this.firestore, `learningMaterials/${materialId}`), {
+          'metadata.totalStudents': increment(delta)
+        });
+      }
+    }
+
     await batch.commit();
+  }
+
+  private shouldCountInTotals(role?: MaterialParticipantRole, status?: InvitationStatus): boolean {
+    return role === 'student' && status === 'accepted';
+  }
+
+  private async updateStudentCount(materialId: string, delta: number): Promise<void> {
+    if (!materialId || !Number.isFinite(delta) || delta === 0) return;
+    try {
+      await updateDoc(doc(this.firestore, `learningMaterials/${materialId}`), {
+        'metadata.totalStudents': increment(delta)
+      });
+    } catch (error) {
+      console.warn('Failed to update material student count:', error);
+    }
+  }
+
+  private async getCurrentStudentCount(materialId: string): Promise<number> {
+    try {
+      const materialDoc = doc(this.firestore, `learningMaterials/${materialId}`);
+      const snap = await runInInjectionContext(this.injector, () => getDoc(materialDoc));
+      if (!snap.exists()) return 0;
+      const raw = snap.data()?.['metadata']?.['totalStudents'];
+      return typeof raw === 'number' && Number.isFinite(raw) ? raw : 0;
+    } catch (error) {
+      console.warn('Failed to read material student count:', error);
+      return 0;
+    }
   }
 
   /**

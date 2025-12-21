@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ColorTheme, ColorThemeService, StoredColorThemeV1 } from '../../../../core/services/color-theme.service';
 import { ThemeDocumentService } from '../../../../core/services/theme-document.service';
 import { ThemeService } from '../../../../core/services/theme.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { MarketplaceTheme } from '../../../../models';
 
 @Component({
@@ -21,6 +22,8 @@ export class ThemeSettingsComponent {
   private authService = inject(AuthService);
   private themeDocs = inject(ThemeDocumentService);
   private router = inject(Router);
+  private translate = inject(TranslateService);
+  private toastService = inject(ToastService);
 
   // Data
   presets = this.colorThemes.presets;
@@ -84,6 +87,28 @@ export class ThemeSettingsComponent {
     this.router.navigate(['/settings/theme-editor/new'], {
       queryParams: { cloneFrom: theme.id }
     });
+  }
+
+  async removeInstalledTheme(theme: StoredColorThemeV1, event?: Event): Promise<void> {
+    event?.stopPropagation();
+
+    const confirmed = confirm(
+      this.translate.instant('settings.page.theme.marketplace.uninstallConfirm', { name: theme.name })
+    );
+    if (!confirmed) return;
+
+    this.colorThemes.deleteCustomTheme(theme.id);
+    if (theme.originId) {
+      try {
+        await this.themeDocs.updateInstallCount(theme.originId, -1);
+      } catch (err) {
+        console.warn('Failed to update theme install count:', err);
+      }
+    }
+    this.toastService.success(
+      this.translate.instant('settings.page.theme.marketplace.uninstalled', { name: theme.name }),
+      2000
+    );
   }
 
   visibilityLabelKey(themeId: string): string | null {

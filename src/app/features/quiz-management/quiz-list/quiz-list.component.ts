@@ -318,6 +318,7 @@ export class QuizListComponent implements OnInit {
     }
 
     // 1. OPTIMISTIC UPDATE - Immediately update UI
+    const previousPublicQuizzes = this.publicQuizzes();
     const optimisticRef: UserQuizReference = {
       quizId: quiz.id,
       role: 'participant',
@@ -326,6 +327,10 @@ export class QuizListComponent implements OnInit {
     };
 
     this.userQuizRefs.update(refs => [...refs, optimisticRef]);
+    this.publicQuizzes.update(quizzes => {
+      if (quizzes.some(q => q.id === quiz.id)) return quizzes;
+      return [...quizzes, quiz].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+    });
     this.updateEnrollmentState(quiz.id, 'loading');
 
     // 2. Firestore write in background
@@ -346,6 +351,7 @@ export class QuizListComponent implements OnInit {
       // 3. ROLLBACK on error
       console.error('Error enrolling in quiz:', err);
       this.userQuizRefs.update(refs => refs.filter(ref => ref.quizId !== quiz.id));
+      this.publicQuizzes.set(previousPublicQuizzes);
       this.updateEnrollmentState(quiz.id, 'error');
       this.toastService.error('Quiz konnte nicht hinzugefügt werden');
     }
@@ -359,9 +365,11 @@ export class QuizListComponent implements OnInit {
 
     // 1. Store for rollback
     const previousRefs = this.userQuizRefs();
+    const previousPublicQuizzes = this.publicQuizzes();
 
     // 2. OPTIMISTIC UPDATE - Immediately update UI
     this.userQuizRefs.update(refs => refs.filter(ref => ref.quizId !== quiz.id));
+    this.publicQuizzes.update(quizzes => quizzes.filter(q => q.id !== quiz.id));
     this.updateEnrollmentState(quiz.id, 'removing');
 
     // 3. Firestore write in background
@@ -375,6 +383,7 @@ export class QuizListComponent implements OnInit {
       // 4. ROLLBACK on error
       console.error('Error removing quiz enrollment:', err);
       this.userQuizRefs.set(previousRefs);
+      this.publicQuizzes.set(previousPublicQuizzes);
       this.updateEnrollmentState(quiz.id, 'error');
       this.toastService.error('Quiz konnte nicht entfernt werden');
     }

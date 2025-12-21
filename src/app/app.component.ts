@@ -144,6 +144,9 @@ export class AppComponent implements OnInit {
     this.offlinePreloadService.init();
     console.log('📦 Offline Preload Service initialized');
 
+    // Refresh installed marketplace themes so updates propagate on reload
+    void this.colorThemeService.refreshMarketplaceThemes();
+
     // Background Sync service is initialized automatically via constructor
     console.log('🔄 Background Sync Service initialized');
 

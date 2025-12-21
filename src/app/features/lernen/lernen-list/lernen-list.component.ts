@@ -319,6 +319,7 @@ export class LernenListComponent implements OnInit {
     }
 
     // Optimistic update
+    const previousPublicDecks = this.publicDecks();
     const optimisticRef: UserDeckReference = {
       deckId: deck.id,
       role: 'student',
@@ -327,6 +328,10 @@ export class LernenListComponent implements OnInit {
     };
 
     this.userDeckRefs.update(refs => [...refs, optimisticRef]);
+    this.publicDecks.update(decks => {
+      if (decks.some(d => d.id === deck.id)) return decks;
+      return [...decks, deck].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+    });
     this.updateEnrollmentState(deck.id, 'loading');
 
     try {
@@ -344,6 +349,7 @@ export class LernenListComponent implements OnInit {
     } catch (err) {
       console.error('Error enrolling in deck:', err);
       this.userDeckRefs.update(refs => refs.filter(ref => ref.deckId !== deck.id));
+      this.publicDecks.set(previousPublicDecks);
       this.updateEnrollmentState(deck.id, 'error');
       this.toastService.error('Deck konnte nicht hinzugefügt werden');
     }
@@ -356,8 +362,10 @@ export class LernenListComponent implements OnInit {
     }
 
     const previousRefs = this.userDeckRefs();
+    const previousPublicDecks = this.publicDecks();
 
     this.userDeckRefs.update(refs => refs.filter(ref => ref.deckId !== deck.id));
+    this.publicDecks.update(decks => decks.filter(d => d.id !== deck.id));
     this.updateEnrollmentState(deck.id, 'removing');
 
     try {
@@ -368,6 +376,7 @@ export class LernenListComponent implements OnInit {
     } catch (err) {
       console.error('Error removing deck enrollment:', err);
       this.userDeckRefs.set(previousRefs);
+      this.publicDecks.set(previousPublicDecks);
       this.updateEnrollmentState(deck.id, 'error');
       this.toastService.error('Deck konnte nicht entfernt werden');
     }
