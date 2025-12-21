@@ -47,7 +47,11 @@
             "scripts": [],
             "allowedCommonJsDependencies": [
               "jszip",
-              "sql.js"
+              "sql.js",
+              "seedrandom",
+              "node-fetch",
+              "string_decoder",
+              "long"
             ],
             "externalDependencies": ["fs", "path", "crypto"]
           },
