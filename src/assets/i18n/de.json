@@ -612,6 +612,26 @@
           "error": "Ungültiges Theme-JSON"
         }
       },
+      "accessibility": {
+        "title": "Barrierefreiheit",
+        "subtitle": "Passe Kontrast, Schriftgröße und Lesehilfen an",
+        "highContrast": {
+          "title": "Hoher Kontrast",
+          "description": "Erhöht die Lesbarkeit durch starke Kontraste."
+        },
+        "dyslexicFont": {
+          "title": "Dyslexie-freundliche Schrift",
+          "description": "Verwendet OpenDyslexic für bessere Buchstaben-Unterscheidung."
+        },
+        "fontSize": {
+          "title": "Schriftgröße",
+          "description": "Skaliert den Text in der gesamten App.",
+          "ariaLabel": "Schriftgrößensteuerung",
+          "decrease": "Schrift verkleinern",
+          "increase": "Schrift vergrößern",
+          "reset": "Zurücksetzen"
+        }
+      },
       "notifications": {
         "title": "Benachrichtigungen",
         "subtitle": "Push-Updates zu deinen Quizzes",

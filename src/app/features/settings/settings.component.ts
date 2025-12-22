@@ -11,6 +11,7 @@ import { ColorThemeService } from '../../core/services/color-theme.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { LanguageSwitcherComponent } from '../../shared/components/language-switcher/language-switcher.component';
 import { ToastService } from '../../core/services/toast.service';
+import { AccessibilityService } from '../../core/services/accessibility.service';
 
 const STORAGE_THEME_SETTINGS_EXPANDED = 'quiz-app-theme-settings-expanded';
 
@@ -31,6 +32,7 @@ export class SettingsComponent {
   private colorThemes = inject(ColorThemeService);
   private themeService = inject(ThemeService);
   private translate = inject(TranslateService);
+  private accessibility = inject(AccessibilityService);
 
   // PWA Detection
   isPWA = this.pwaDetection.isPWA;
@@ -83,6 +85,15 @@ export class SettingsComponent {
   activeColorTheme = this.colorThemes.activeTheme;
   currentMode = this.themeService.theme;
   themePreviewGradient = computed(() => this.colorThemes.getPreviewGradient(this.activeColorTheme(), this.currentMode()));
+
+  fontScale = this.accessibility.fontScale;
+  fontScaleMin = this.accessibility.fontScaleMin;
+  fontScaleMax = this.accessibility.fontScaleMax;
+  fontScaleStep = this.accessibility.fontScaleStep;
+  fontScaleDefault = this.accessibility.fontScaleDefault;
+  fontScalePercent = computed(() => Math.round(this.fontScale() * 100));
+  isDyslexicFontEnabled = this.accessibility.dyslexicFontEnabled;
+  isHighContrastEnabled = this.accessibility.highContrastEnabled;
 
   constructor() {
     effect(() => {
@@ -165,6 +176,36 @@ export class SettingsComponent {
 
   toggleThemeSettings(): void {
     this.isThemeSettingsExpanded.update((v) => !v);
+  }
+
+  setHighContrastEnabled(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    this.accessibility.setHighContrastEnabled(Boolean(target?.checked));
+  }
+
+  setDyslexicFontEnabled(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    this.accessibility.setDyslexicFontEnabled(Boolean(target?.checked));
+  }
+
+  onFontScaleInput(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    if (!target) return;
+    const value = Number.parseFloat(target.value);
+    if (Number.isNaN(value)) return;
+    this.accessibility.setFontScale(value);
+  }
+
+  increaseFontScale(): void {
+    this.accessibility.increaseFontScale();
+  }
+
+  decreaseFontScale(): void {
+    this.accessibility.decreaseFontScale();
+  }
+
+  resetFontScale(): void {
+    this.accessibility.resetFontScale();
   }
 
   private loadThemeSettingsExpanded(): boolean {

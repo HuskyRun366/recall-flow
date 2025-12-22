@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @use './styles/variables' as *;
 @use './styles/themes';
+@use './styles/fonts';
 
 * {
   box-sizing: border-box;
@@ -8,9 +9,18 @@
   padding: 0;
 }
 
+:root {
+  --app-font-scale: 1;
+  --app-font-family-default: #{$font-family-sans};
+}
+
+html {
+  font-size: calc(16px * var(--app-font-scale));
+}
+
 html, body {
   height: 100%;
-  font-family: $font-family-sans;
+  font-family: var(--app-font-family, var(--app-font-family-default));
   background-color: var(--color-background);
   color: var(--color-text-primary);
   transition: background-color $transition-normal, color $transition-normal;
@@ -72,6 +82,11 @@ input, textarea, select {
   font-family: inherit;
   font-size: inherit;
   outline: none;
+}
+
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-primary) 60%, #ffffff 40%);
+  outline-offset: 3px;
 }
 
 // Prevent FAB artifacts during route transitions (animated/3D content can temporarily clip it)

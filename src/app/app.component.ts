@@ -14,6 +14,7 @@ import { BackgroundSyncService } from './core/services/background-sync.service';
 import { BadgingService } from './core/services/badging.service';
 import { KeyboardShortcutsService } from './core/services/keyboard-shortcuts.service';
 import { ColorThemeService } from './core/services/color-theme.service';
+import { AccessibilityService } from './core/services/accessibility.service';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs/operators';
 
@@ -114,6 +115,7 @@ export class AppComponent implements OnInit {
   private badgingService = inject(BadgingService);
   private keyboardShortcuts = inject(KeyboardShortcutsService);
   private colorThemeService = inject(ColorThemeService);
+  private accessibility = inject(AccessibilityService);
   private swUpdate = inject(SwUpdate);
 
   /**
@@ -137,6 +139,9 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Ensure accessibility preferences are applied on startup
+    this.accessibility.fontScale();
+
     // Initialize PWA service
     console.log('🚀 PWA Service initialized');
 

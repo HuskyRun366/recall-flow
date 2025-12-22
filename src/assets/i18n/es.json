@@ -601,6 +601,26 @@
           "error": "JSON de tema no válido"
         }
       },
+      "accessibility": {
+        "title": "Accesibilidad",
+        "subtitle": "Ajusta contraste, tamaño de fuente y ayudas de lectura",
+        "highContrast": {
+          "title": "Alto contraste",
+          "description": "Mejora la legibilidad con alto contraste."
+        },
+        "dyslexicFont": {
+          "title": "Fuente para dislexia",
+          "description": "Usa OpenDyslexic para distinguir mejor las letras."
+        },
+        "fontSize": {
+          "title": "Tamaño de fuente",
+          "description": "Escala el texto en toda la app.",
+          "ariaLabel": "Controles de tamaño de fuente",
+          "decrease": "Disminuir tamaño de fuente",
+          "increase": "Aumentar tamaño de fuente",
+          "reset": "Restablecer"
+        }
+      },
       "notifications": {
         "title": "Notificaciones",
         "subtitle": "Actualizaciones push sobre tus cuestionarios",

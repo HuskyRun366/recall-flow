@@ -612,6 +612,26 @@
           "error": "Invalid theme JSON"
         }
       },
+      "accessibility": {
+        "title": "Accessibility",
+        "subtitle": "Adjust contrast, font size, and reading aids",
+        "highContrast": {
+          "title": "High contrast mode",
+          "description": "Boosts readability with strong color contrast."
+        },
+        "dyslexicFont": {
+          "title": "Dyslexia-friendly font",
+          "description": "Uses OpenDyslexic to improve letter distinction."
+        },
+        "fontSize": {
+          "title": "Font size",
+          "description": "Scale text across the app.",
+          "ariaLabel": "Font size controls",
+          "decrease": "Decrease font size",
+          "increase": "Increase font size",
+          "reset": "Reset"
+        }
+      },
       "notifications": {
         "title": "Notifications",
         "subtitle": "Push updates about your quizzes",

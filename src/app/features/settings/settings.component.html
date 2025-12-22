@@ -115,6 +115,130 @@
     </div>
   </div>
 
+  <!-- Accessibility Settings Section -->
+  <div class="settings-section">
+    <div class="section-header">
+      <div class="section-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="4" r="2"/>
+          <path d="M6 7h12"/>
+          <path d="M6 7l6 3 6-3"/>
+          <path d="M10 22l2-6 2 6"/>
+        </svg>
+      </div>
+      <div>
+        <h2>{{ 'settings.page.accessibility.title' | translate }}</h2>
+        <p class="section-description">{{ 'settings.page.accessibility.subtitle' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <div class="setting-item">
+        <div class="setting-info">
+          <div class="setting-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M12 3a9 9 0 0 0 0 18V3z"/>
+            </svg>
+          </div>
+          <div>
+            <strong id="accessibility-high-contrast-title">{{ 'settings.page.accessibility.highContrast.title' | translate }}</strong>
+            <p id="accessibility-high-contrast-desc">{{ 'settings.page.accessibility.highContrast.description' | translate }}</p>
+          </div>
+        </div>
+        <label class="toggle">
+          <input
+            id="accessibility-high-contrast"
+            type="checkbox"
+            [checked]="isHighContrastEnabled()"
+            (change)="setHighContrastEnabled($event)"
+            [attr.aria-labelledby]="'accessibility-high-contrast-title'"
+            [attr.aria-describedby]="'accessibility-high-contrast-desc'" />
+          <span class="toggle-track" aria-hidden="true"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <div class="setting-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 7V4h16v3"/>
+              <path d="M9 20h6"/>
+              <path d="M12 4v16"/>
+            </svg>
+          </div>
+          <div>
+            <strong id="accessibility-dyslexic-title">{{ 'settings.page.accessibility.dyslexicFont.title' | translate }}</strong>
+            <p id="accessibility-dyslexic-desc">{{ 'settings.page.accessibility.dyslexicFont.description' | translate }}</p>
+          </div>
+        </div>
+        <label class="toggle">
+          <input
+            id="accessibility-dyslexic"
+            type="checkbox"
+            [checked]="isDyslexicFontEnabled()"
+            (change)="setDyslexicFontEnabled($event)"
+            [attr.aria-labelledby]="'accessibility-dyslexic-title'"
+            [attr.aria-describedby]="'accessibility-dyslexic-desc'" />
+          <span class="toggle-track" aria-hidden="true"></span>
+        </label>
+      </div>
+
+      <div class="setting-item font-size-setting">
+        <div class="setting-info">
+          <div class="setting-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 20h8"/>
+              <path d="M12 4h8"/>
+              <path d="M10 20L6 4"/>
+              <path d="M14 20l4-16"/>
+            </svg>
+          </div>
+          <div>
+            <strong id="accessibility-font-size-title">{{ 'settings.page.accessibility.fontSize.title' | translate }}</strong>
+            <p id="accessibility-font-size-desc">{{ 'settings.page.accessibility.fontSize.description' | translate }}</p>
+          </div>
+        </div>
+        <div class="font-controls" role="group" [attr.aria-labelledby]="'accessibility-font-size-title'" [attr.aria-describedby]="'accessibility-font-size-desc'">
+          <button
+            class="btn btn-secondary btn-icon"
+            type="button"
+            [disabled]="fontScale() <= fontScaleMin"
+            (click)="decreaseFontScale()"
+            [attr.aria-label]="'settings.page.accessibility.fontSize.decrease' | translate">
+            A-
+          </button>
+          <div class="font-slider">
+            <input
+              type="range"
+              [min]="fontScaleMin"
+              [max]="fontScaleMax"
+              [step]="fontScaleStep"
+              [value]="fontScale()"
+              (input)="onFontScaleInput($event)"
+              [attr.aria-label]="'settings.page.accessibility.fontSize.ariaLabel' | translate" />
+            <span class="font-scale-value">{{ fontScalePercent() }}%</span>
+          </div>
+          <button
+            class="btn btn-secondary btn-icon"
+            type="button"
+            [disabled]="fontScale() >= fontScaleMax"
+            (click)="increaseFontScale()"
+            [attr.aria-label]="'settings.page.accessibility.fontSize.increase' | translate">
+            A+
+          </button>
+          <button
+            class="btn btn-secondary btn-reset"
+            type="button"
+            [disabled]="fontScale() === fontScaleDefault"
+            (click)="resetFontScale()">
+            {{ 'settings.page.accessibility.fontSize.reset' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Notification Settings Section -->
   <div class="settings-section">
     <div class="section-header">

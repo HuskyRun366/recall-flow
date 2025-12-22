@@ -601,6 +601,26 @@
           "error": "JSON de thème invalide"
         }
       },
+      "accessibility": {
+        "title": "Accessibilité",
+        "subtitle": "Ajustez le contraste, la taille du texte et les aides de lecture",
+        "highContrast": {
+          "title": "Contraste élevé",
+          "description": "Améliore la lisibilité grâce à un contraste fort."
+        },
+        "dyslexicFont": {
+          "title": "Police pour la dyslexie",
+          "description": "Utilise OpenDyslexic pour mieux distinguer les lettres."
+        },
+        "fontSize": {
+          "title": "Taille du texte",
+          "description": "Ajuste la taille du texte dans toute l'application.",
+          "ariaLabel": "Contrôles de taille du texte",
+          "decrease": "Réduire la taille du texte",
+          "increase": "Augmenter la taille du texte",
+          "reset": "Réinitialiser"
+        }
+      },
       "notifications": {
         "title": "Notifications",
         "subtitle": "Mises à jour push sur vos quiz",
