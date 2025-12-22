@@ -70,6 +70,7 @@
   "nav": {
     "home": "Home",
     "quizzes": "Quizzes",
+    "analytics": "Analytics",
     "flashcards": "Flashcards",
     "materials": "Materials",
     "discover": "Discover",
@@ -153,12 +154,14 @@
       "searchPlaceholder": {
         "owned": "Search my quizzes",
         "coAuthored": "Search co-authored quizzes",
-        "public": "Search public quizzes"
+        "public": "Search public quizzes",
+        "analytics": "Search creator analytics"
       },
       "pill": {
         "owned": "My quizzes",
         "coAuthored": "Co-authored",
-        "public": "Public quizzes"
+        "public": "Public quizzes",
+        "analytics": "Creator analytics"
       },
       "empty": {
         "owned": {
@@ -172,11 +175,47 @@
         "public": {
           "search": "No public quiz matches your search.",
           "none": "No public quizzes available."
+        },
+        "analytics": {
+          "search": "No analytics match your search.",
+          "none": "No creator analytics available yet."
         }
       }
     },
     "detail": {
       "eyebrow": "Quiz"
+    },
+    "analytics": {
+      "title": "Analytics",
+      "eyebrow": "Quiz Analytics",
+      "creatorTitle": "Creator Analytics",
+      "creatorSubtitle": "All quizzes you own or co-author",
+      "summary": "Overview",
+      "attemptedUsers": "Users started",
+      "completions": "Completions",
+      "avgCompletion": "Avg. completion rate",
+      "questionDifficulty": "Question difficulty",
+      "dropoff": "Drop-off heat map",
+      "abTesting": "A/B question compare",
+      "questionA": "Question A",
+      "questionB": "Question B",
+      "noData": "No analytics data yet",
+      "refresh": "Refresh",
+      "lastUpdated": "Last updated",
+      "attempts": "Attempts",
+      "correctRate": "Correct rate",
+      "avgTime": "Avg. time",
+      "difficulty": {
+        "easy": "Easy",
+        "medium": "Medium",
+        "hard": "Hard"
+      },
+      "table": {
+        "question": "Question",
+        "difficulty": "Difficulty",
+        "correctRate": "Correct rate",
+        "attempts": "Attempts"
+      }
     },
     "editor": {
       "eyebrow": "Quiz Editor",
@@ -635,7 +674,8 @@
   "tabs": {
     "owned": "Owned",
     "coAuthored": "Co-authored",
-    "public": "Public"
+    "public": "Public",
+    "analytics": "Creator analytics"
   },
 
   "access": {

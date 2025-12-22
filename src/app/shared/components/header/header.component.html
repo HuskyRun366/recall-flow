@@ -24,6 +24,7 @@
           @if (modeService.isQuizMode()) {
             <a routerLink="/quiz/home" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">{{ 'nav.home' | translate }}</a>
             <a routerLink="/quiz/quizzes" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">{{ 'nav.quizzes' | translate }}</a>
+            <a routerLink="/quiz/analytics" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">{{ 'nav.analytics' | translate }}</a>
           } @else {
             <a routerLink="/lernen/home" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">{{ 'nav.home' | translate }}</a>
             <a routerLink="/lernen/decks" routerLinkActive="active" (click)="mobileMenuOpen.set(false)">{{ 'nav.flashcards' | translate }}</a>

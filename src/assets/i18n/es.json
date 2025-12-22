@@ -69,6 +69,7 @@
   "nav": {
     "home": "Inicio",
     "quizzes": "Cuestionarios",
+    "analytics": "Analíticas",
     "flashcards": "Flashcards",
     "materials": "Materiales",
     "discover": "Descubrir",
@@ -150,12 +151,14 @@
       "searchPlaceholder": {
         "owned": "Buscar mis cuestionarios",
         "coAuthored": "Buscar cuestionarios en coautoría",
-        "public": "Buscar cuestionarios públicos"
+        "public": "Buscar cuestionarios públicos",
+        "analytics": "Buscar analíticas de creador"
       },
       "pill": {
         "owned": "Mis cuestionarios",
         "coAuthored": "En coautoría",
-        "public": "Cuestionarios públicos"
+        "public": "Cuestionarios públicos",
+        "analytics": "Analíticas del creador"
       },
       "empty": {
         "owned": {
@@ -169,11 +172,47 @@
         "public": {
           "search": "Ningún cuestionario público coincide con tu búsqueda.",
           "none": "No hay cuestionarios públicos disponibles."
+        },
+        "analytics": {
+          "search": "Ninguna analítica coincide con tu búsqueda.",
+          "none": "Aún no hay analíticas de creador."
         }
       }
     },
     "detail": {
       "eyebrow": "Cuestionario"
+    },
+    "analytics": {
+      "title": "Analíticas",
+      "eyebrow": "Analíticas del cuestionario",
+      "creatorTitle": "Analíticas del creador",
+      "creatorSubtitle": "Todos los cuestionarios que posees o coautoras",
+      "summary": "Resumen",
+      "attemptedUsers": "Usuarios iniciados",
+      "completions": "Finalizaciones",
+      "avgCompletion": "Tasa de finalización media",
+      "questionDifficulty": "Dificultad de preguntas",
+      "dropoff": "Mapa de abandono",
+      "abTesting": "Comparativa A/B de preguntas",
+      "questionA": "Pregunta A",
+      "questionB": "Pregunta B",
+      "noData": "Aún no hay datos de analíticas",
+      "refresh": "Actualizar",
+      "lastUpdated": "Actualizado",
+      "attempts": "Intentos",
+      "correctRate": "Tasa de aciertos",
+      "avgTime": "Tiempo medio",
+      "difficulty": {
+        "easy": "Fácil",
+        "medium": "Medio",
+        "hard": "Difícil"
+      },
+      "table": {
+        "question": "Pregunta",
+        "difficulty": "Dificultad",
+        "correctRate": "Tasa de aciertos",
+        "attempts": "Intentos"
+      }
     },
     "editor": {
       "eyebrow": "Editor de cuestionario",
@@ -622,7 +661,8 @@
   "tabs": {
     "owned": "Míos",
     "coAuthored": "En coautoría",
-    "public": "Públicos"
+    "public": "Públicos",
+    "analytics": "Analíticas"
   },
   "access": {
     "enrollmentRequired": "Se requiere inscripción",

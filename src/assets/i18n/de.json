@@ -70,6 +70,7 @@
   "nav": {
     "home": "Home",
     "quizzes": "Quizzes",
+    "analytics": "Analytics",
     "flashcards": "Flashcards",
     "materials": "Material",
     "discover": "Entdecken",
@@ -153,12 +154,14 @@
       "searchPlaceholder": {
         "owned": "Eigene Quizzes durchsuchen",
         "coAuthored": "Mit-Autoren-Quizzes durchsuchen",
-        "public": "Öffentliche Quizzes durchsuchen"
+        "public": "Öffentliche Quizzes durchsuchen",
+        "analytics": "Creator-Analytics durchsuchen"
       },
       "pill": {
         "owned": "Meine Quizzes",
         "coAuthored": "Mit-Autoren",
-        "public": "Öffentliche Quizzes"
+        "public": "Öffentliche Quizzes",
+        "analytics": "Creator Analytics"
       },
       "empty": {
         "owned": {
@@ -172,11 +175,47 @@
         "public": {
           "search": "Kein öffentliches Quiz passt zu deiner Suche.",
           "none": "Keine öffentlichen Quizzes verfügbar."
+        },
+        "analytics": {
+          "search": "Keine Analytics passen zu deiner Suche.",
+          "none": "Noch keine Creator Analytics verfügbar."
         }
       }
     },
     "detail": {
       "eyebrow": "Quiz"
+    },
+    "analytics": {
+      "title": "Analytics",
+      "eyebrow": "Quiz Analytics",
+      "creatorTitle": "Creator Analytics",
+      "creatorSubtitle": "Alle Quizzes, die du besitzt oder mitbearbeitest",
+      "summary": "Übersicht",
+      "attemptedUsers": "Teilnehmende (gestartet)",
+      "completions": "Abschlüsse",
+      "avgCompletion": "Ø Abschlussrate",
+      "questionDifficulty": "Fragen-Schwierigkeit",
+      "dropoff": "Abbruch-Heatmap",
+      "abTesting": "A/B-Fragenvergleich",
+      "questionA": "Frage A",
+      "questionB": "Frage B",
+      "noData": "Noch keine Analytics-Daten",
+      "refresh": "Aktualisieren",
+      "lastUpdated": "Zuletzt aktualisiert",
+      "attempts": "Versuche",
+      "correctRate": "Richtigquote",
+      "avgTime": "Ø Zeit",
+      "difficulty": {
+        "easy": "Leicht",
+        "medium": "Mittel",
+        "hard": "Schwer"
+      },
+      "table": {
+        "question": "Frage",
+        "difficulty": "Schwierigkeit",
+        "correctRate": "Richtigquote",
+        "attempts": "Versuche"
+      }
     },
     "editor": {
       "eyebrow": "Quiz Editor",
@@ -635,7 +674,8 @@
   "tabs": {
     "owned": "Eigene",
     "coAuthored": "Co-Autor",
-    "public": "Öffentlich"
+    "public": "Öffentlich",
+    "analytics": "Creator Analytics"
   },
 
   "access": {

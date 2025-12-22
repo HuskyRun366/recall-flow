@@ -69,6 +69,7 @@
   "nav": {
     "home": "Accueil",
     "quizzes": "Quiz",
+    "analytics": "Analytics",
     "flashcards": "Flashcards",
     "materials": "Documents",
     "discover": "Découvrir",
@@ -150,12 +151,14 @@
       "searchPlaceholder": {
         "owned": "Rechercher mes quiz",
         "coAuthored": "Rechercher des quiz en co-auteur",
-        "public": "Rechercher des quiz publics"
+        "public": "Rechercher des quiz publics",
+        "analytics": "Rechercher les analytics créateur"
       },
       "pill": {
         "owned": "Mes quiz",
         "coAuthored": "Co-écrits",
-        "public": "Quiz publics"
+        "public": "Quiz publics",
+        "analytics": "Analytics créateur"
       },
       "empty": {
         "owned": {
@@ -169,11 +172,47 @@
         "public": {
           "search": "Aucun quiz public ne correspond à votre recherche.",
           "none": "Aucun quiz public disponible."
+        },
+        "analytics": {
+          "search": "Aucune analytics ne correspond à votre recherche.",
+          "none": "Aucune analytics créateur pour le moment."
         }
       }
     },
     "detail": {
       "eyebrow": "Quiz"
+    },
+    "analytics": {
+      "title": "Analytics",
+      "eyebrow": "Analytics du quiz",
+      "creatorTitle": "Analytics créateur",
+      "creatorSubtitle": "Tous les quiz que vous possédez ou co‑éditez",
+      "summary": "Aperçu",
+      "attemptedUsers": "Utilisateurs ayant commencé",
+      "completions": "Achèvements",
+      "avgCompletion": "Taux de complétion moyen",
+      "questionDifficulty": "Difficulté des questions",
+      "dropoff": "Heatmap d'abandon",
+      "abTesting": "Comparaison A/B des questions",
+      "questionA": "Question A",
+      "questionB": "Question B",
+      "noData": "Pas encore de données d'analytics",
+      "refresh": "Actualiser",
+      "lastUpdated": "Dernière mise à jour",
+      "attempts": "Tentatives",
+      "correctRate": "Taux de réussite",
+      "avgTime": "Temps moyen",
+      "difficulty": {
+        "easy": "Facile",
+        "medium": "Moyen",
+        "hard": "Difficile"
+      },
+      "table": {
+        "question": "Question",
+        "difficulty": "Difficulté",
+        "correctRate": "Taux de réussite",
+        "attempts": "Tentatives"
+      }
     },
     "editor": {
       "eyebrow": "Éditeur de quiz",
@@ -622,7 +661,8 @@
   "tabs": {
     "owned": "Mes",
     "coAuthored": "Co-écrits",
-    "public": "Public"
+    "public": "Public",
+    "analytics": "Analytics"
   },
   "access": {
     "enrollmentRequired": "Inscription requise",

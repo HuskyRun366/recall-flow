@@ -61,9 +61,19 @@ export const routes: Routes = [
         loadComponent: () => import('./features/ai-quiz-generator/ai-quiz-generator.component').then(m => m.AiQuizGeneratorComponent)
       },
       {
+        path: 'analytics',
+        data: { animationIndex: 45 },
+        loadComponent: () => import('./features/quiz-management/creator-analytics/creator-analytics.component').then(m => m.CreatorAnalyticsComponent)
+      },
+      {
         path: ':id/take',
         data: { animationIndex: 43 },
         loadComponent: () => import('./features/quiz-taking/quiz-session/quiz-session.component').then(m => m.QuizSessionComponent)
+      },
+      {
+        path: ':id/analytics',
+        data: { animationIndex: 45 },
+        loadComponent: () => import('./features/quiz-management/quiz-analytics/quiz-analytics.component').then(m => m.QuizAnalyticsComponent)
       },
       {
         path: ':id',

@@ -1,0 +1,126 @@
+<div class="creator-analytics-page" appPullToRefresh (refresh)="onRefresh()">
+  <section class="hero hero-gradient">
+    <div class="hero-copy">
+      <p class="eyebrow">{{ 'quiz.analytics.eyebrow' | translate }}</p>
+      <h1>{{ 'quiz.analytics.creatorTitle' | translate }}</h1>
+      <p class="subtitle">{{ 'quiz.analytics.creatorSubtitle' | translate }}</p>
+      <div class="hero-meta">
+        <span class="meta-pill">{{ displayedQuizCount() }} {{ 'quiz.quizzes' | translate }}</span>
+        <span class="meta-pill">{{ displayedQuestionCount() }} {{ 'quiz.questions' | translate }}</span>
+        <span class="meta-pill">
+          {{ 'common.lastUpdated' | translate }}:
+          {{ latestUpdatedDate() ? formatDate(latestUpdatedDate()!) : '—' }}
+        </span>
+      </div>
+    </div>
+  </section>
+
+  @if (!isLoading() && !error()) {
+    <div class="control-bar">
+      <div class="search-field">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <input
+          type="search"
+          #quizSearch
+          [value]="searchTerm()"
+          (input)="onSearch(quizSearch.value)"
+          [placeholder]="'quiz.list.searchPlaceholder.analytics' | translate"
+          [attr.aria-label]="'quiz.list.searchAria' | translate" />
+        <button
+          type="button"
+          class="clear-btn"
+          *ngIf="searchTerm()"
+          (click)="clearSearch()">
+          {{ 'common.reset' | translate }}
+        </button>
+      </div>
+      <div class="result-count">
+        <span class="result-dot"></span>
+        {{ filteredQuizzes().length }} {{ (filteredQuizzes().length === 1 ? 'common.result' : 'common.results') | translate }}
+      </div>
+    </div>
+  }
+
+  @if (isLoading()) {
+    <div class="skeleton-grid">
+      @for (item of [1,2,3,4,5,6]; track item) {
+        <app-skeleton-loader type="card" />
+      }
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+      <h2>{{ 'errors.loadingFailed' | translate }}</h2>
+      <p>{{ error() }}</p>
+    </div>
+  } @else {
+    <div class="insights-panel">
+      @if (filteredQuizzes().length === 0) {
+        <div class="empty-state">
+          <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M9 11H3v9h6v-9Z M21 11h-6v9h6v-9Z M15 5H9v14h6V5Z" />
+          </svg>
+          <h2>{{ 'quiz.analytics.title' | translate }}</h2>
+          <p>
+            {{ (searchTerm().trim() ? 'quiz.list.empty.analytics.search' : 'quiz.list.empty.analytics.none') | translate }}
+          </p>
+        </div>
+      } @else {
+        <div class="insights-header">
+          <span>{{ 'quiz.quizzes' | translate }}</span>
+          <span>{{ 'quiz.questions' | translate }}</span>
+          <span>{{ 'common.updated' | translate }}</span>
+          <span class="actions-label">{{ 'quiz.analytics.title' | translate }}</span>
+        </div>
+        @for (quiz of filteredQuizzes(); track quiz.id) {
+          <div class="insight-row">
+            <div class="insight-main">
+              <div class="avatar">{{ (quiz.title || 'Q').substring(0, 1).toUpperCase() }}</div>
+              <div class="title-block">
+                <div class="title-row">
+                  <h3>{{ quiz.title }}</h3>
+                  <span
+                    class="badge"
+                    [ngClass]="{
+                      'badge-public': quiz.visibility === 'public',
+                      'badge-unlisted': quiz.visibility === 'unlisted',
+                      'badge-private': quiz.visibility !== 'public' && quiz.visibility !== 'unlisted'
+                    }">
+                    @if (quiz.visibility === 'public') {
+                      {{ 'quiz.visibility.public' | translate }}
+                    } @else if (quiz.visibility === 'unlisted') {
+                      {{ 'quiz.visibility.unlisted' | translate }}
+                    } @else {
+                      {{ 'quiz.visibility.private' | translate }}
+                    }
+                  </span>
+                </div>
+                <p *ngIf="quiz.description">{{ quiz.description }}</p>
+              </div>
+            </div>
+            <div class="insight-signal">
+              <div class="signal-track" [style.--signal]="(quiz.questionCount || 0) / maxQuestionCount() * 100"></div>
+              <span>{{ quiz.questionCount }}</span>
+            </div>
+            <div class="insight-updated">{{ formatDate(quiz.updatedAt) }}</div>
+            <div class="insight-actions">
+              <button class="btn btn-primary btn-small" (click)="viewAnalytics(quiz.id)">
+                {{ 'quiz.analytics.title' | translate }}
+              </button>
+              <button class="btn btn-secondary btn-small" (click)="viewDetails(quiz.id)">
+                {{ 'common.details' | translate }}
+              </button>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+</div>

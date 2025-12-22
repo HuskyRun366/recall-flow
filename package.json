@@ -39,6 +39,7 @@
     "@tensorflow/tfjs": "^4.22.0",
     "@types/dompurify": "^3.0.5",
     "@types/uuid": "^10.0.0",
+    "chart.js": "^4.5.1",
     "codemirror": "^6.0.2",
     "dompurify": "^3.3.1",
     "firebase": "^11.10.0",

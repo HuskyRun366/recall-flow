@@ -8,6 +8,7 @@ import { FirestoreService } from '../../../core/services/firestore.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { ProgressService } from '../../../core/services/progress.service';
 import { ParticipantService } from '../../../core/services/participant.service';
+import { QuizAnalyticsService } from '../../../core/services/quiz-analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AdaptiveLearningService } from '../../../core/services/adaptive-learning.service';
 import { KeyboardShortcutsService } from '../../../core/services/keyboard-shortcuts.service';
@@ -48,6 +49,7 @@ export class QuizSessionComponent implements OnInit, OnDestroy {
   private questionService = inject(QuestionService);
   private progressService = inject(ProgressService);
   private participantService = inject(ParticipantService);
+  private quizAnalytics = inject(QuizAnalyticsService);
   private authService = inject(AuthService);
   private adaptiveLearning = inject(AdaptiveLearningService);
   private titleService = inject(Title);
@@ -61,6 +63,7 @@ export class QuizSessionComponent implements OnInit, OnDestroy {
   private repeatCounts = new Map<string, number>();
   private readonly repeatLimit = 2;
   private readonly repeatSpacing = 3;
+  private answeredQuestionIds = new Set<string>();
 
   quiz = signal<Quiz | null>(null);
   questions = signal<Question[]>([]);
@@ -255,6 +258,19 @@ export class QuizSessionComponent implements OnInit, OnDestroy {
         this.allQuestionsWithProgress.set(prioritized);
         this.questionsWithProgress.set(prioritized);
         this.repeatCounts.clear();
+        this.answeredQuestionIds.clear();
+        progressList.forEach(progress => {
+          const attempts = (progress.correctCount || 0) + (progress.incorrectCount || 0);
+          if (attempts > 0) {
+            this.answeredQuestionIds.add(progress.questionId);
+          }
+        });
+        const totalQuestions = questions.length;
+        const completionRate = totalQuestions > 0
+          ? Math.min(100, Math.round((this.answeredQuestionIds.size / totalQuestions) * 100))
+          : 0;
+        this.progressService.updateCompletionRate(quizId, userId, completionRate)
+          .catch(err => console.warn('Failed to sync completion rate', err));
         this.isLoading.set(false);
       },
       error: (err) => {
@@ -339,6 +355,22 @@ export class QuizSessionComponent implements OnInit, OnDestroy {
 
       this.updateLocalProgress(currentQ.question.id, updatedProgress);
 
+      // Analytics: record only the first attempt per question in this session
+      const isFirstAttempt = !this.answeredQuestionIds.has(currentQ.question.id);
+      this.answeredQuestionIds.add(currentQ.question.id);
+      if (isFirstAttempt) {
+        this.quizAnalytics.recordAnswer(quiz.id, currentQ.question, isCorrect, responseTimeMs)
+          .catch(err => console.warn('Failed to record analytics', err));
+      }
+
+      // Update completion rate based on unique questions answered
+      const totalQuestions = this.questions().length;
+      const completionRate = totalQuestions > 0
+        ? Math.min(100, Math.round((this.answeredQuestionIds.size / totalQuestions) * 100))
+        : 0;
+      this.progressService.updateCompletionRate(quiz.id, userId, completionRate)
+        .catch(err => console.warn('Failed to update completion rate', err));
+
       if (!isCorrect && !this.isReviewMode()) {
         this.scheduleRepeat(currentQ);
       }
@@ -368,6 +400,13 @@ export class QuizSessionComponent implements OnInit, OnDestroy {
   finishQuiz(): void {
     // Show completion screen instead of navigating away
     this.showCompletion.set(true);
+
+    const userId = this.currentUser()?.uid;
+    const quiz = this.quiz();
+    if (userId && quiz) {
+      this.progressService.updateCompletionRate(quiz.id, userId, 100)
+        .catch(err => console.warn('Failed to finalize completion rate', err));
+    }
   }
 
   // Get questions that were answered incorrectly (level 0 or incorrectCount > 0)

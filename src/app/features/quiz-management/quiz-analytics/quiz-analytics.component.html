@@ -1,0 +1,184 @@
+<div class="analytics-page" *ngIf="!isLoading(); else loading">
+  <ng-container *ngIf="quiz(); else errorBlock">
+    <div class="hero-card">
+      <div class="hero-left">
+        <div class="avatar">{{ quiz()!.title.charAt(0).toUpperCase() }}</div>
+        <div>
+          <p class="eyebrow">{{ 'quiz.analytics.eyebrow' | translate }}</p>
+          <h1>{{ quiz()!.title }}</h1>
+          <p class="subtitle">{{ 'quiz.analytics.title' | translate }}</p>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <button class="btn btn-secondary" (click)="backToDetail()">
+          {{ 'common.back' | translate }}
+        </button>
+        <button class="btn btn-secondary" (click)="refreshSummary()" [disabled]="summaryLoading()">
+          {{ summaryLoading() ? ('common.loading' | translate) : ('quiz.analytics.refresh' | translate) }}
+        </button>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <app-stat-card [config]="{
+        icon: 'svg',
+        iconContent: '<path d=\'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\'/><circle cx=\'12\' cy=\'7\' r=\'4\'/>',
+        value: totalUsersLabel(),
+        label: ('quiz.analytics.attemptedUsers' | translate)
+      }" />
+
+      <app-stat-card [config]="{
+        icon: 'svg',
+        iconContent: '<path d=\'M9 12l2 2 4-4\'/><path d=\'M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z\'/>',
+        value: completionsLabel(),
+        label: ('quiz.analytics.completions' | translate)
+      }" />
+
+      <app-stat-card [config]="{
+        icon: 'svg',
+        iconContent: '<path d=\'M3 3v18h18\'/><path d=\'M7 15l3-3 4 4 5-6\'/>',
+        value: avgCompletionLabel(),
+        label: ('quiz.analytics.avgCompletion' | translate)
+      }" />
+
+      <app-stat-card [config]="{
+        icon: 'svg',
+        iconContent: '<circle cx=\'12\' cy=\'12\' r=\'10\'/><path d=\'M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\'/><line x1=\'12\' y1=\'17\' x2=\'12.01\' y2=\'17\'/>',
+        value: questionRows().length,
+        label: ('quiz.questions' | translate)
+      }" />
+    </div>
+
+    <div class="meta-row">
+      <span *ngIf="lastUpdated()">
+        {{ 'quiz.analytics.lastUpdated' | translate }}:
+        {{ lastUpdated() | date:'shortTime' }}
+      </span>
+      <span class="empty-note" *ngIf="!hasStats()">
+        {{ 'quiz.analytics.noData' | translate }}
+      </span>
+    </div>
+
+    <div class="card chart-card">
+      <div class="card-header">
+        <h2>{{ 'quiz.analytics.questionDifficulty' | translate }}</h2>
+      </div>
+      <div class="chart-wrapper">
+        <canvas #difficultyChart></canvas>
+      </div>
+
+      <div class="table">
+        <div class="table-row header">
+          <span>{{ 'quiz.analytics.table.question' | translate }}</span>
+          <span>{{ 'quiz.analytics.table.difficulty' | translate }}</span>
+          <span>{{ 'quiz.analytics.table.correctRate' | translate }}</span>
+          <span>{{ 'quiz.analytics.table.attempts' | translate }}</span>
+        </div>
+        <div class="table-row" *ngFor="let row of questionRows()">
+          <span class="question-text">
+            Q{{ row.question.orderIndex + 1 }} · {{ row.question.questionText }}
+          </span>
+          <span class="difficulty" [ngClass]="row.difficulty">
+            {{ ('quiz.analytics.difficulty.' + row.difficulty) | translate }}
+          </span>
+          <span>{{ row.correctRate }}%</span>
+          <span>{{ row.attempts }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card chart-card">
+      <div class="card-header">
+        <h2>{{ 'quiz.analytics.dropoff' | translate }}</h2>
+      </div>
+      <div class="chart-wrapper">
+        <canvas #dropoffChart></canvas>
+      </div>
+
+      <div class="heatmap">
+        <div class="heatmap-row" *ngFor="let row of questionRows()">
+          <div class="heatmap-label">Q{{ row.question.orderIndex + 1 }}</div>
+          <div class="heatmap-bar" [style.--heat]="row.dropOffRate"></div>
+          <div class="heatmap-meta">
+            {{ row.dropOffRate }}% · {{ row.attempts }} {{ 'quiz.analytics.attempts' | translate }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card ab-card">
+      <div class="card-header">
+        <h2>{{ 'quiz.analytics.abTesting' | translate }}</h2>
+      </div>
+
+      <div class="ab-controls">
+        <label>
+          {{ 'quiz.analytics.questionA' | translate }}
+          <select [value]="abQuestionAId()" (change)="setAbQuestionA($any($event.target).value)">
+            <option *ngFor="let row of questionRows()" [value]="row.question.id">
+              Q{{ row.question.orderIndex + 1 }} · {{ row.question.questionText }}
+            </option>
+          </select>
+        </label>
+
+        <label>
+          {{ 'quiz.analytics.questionB' | translate }}
+          <select [value]="abQuestionBId()" (change)="setAbQuestionB($any($event.target).value)">
+            <option *ngFor="let row of questionRows()" [value]="row.question.id">
+              Q{{ row.question.orderIndex + 1 }} · {{ row.question.questionText }}
+            </option>
+          </select>
+        </label>
+      </div>
+
+      <div class="ab-grid">
+        <div class="ab-panel">
+          <h3>A</h3>
+          <p class="ab-question">{{ selectedA()?.question?.questionText || '—' }}</p>
+          <div class="ab-metric">
+            <span>{{ 'quiz.analytics.correctRate' | translate }}</span>
+            <strong>{{ selectedA()?.correctRate ?? 0 }}%</strong>
+          </div>
+          <div class="ab-metric">
+            <span>{{ 'quiz.analytics.attempts' | translate }}</span>
+            <strong>{{ selectedA()?.attempts ?? 0 }}</strong>
+          </div>
+          <div class="ab-metric">
+            <span>{{ 'quiz.analytics.avgTime' | translate }}</span>
+            <strong>{{ selectedA()?.avgResponseMs ?? 0 }} ms</strong>
+          </div>
+        </div>
+
+        <div class="ab-panel">
+          <h3>B</h3>
+          <p class="ab-question">{{ selectedB()?.question?.questionText || '—' }}</p>
+          <div class="ab-metric">
+            <span>{{ 'quiz.analytics.correctRate' | translate }}</span>
+            <strong>{{ selectedB()?.correctRate ?? 0 }}%</strong>
+          </div>
+          <div class="ab-metric">
+            <span>{{ 'quiz.analytics.attempts' | translate }}</span>
+            <strong>{{ selectedB()?.attempts ?? 0 }}</strong>
+          </div>
+          <div class="ab-metric">
+            <span>{{ 'quiz.analytics.avgTime' | translate }}</span>
+            <strong>{{ selectedB()?.avgResponseMs ?? 0 }} ms</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<ng-template #loading>
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>{{ 'common.loading' | translate }}</p>
+  </div>
+</ng-template>
+
+<ng-template #errorBlock>
+  <div class="error-state">
+    {{ error() ? error() : ('errors.loadingFailed' | translate) }}
+  </div>
+</ng-template>

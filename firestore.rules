@@ -134,6 +134,18 @@ service cloud.firestore {
       }
     }
 
+    // Quiz analytics (aggregated stats)
+    match /quizAnalytics/{quizId} {
+      allow read: if canEditQuiz(quizId);
+      allow write: if false;
+
+      match /questionStats/{questionId} {
+        allow read: if canEditQuiz(quizId);
+        allow create, update: if isAuthenticated() && canAccessQuiz(quizId);
+        allow delete: if canEditQuiz(quizId);
+      }
+    }
+
     // =============================================
     // FLASHCARD DECK RULES (separate from quizzes)
     // =============================================

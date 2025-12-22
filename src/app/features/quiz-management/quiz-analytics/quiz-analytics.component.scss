@@ -1,0 +1,289 @@
+@use '../../../../styles/variables' as *;
+
+.analytics-page {
+  max-width: 1200px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: $spacing-xxl $spacing-lg;
+  overflow-x: hidden;
+}
+
+.hero-card {
+  display: flex;
+  justify-content: space-between;
+  gap: $spacing-lg;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-xl;
+  padding: $spacing-xl;
+  box-shadow: $shadow-lg;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  .hero-left {
+    display: flex;
+    gap: $spacing-md;
+    align-items: center;
+
+    .avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 1.4rem;
+      box-shadow: $shadow-md;
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.8rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.4rem, 5vw, 2rem);
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    .subtitle {
+      margin: $spacing-xs 0 0;
+      color: var(--color-text-secondary);
+      font-size: clamp(0.95rem, 3.6vw, 1.05rem);
+      line-height: 1.4;
+    }
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: $spacing-sm;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+}
+
+.stats-grid {
+  margin: $spacing-xl 0 $spacing-md;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: $spacing-md;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $spacing-md;
+  color: var(--color-text-secondary);
+  margin-bottom: $spacing-lg;
+  font-size: 0.9rem;
+
+  .empty-note {
+    font-weight: 600;
+    color: var(--color-warning);
+  }
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-xl;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+
+  h2 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+}
+
+.chart-wrapper {
+  height: 260px;
+  position: relative;
+  margin-top: $spacing-sm;
+}
+
+.table {
+  margin-top: $spacing-lg;
+  display: grid;
+  gap: $spacing-xs;
+
+  .table-row {
+    display: grid;
+    grid-template-columns: minmax(160px, 2fr) repeat(3, minmax(90px, 1fr));
+    gap: $spacing-sm;
+    align-items: center;
+    padding: $spacing-sm;
+    border-radius: $radius-md;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-elevated);
+    font-size: 0.92rem;
+
+    &.header {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--color-text-secondary);
+      background: var(--color-surface);
+    }
+
+    .question-text {
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .difficulty {
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+
+      &.easy { color: var(--color-success); }
+      &.medium { color: var(--color-warning); }
+      &.hard { color: var(--color-error); }
+    }
+  }
+}
+
+.heatmap {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  margin-top: $spacing-lg;
+
+  .heatmap-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 140px;
+    gap: $spacing-sm;
+    align-items: center;
+  }
+
+  .heatmap-label {
+    font-weight: 600;
+    color: var(--color-text-secondary);
+  }
+
+  .heatmap-bar {
+    --heat: 0;
+    position: relative;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+
+  .heatmap-bar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: calc(var(--heat) * 1%);
+    background: linear-gradient(90deg, var(--color-success), var(--color-warning), var(--color-error));
+    transition: width $transition-fast;
+  }
+
+  .heatmap-meta {
+    text-align: right;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+  }
+}
+
+.ab-card {
+  .ab-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: $spacing-md;
+    margin-bottom: $spacing-lg;
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-xs;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+    }
+
+    select {
+      border: 1px solid var(--color-border);
+      border-radius: $radius-md;
+      padding: $spacing-sm;
+      background: var(--color-surface-elevated);
+      color: var(--color-text-primary);
+    }
+  }
+
+  .ab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: $spacing-lg;
+  }
+
+  .ab-panel {
+    padding: $spacing-md;
+    border-radius: $radius-md;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-elevated);
+
+    h3 {
+      margin: 0 0 $spacing-xs 0;
+      font-size: 1rem;
+    }
+
+    .ab-question {
+      font-weight: 600;
+      margin: 0 0 $spacing-md 0;
+      color: var(--color-text-primary);
+    }
+
+    .ab-metric {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: $spacing-xs;
+      color: var(--color-text-secondary);
+
+      strong {
+        color: var(--color-text-primary);
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .meta-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .table .table-row {
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: auto;
+    gap: $spacing-xs;
+  }
+}
