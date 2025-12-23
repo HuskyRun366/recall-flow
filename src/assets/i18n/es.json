@@ -421,6 +421,7 @@
   "materials": {
     "title": "Materiales de aprendizaje",
     "newMaterial": "Nuevo material",
+    "aiGenerator": "Materiales con IA",
     "editMaterial": "Editar material",
     "deleteMaterial": "Eliminar material",
     "viewMaterial": "Ver material",
@@ -916,6 +917,82 @@
       "validatingToon": "Validando TOON...",
       "savingQuiz": "Guardando cuestionario...",
       "openingQuiz": "¡Listo! Abriendo el cuestionario..."
+    },
+    "loading": {
+      "hint": "Esto puede tardar unos segundos..."
+    },
+    "errors": {
+      "notEnabled": "La generación con IA no está habilitada en este entorno.",
+      "maxFiles": "Se permiten como máximo {{maxFiles}} archivos.",
+      "selectAtLeastOne": "Selecciona al menos un archivo.",
+      "mustBeSignedIn": "Debes iniciar sesión.",
+      "generationFailedRetry": "Error: {{message}}. Inténtalo de nuevo.",
+      "generationFailedRetryGeneric": "Error. Inténtalo de nuevo.",
+      "generationFailed": "La generación falló después de {{maxRetries}} intentos: {{message}}",
+      "generationFailedGeneric": "La generación falló después de {{maxRetries}} intentos."
+    }
+  },
+
+  "aiMaterialGenerator": {
+    "title": "Generar material de aprendizaje con IA",
+    "subtitle": "Sube imágenes o PDF y deja que la IA cree material interactivo",
+    "upload": {
+      "title": "Seleccionar archivos",
+      "supportedTypes": "Imágenes (JPG, PNG, GIF, WebP) o PDF",
+      "limits": "Máx. {{maxFiles}} archivos, {{maxFileSizeMB}}MB cada uno",
+      "dragHint": "Arrastra archivos aquí o haz clic para seleccionar",
+      "browse": "Explorar"
+    },
+    "config": {
+      "title": "Configuración del material",
+      "style": "Estilo del material",
+      "sectionCount": "Número de secciones",
+      "autoSections": "IA decide",
+      "autoSectionsHint": "La IA elige el número de secciones según el contenido.",
+      "sections": "secciones",
+      "interactivity": "Interactividad"
+    },
+    "styles": {
+      "concise": {
+        "name": "Conciso",
+        "description": "Corto y al grano"
+      },
+      "balanced": {
+        "name": "Equilibrado",
+        "description": "Estructura clara con ejemplos"
+      },
+      "detailed": {
+        "name": "Detallado",
+        "description": "Explicaciones en profundidad"
+      }
+    },
+    "interactivity": {
+      "low": {
+        "name": "Baja",
+        "description": "Principalmente lectura, pocas interacciones"
+      },
+      "medium": {
+        "name": "Media",
+        "description": "Mezcla de lectura y comprobaciones rápidas"
+      },
+      "high": {
+        "name": "Alta",
+        "description": "Muchas preguntas y tareas"
+      }
+    },
+    "selectedFiles": {
+      "title": "Archivos seleccionados ({{count}}/{{maxFiles}})",
+      "totalSize": "Total: {{size}}"
+    },
+    "actions": {
+      "generate": "Generar material",
+      "retry": "Reintentar ({{current}}/{{maxRetries}})"
+    },
+    "progress": {
+      "processingFiles": "Procesando archivos...",
+      "generating": "Generando material con IA...",
+      "savingMaterial": "Guardando material...",
+      "openingMaterial": "¡Listo! Abriendo el material..."
     },
     "loading": {
       "hint": "Esto puede tardar unos segundos..."

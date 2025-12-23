@@ -15,7 +15,7 @@ export const environment = {
   },
   gemini: {
     apiKey: 'YOUR_GEMINI_API_KEY', // Get from Google AI Studio
-    model: 'gemini-2.5-flash', // Model with multimodal support
+    model: 'gemini-3-flash-preview', // Model with multimodal support
     maxFiles: 3, // Maximum files per generation
     maxFileSizeMB: 10, // Maximum file size in MB
     maxOutputTokens: 25000, // Cap the AI response

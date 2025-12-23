@@ -428,6 +428,7 @@
   "materials": {
     "title": "Lernunterlagen",
     "newMaterial": "Neue Unterlage",
+    "aiGenerator": "KI-Unterlagen",
     "editMaterial": "Unterlage bearbeiten",
     "deleteMaterial": "Unterlage löschen",
     "viewMaterial": "Unterlage ansehen",
@@ -936,6 +937,82 @@
       "validatingToon": "TOON wird validiert...",
       "savingQuiz": "Quiz wird gespeichert...",
       "openingQuiz": "Fertig! Quiz wird geöffnet..."
+    },
+    "loading": {
+      "hint": "Dies kann einige Sekunden dauern..."
+    },
+    "errors": {
+      "notEnabled": "AI-Generierung ist in dieser Umgebung nicht aktiviert.",
+      "maxFiles": "Maximal {{maxFiles}} Dateien erlaubt.",
+      "selectAtLeastOne": "Bitte wähle mindestens eine Datei aus.",
+      "mustBeSignedIn": "Du musst angemeldet sein.",
+      "generationFailedRetry": "Fehler: {{message}}. Bitte versuche es erneut.",
+      "generationFailedRetryGeneric": "Fehler. Bitte versuche es erneut.",
+      "generationFailed": "Generierung fehlgeschlagen nach {{maxRetries}} Versuchen: {{message}}",
+      "generationFailedGeneric": "Generierung fehlgeschlagen nach {{maxRetries}} Versuchen."
+    }
+  },
+
+  "aiMaterialGenerator": {
+    "title": "Lernunterlage mit KI generieren",
+    "subtitle": "Lade Bilder oder PDFs hoch und lass KI interaktive Lernunterlagen erstellen",
+    "upload": {
+      "title": "Dateien auswählen",
+      "supportedTypes": "Bilder (JPG, PNG, GIF, WebP) oder PDFs",
+      "limits": "Max. {{maxFiles}} Dateien, je {{maxFileSizeMB}}MB",
+      "dragHint": "Dateien hierher ziehen oder klicken zum Auswählen",
+      "browse": "Durchsuchen"
+    },
+    "config": {
+      "title": "Unterlagen-Konfiguration",
+      "style": "Stil der Unterlage",
+      "sectionCount": "Anzahl der Abschnitte",
+      "autoSections": "KI entscheidet",
+      "autoSectionsHint": "Die KI wählt die Anzahl der Abschnitte passend zum Inhalt.",
+      "sections": "Abschnitte",
+      "interactivity": "Interaktivität"
+    },
+    "styles": {
+      "concise": {
+        "name": "Kompakt",
+        "description": "Kurz und auf das Wesentliche"
+      },
+      "balanced": {
+        "name": "Ausgewogen",
+        "description": "Klare Struktur mit Beispielen"
+      },
+      "detailed": {
+        "name": "Detailliert",
+        "description": "Ausführliche Erklärungen"
+      }
+    },
+    "interactivity": {
+      "low": {
+        "name": "Niedrig",
+        "description": "Hauptsächlich Lesen, wenige Interaktionen"
+      },
+      "medium": {
+        "name": "Mittel",
+        "description": "Mix aus Lesen und kurzen Checks"
+      },
+      "high": {
+        "name": "Hoch",
+        "description": "Viele Quizze und Aufgaben"
+      }
+    },
+    "selectedFiles": {
+      "title": "Ausgewählte Dateien ({{count}}/{{maxFiles}})",
+      "totalSize": "Gesamt: {{size}}"
+    },
+    "actions": {
+      "generate": "Unterlage generieren",
+      "retry": "Erneut versuchen ({{current}}/{{maxRetries}})"
+    },
+    "progress": {
+      "processingFiles": "Dateien werden verarbeitet...",
+      "generating": "Unterlage wird mit KI generiert...",
+      "savingMaterial": "Unterlage wird gespeichert...",
+      "openingMaterial": "Fertig! Unterlage wird geöffnet..."
     },
     "loading": {
       "hint": "Dies kann einige Sekunden dauern..."

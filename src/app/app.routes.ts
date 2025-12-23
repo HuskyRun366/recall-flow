@@ -137,6 +137,11 @@ export const routes: Routes = [
         path: 'material-editor/:id',
         data: { animationIndex: 67 },
         loadComponent: () => import('./features/lernen/material-editor/material-editor.component').then(m => m.MaterialEditorComponent)
+      },
+      {
+        path: 'ai-material-generator',
+        data: { animationIndex: 68 },
+        loadComponent: () => import('./features/ai-material-generator/ai-material-generator.component').then(m => m.AiMaterialGeneratorComponent)
       }
     ]
   },

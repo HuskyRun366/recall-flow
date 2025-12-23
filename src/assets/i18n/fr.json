@@ -421,6 +421,7 @@
   "materials": {
     "title": "Documents d'apprentissage",
     "newMaterial": "Nouveau document",
+    "aiGenerator": "Documents IA",
     "editMaterial": "Modifier le document",
     "deleteMaterial": "Supprimer le document",
     "viewMaterial": "Voir le document",
@@ -916,6 +917,82 @@
       "validatingToon": "Validation du TOON...",
       "savingQuiz": "Enregistrement du quiz...",
       "openingQuiz": "Terminé ! Ouverture du quiz..."
+    },
+    "loading": {
+      "hint": "Cela peut prendre quelques secondes..."
+    },
+    "errors": {
+      "notEnabled": "La génération IA n'est pas activée dans cet environnement.",
+      "maxFiles": "Maximum {{maxFiles}} fichiers autorisés.",
+      "selectAtLeastOne": "Veuillez sélectionner au moins un fichier.",
+      "mustBeSignedIn": "Vous devez être connecté.",
+      "generationFailedRetry": "Erreur : {{message}}. Veuillez réessayer.",
+      "generationFailedRetryGeneric": "Erreur. Veuillez réessayer.",
+      "generationFailed": "La génération a échoué après {{maxRetries}} tentatives : {{message}}",
+      "generationFailedGeneric": "La génération a échoué après {{maxRetries}} tentatives."
+    }
+  },
+
+  "aiMaterialGenerator": {
+    "title": "Générer un document avec l'IA",
+    "subtitle": "Téléversez des images ou des PDF et laissez l'IA créer un document interactif",
+    "upload": {
+      "title": "Sélectionner des fichiers",
+      "supportedTypes": "Images (JPG, PNG, GIF, WebP) ou PDF",
+      "limits": "Max. {{maxFiles}} fichiers, {{maxFileSizeMB}}Mo chacun",
+      "dragHint": "Glissez des fichiers ici ou cliquez pour sélectionner",
+      "browse": "Parcourir"
+    },
+    "config": {
+      "title": "Configuration du document",
+      "style": "Style du document",
+      "sectionCount": "Nombre de sections",
+      "autoSections": "IA décide",
+      "autoSectionsHint": "L'IA choisit le nombre de sections en fonction du contenu.",
+      "sections": "sections",
+      "interactivity": "Interactivité"
+    },
+    "styles": {
+      "concise": {
+        "name": "Concis",
+        "description": "Court et ciblé"
+      },
+      "balanced": {
+        "name": "Équilibré",
+        "description": "Structure claire avec des exemples"
+      },
+      "detailed": {
+        "name": "Détaillé",
+        "description": "Explications approfondies"
+      }
+    },
+    "interactivity": {
+      "low": {
+        "name": "Faible",
+        "description": "Surtout lecture, peu d'interactions"
+      },
+      "medium": {
+        "name": "Moyenne",
+        "description": "Mélange de lecture et de vérifications rapides"
+      },
+      "high": {
+        "name": "Élevée",
+        "description": "Beaucoup de quiz et de tâches"
+      }
+    },
+    "selectedFiles": {
+      "title": "Fichiers sélectionnés ({{count}}/{{maxFiles}})",
+      "totalSize": "Total : {{size}}"
+    },
+    "actions": {
+      "generate": "Générer le document",
+      "retry": "Réessayer ({{current}}/{{maxRetries}})"
+    },
+    "progress": {
+      "processingFiles": "Traitement des fichiers...",
+      "generating": "Génération du document avec l'IA...",
+      "savingMaterial": "Enregistrement du document...",
+      "openingMaterial": "Terminé ! Ouverture du document..."
     },
     "loading": {
       "hint": "Cela peut prendre quelques secondes..."

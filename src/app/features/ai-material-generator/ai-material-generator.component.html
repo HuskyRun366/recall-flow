@@ -1,0 +1,160 @@
+<div class="ai-generator-page">
+  <div class="generator-container">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-content">
+        <div class="icon">🧠</div>
+        <h1>{{ 'aiMaterialGenerator.title' | translate }}</h1>
+        <p class="subtitle">{{ 'aiMaterialGenerator.subtitle' | translate }}</p>
+      </div>
+    </div>
+
+    <!-- File Upload Section -->
+    <div class="upload-section" *ngIf="!isGenerating()">
+      <div class="upload-card">
+        <input
+          #fileInput
+          type="file"
+          id="file-input"
+          multiple
+          accept="image/*,.pdf"
+          (change)="onFilesSelected($event)"
+          [disabled]="isGenerating()"
+          hidden>
+
+        <div
+          class="upload-area"
+          [class.drag-over]="isDraggingOver()"
+          (click)="fileInput.click()"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)">
+          <div class="upload-icon">📁</div>
+          <h3>{{ 'aiMaterialGenerator.upload.title' | translate }}</h3>
+          <p>{{ 'aiMaterialGenerator.upload.supportedTypes' | translate }}</p>
+          <p class="limits">{{ 'aiMaterialGenerator.upload.limits' | translate:{ maxFiles: maxFiles, maxFileSizeMB: maxFileSizeMB } }}</p>
+          <p class="drag-hint">{{ 'aiMaterialGenerator.upload.dragHint' | translate }}</p>
+          <button type="button" class="btn btn-primary" (click)="fileInput.click(); $event.stopPropagation()">
+            {{ 'aiMaterialGenerator.upload.browse' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Configuration Section -->
+      <div class="config-section" *ngIf="selectedFiles().length > 0">
+        <h3>{{ 'aiMaterialGenerator.config.title' | translate }}</h3>
+
+        <!-- Style Selection -->
+        <div class="config-item">
+          <label>{{ 'aiMaterialGenerator.config.style' | translate }}</label>
+          <div class="teacher-style-selector">
+            <button
+              *ngFor="let style of materialStyles"
+              type="button"
+              class="style-card"
+              [class.selected]="materialStyle() === style.id"
+              (click)="materialStyle.set(style.id)">
+              <span class="style-emoji">{{ style.emoji }}</span>
+              <span class="style-name">{{ style.nameKey | translate }}</span>
+              <span class="style-desc">{{ style.descriptionKey | translate }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section Count -->
+        <div class="config-item">
+          <div class="config-row">
+            <label>{{ 'aiMaterialGenerator.config.sectionCount' | translate }}</label>
+            <div class="toggle">
+              <span class="toggle-label">{{ 'aiMaterialGenerator.config.autoSections' | translate }}</span>
+              <label class="switch">
+                <input
+                  type="checkbox"
+                  [checked]="autoSections()"
+                  (change)="autoSections.set($any($event.target).checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+          @if (autoSections()) {
+            <p class="config-hint">{{ 'aiMaterialGenerator.config.autoSectionsHint' | translate }}</p>
+          }
+          <div class="slider-container" [class.disabled]="autoSections()">
+            <input
+              type="range"
+              min="3"
+              max="12"
+              [value]="sectionCount()"
+              (input)="sectionCount.set(+$any($event.target).value)"
+              class="question-slider"
+              [disabled]="autoSections()">
+            <div class="slider-labels">
+              <span>3</span>
+              <span class="current-value">{{ sectionCount() }} {{ 'aiMaterialGenerator.config.sections' | translate }}</span>
+              <span>12</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactivity Level -->
+        <div class="config-item">
+          <label>{{ 'aiMaterialGenerator.config.interactivity' | translate }}</label>
+          <div class="teacher-style-selector interactivity">
+            <button
+              *ngFor="let level of interactivityOptions"
+              type="button"
+              class="style-card"
+              [class.selected]="interactivityLevel() === level.id"
+              (click)="interactivityLevel.set(level.id)">
+              <span class="style-emoji">{{ level.emoji }}</span>
+              <span class="style-name">{{ level.nameKey | translate }}</span>
+              <span class="style-desc">{{ level.descriptionKey | translate }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected Files -->
+      <div class="selected-files" *ngIf="selectedFiles().length > 0">
+        <h3>{{ 'aiMaterialGenerator.selectedFiles.title' | translate:{ count: selectedFiles().length, maxFiles: maxFiles } }}</h3>
+        <div class="file-list">
+          <div class="file-item" *ngFor="let file of selectedFiles(); let i = index">
+            <span class="file-icon">{{ file.type.includes('pdf') ? '📄' : '🖼️' }}</span>
+            <div class="file-info">
+              <span class="file-name">{{ file.name }}</span>
+              <span class="file-size">{{ fileProcessingService.formatFileSize(file.size) }}</span>
+            </div>
+            <button class="remove-btn" (click)="removeFile(i)" [disabled]="isGenerating()" [attr.aria-label]="'common.remove' | translate">×</button>
+          </div>
+        </div>
+        <div class="total-size">{{ 'aiMaterialGenerator.selectedFiles.totalSize' | translate:{ size: getTotalSize() } }}</div>
+      </div>
+
+      <!-- Error Display -->
+      <div class="error-message" *ngIf="error()">
+        <strong>⚠️ {{ 'common.error' | translate }}:</strong> {{ error() | translate:errorParams() }}
+        <button class="btn btn-secondary" (click)="retry()" *ngIf="retryCount() < maxRetries && retryCount() > 0">
+          {{ 'aiMaterialGenerator.actions.retry' | translate:{ current: retryCount(), maxRetries: maxRetries } }}
+        </button>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button class="btn btn-secondary" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
+        <button
+          class="btn btn-primary"
+          (click)="generateMaterial()"
+          [disabled]="selectedFiles().length === 0">
+          {{ 'aiMaterialGenerator.actions.generate' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-section" *ngIf="isGenerating()">
+      <div class="spinner"></div>
+      <h2>{{ generationProgress() | translate }}</h2>
+      <p>{{ 'aiMaterialGenerator.loading.hint' | translate }}</p>
+    </div>
+  </div>
+</div>

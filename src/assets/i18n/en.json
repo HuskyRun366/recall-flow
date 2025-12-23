@@ -428,6 +428,7 @@
   "materials": {
     "title": "Learning Materials",
     "newMaterial": "New Material",
+    "aiGenerator": "AI Materials",
     "editMaterial": "Edit Material",
     "deleteMaterial": "Delete Material",
     "viewMaterial": "View Material",
@@ -936,6 +937,82 @@
       "validatingToon": "Validating TOON...",
       "savingQuiz": "Saving quiz...",
       "openingQuiz": "Done! Opening quiz..."
+    },
+    "loading": {
+      "hint": "This may take a few seconds..."
+    },
+    "errors": {
+      "notEnabled": "AI generation is not enabled in this environment.",
+      "maxFiles": "Maximum {{maxFiles}} files allowed.",
+      "selectAtLeastOne": "Please select at least one file.",
+      "mustBeSignedIn": "You must be signed in.",
+      "generationFailedRetry": "Error: {{message}}. Please try again.",
+      "generationFailedRetryGeneric": "Error. Please try again.",
+      "generationFailed": "Generation failed after {{maxRetries}} attempts: {{message}}",
+      "generationFailedGeneric": "Generation failed after {{maxRetries}} attempts."
+    }
+  },
+
+  "aiMaterialGenerator": {
+    "title": "Generate learning material with AI",
+    "subtitle": "Upload images or PDFs and let AI create interactive learning material",
+    "upload": {
+      "title": "Select files",
+      "supportedTypes": "Images (JPG, PNG, GIF, WebP) or PDFs",
+      "limits": "Max. {{maxFiles}} files, {{maxFileSizeMB}}MB each",
+      "dragHint": "Drag files here or click to select",
+      "browse": "Browse"
+    },
+    "config": {
+      "title": "Material configuration",
+      "style": "Material style",
+      "sectionCount": "Number of sections",
+      "autoSections": "Auto sections",
+      "autoSectionsHint": "AI chooses the number of sections based on the content.",
+      "sections": "sections",
+      "interactivity": "Interactivity"
+    },
+    "styles": {
+      "concise": {
+        "name": "Concise",
+        "description": "Short and focused"
+      },
+      "balanced": {
+        "name": "Balanced",
+        "description": "Clear structure with examples"
+      },
+      "detailed": {
+        "name": "Detailed",
+        "description": "In-depth explanations"
+      }
+    },
+    "interactivity": {
+      "low": {
+        "name": "Low",
+        "description": "Mostly reading, few interactions"
+      },
+      "medium": {
+        "name": "Medium",
+        "description": "Mix of reading and quick checks"
+      },
+      "high": {
+        "name": "High",
+        "description": "Lots of quizzes and tasks"
+      }
+    },
+    "selectedFiles": {
+      "title": "Selected files ({{count}}/{{maxFiles}})",
+      "totalSize": "Total: {{size}}"
+    },
+    "actions": {
+      "generate": "Generate material",
+      "retry": "Retry ({{current}}/{{maxRetries}})"
+    },
+    "progress": {
+      "processingFiles": "Processing files...",
+      "generating": "Generating material with AI...",
+      "savingMaterial": "Saving material...",
+      "openingMaterial": "Done! Opening material..."
     },
     "loading": {
       "hint": "This may take a few seconds..."

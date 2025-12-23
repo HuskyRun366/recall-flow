@@ -32,6 +32,23 @@ export class GeminiService {
     );
   }
 
+  generateLearningMaterialFromFiles(
+    files: Array<{ data: string; mimeType: string }>,
+    sectionCount: number | null = null,
+    interactivityLevel: 'low' | 'medium' | 'high' = 'medium',
+    style: 'concise' | 'balanced' | 'detailed' = 'balanced'
+  ): Observable<{ title: string; description: string; html: string }> {
+    return from(this.generateLearningMaterialInternal(files, sectionCount, interactivityLevel, style)).pipe(
+      map(response => {
+        return this.parseMaterialResponse(response);
+      }),
+      catchError(error => {
+        console.error('Gemini API Error:', error);
+        throw new Error(this.formatErrorMessage(error));
+      })
+    );
+  }
+
   private async generateQuizInternal(
     files: Array<{ data: string; mimeType: string }>,
     questionCount: number,
@@ -55,6 +72,28 @@ export class GeminiService {
     }
 
     // Single-model call (flash)
+    return await this.generateWithModel(environment.gemini.model || 'gemini-2.5-flash', parts);
+  }
+
+  private async generateLearningMaterialInternal(
+    files: Array<{ data: string; mimeType: string }>,
+    sectionCount: number | null,
+    interactivityLevel: 'low' | 'medium' | 'high',
+    style: 'concise' | 'balanced' | 'detailed'
+  ): Promise<string> {
+    const prompt = this.buildMaterialPrompt(sectionCount, interactivityLevel, style);
+
+    const parts: Array<any> = [{ text: prompt }];
+
+    for (const file of files) {
+      parts.push({
+        inlineData: {
+          mimeType: file.mimeType,
+          data: file.data
+        }
+      });
+    }
+
     return await this.generateWithModel(environment.gemini.model || 'gemini-2.5-flash', parts);
   }
 
@@ -268,12 +307,111 @@ options[4]{questionIndex,text,isCorrect}:
 Generate ONLY the TOON format output following this exact structure. Do not include explanations, markdown code blocks, or any other text.`;
   }
 
+  private buildMaterialPrompt(
+    sectionCount: number | null,
+    interactivityLevel: 'low' | 'medium' | 'high',
+    style: 'concise' | 'balanced' | 'detailed'
+  ): string {
+    const sectionRule = typeof sectionCount === 'number'
+      ? `Generate exactly ${sectionCount} main sections with clear headings.`
+      : 'Decide an appropriate number of main sections (between 3 and 12) based on the material.';
+    const layoutRule = typeof sectionCount === 'number'
+      ? `Layout: add a hero header, an overview/summary block, then the ${sectionCount} sections. Use consistent spacing and section anchors.`
+      : 'Layout: add a hero header, an overview/summary block, then the main sections you decided on. Use consistent spacing and section anchors.';
+
+    return `You are an instructional designer. Analyze the provided images/PDFs and create an interactive learning material.
+
+OUTPUT FORMAT (strict, no markdown/code fences):
+---TITLE---
+<title text>
+---DESCRIPTION---
+<short description>
+---HTML---
+<!DOCTYPE html>...full HTML document...
+
+CONTENT RULES:
+1. ${sectionRule}
+2. Match the language of the source documents (German input -> German output).
+3. Include a short summary and a \"Key takeaways\" section.
+4. Interactivity level: ${interactivityLevel}.
+   - low: collapsible sections + glossary tooltips.
+   - medium: add flashcards + quick check questions.
+   - high: add flashcards + quick quiz + progress tracker.
+5. Style mode: ${style}.
+   - concise: short explanations, bullet points.
+   - balanced: mix of explanations and bullets.
+   - detailed: richer explanations and examples.
+6. Visual direction: data-centric learning sheet (clean grid, clear typographic hierarchy, compact summary cards, styled tables, callouts, and visual separators). Prefer structured tables/diagrams if the source contains systematic lists or comparisons.
+7. ${layoutRule}
+8. HTML must be self-contained with inline CSS/JS. You may include ONE optional JS library via CDN only if it clearly improves understanding (e.g., Chart.js for charts). No external fonts, no iframes, no tracking scripts.
+9. If you use a library, provide a text fallback and keep datasets small.
+10. Use CSS variables for theming: --bg, --text, --surface, --border. Use them in your styles (gradients allowed).
+11. Ensure the HTML stays under ~200KB and avoids heavy inline data.
+12. The HTML must be safe for sandboxed iframes (no top-level navigation, no window.open).
+13. Accessibility: semantic headings, buttons with aria-labels, high contrast for text, and keyboard-friendly interactions.
+
+Return ONLY the specified format.`;
+  }
+
   private extractToonFromResponse(text: string): string {
     // Remove markdown code blocks if present
     let toon = text.trim();
     toon = toon.replace(/^```(?:toon)?\n?/gm, '');
     toon = toon.replace(/\n?```$/gm, '');
     return toon.trim();
+  }
+
+  private parseMaterialResponse(text: string): { title: string; description: string; html: string } {
+    const cleaned = this.stripCodeFences(text);
+    const titleMarker = '---TITLE---';
+    const descMarker = '---DESCRIPTION---';
+    const htmlMarker = '---HTML---';
+
+    const titleIndex = cleaned.indexOf(titleMarker);
+    const descIndex = cleaned.indexOf(descMarker);
+    const htmlIndex = cleaned.indexOf(htmlMarker);
+
+    if (titleIndex !== -1 && descIndex !== -1 && htmlIndex !== -1) {
+      const title = cleaned.slice(titleIndex + titleMarker.length, descIndex).trim();
+      const description = cleaned.slice(descIndex + descMarker.length, htmlIndex).trim();
+      const html = cleaned.slice(htmlIndex + htmlMarker.length).trim();
+
+      if (!title || !html) {
+        throw new Error('Invalid material response');
+      }
+
+      return { title, description, html };
+    }
+
+    const jsonText = this.extractJsonFromResponse(cleaned);
+    const data = JSON.parse(jsonText) as { title?: string; description?: string; html?: string };
+
+    if (!data?.title || !data?.html) {
+      throw new Error('Invalid material response');
+    }
+
+    return {
+      title: data.title,
+      description: data.description ?? '',
+      html: data.html
+    };
+  }
+
+  private extractJsonFromResponse(text: string): string {
+    const cleaned = this.stripCodeFences(text).trim();
+    const start = cleaned.indexOf('{');
+    const end = cleaned.lastIndexOf('}');
+    if (start === -1 || end === -1 || end <= start) {
+      throw new Error('No JSON object found in response');
+    }
+    return cleaned.slice(start, end + 1);
+  }
+
+  private stripCodeFences(text: string): string {
+    let cleaned = text.trim();
+    cleaned = cleaned.replace(/^```(?:json|html|text)?\n?/gm, '');
+    cleaned = cleaned.replace(/\n?```$/gm, '');
+    return cleaned.trim();
   }
 
   private formatErrorMessage(error: any): string {
