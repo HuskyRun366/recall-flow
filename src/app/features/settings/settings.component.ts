@@ -12,6 +12,7 @@ import { ThemeService } from '../../core/services/theme.service';
 import { LanguageSwitcherComponent } from '../../shared/components/language-switcher/language-switcher.component';
 import { ToastService } from '../../core/services/toast.service';
 import { AccessibilityService } from '../../core/services/accessibility.service';
+import { AccountDataService } from '../../core/services/account-data.service';
 
 const STORAGE_THEME_SETTINGS_EXPANDED = 'quiz-app-theme-settings-expanded';
 
@@ -33,6 +34,7 @@ export class SettingsComponent {
   private themeService = inject(ThemeService);
   private translate = inject(TranslateService);
   private accessibility = inject(AccessibilityService);
+  private accountData = inject(AccountDataService);
 
   // PWA Detection
   isPWA = this.pwaDetection.isPWA;
@@ -94,6 +96,9 @@ export class SettingsComponent {
   fontScalePercent = computed(() => Math.round(this.fontScale() * 100));
   isDyslexicFontEnabled = this.accessibility.dyslexicFontEnabled;
   isHighContrastEnabled = this.accessibility.highContrastEnabled;
+
+  isExportingData = signal(false);
+  isDeletingAccount = signal(false);
 
   constructor() {
     effect(() => {
@@ -206,6 +211,86 @@ export class SettingsComponent {
 
   resetFontScale(): void {
     this.accessibility.resetFontScale();
+  }
+
+  async exportUserData(): Promise<void> {
+    const user = this.authService.currentUser();
+    if (!user || this.isExportingData()) {
+      return;
+    }
+
+    this.isExportingData.set(true);
+    try {
+      const payload = await this.accountData.exportUserData(user.uid);
+      const json = JSON.stringify(payload, null, 2);
+      const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+
+      const date = new Date().toISOString().slice(0, 10);
+      const filename = `dsgvo-export-${date}.json`;
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      this.toastService.success(this.translate.instant('settings.page.account.export.success'), 2500);
+    } catch (error) {
+      console.error('Failed to export user data:', error);
+      this.toastService.error(this.translate.instant('settings.page.account.export.failed'));
+    } finally {
+      this.isExportingData.set(false);
+    }
+  }
+
+  async deleteAccount(): Promise<void> {
+    const user = this.authService.currentUser();
+    if (!user || this.isDeletingAccount()) {
+      return;
+    }
+
+    const confirmText = this.translate.instant('settings.page.account.delete.confirm');
+    const confirmFinal = this.translate.instant('settings.page.account.delete.confirmFinal');
+
+    if (!confirm(confirmText)) {
+      return;
+    }
+    if (!confirm(confirmFinal)) {
+      return;
+    }
+
+    this.isDeletingAccount.set(true);
+    try {
+      await this.accountData.deleteUserData(user.uid, user.email);
+      try {
+        await this.authService.deleteCurrentUser();
+      } catch (error: any) {
+        if (error?.code === 'auth/requires-recent-login') {
+          try {
+            await this.authService.reauthenticateWithGoogle();
+            await this.authService.deleteCurrentUser();
+          } catch (reauthError) {
+            console.error('Reauthentication failed:', reauthError);
+            this.toastService.error(this.translate.instant('settings.page.account.delete.reauthFailed'));
+            return;
+          }
+        } else {
+          throw error;
+        }
+      }
+
+      this.toastService.success(this.translate.instant('settings.page.account.delete.success'), 3000);
+      await this.authService.signOut();
+    } catch (error) {
+      console.error('Failed to delete account:', error);
+      this.toastService.error(this.translate.instant('settings.page.account.delete.failed'));
+    } finally {
+      this.isDeletingAccount.set(false);
+    }
   }
 
   private loadThemeSettingsExpanded(): boolean {

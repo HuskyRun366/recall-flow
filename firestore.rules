@@ -80,7 +80,18 @@ service cloud.firestore {
       // Allow users to create their own email lookup entry
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       // Prevent modification and deletion for data integrity
-      allow update, delete: if false;
+      allow update: if false;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // User notifications (badge/read tracking)
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if false;
+      allow update: if isAuthenticated() &&
+                       resource.data.userId == request.auth.uid &&
+                       request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
     }
 
     // Quizzes collection
@@ -407,7 +418,10 @@ service cloud.firestore {
     // Reviews collection
     match /reviews/{reviewId} {
       // Anyone can read reviews for public/unlisted content
-      allow read: if canAccessContent(resource.data.contentType, resource.data.contentId);
+      allow read: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid ||
+        canAccessContent(resource.data.contentType, resource.data.contentId)
+      );
 
       // Authenticated users can create reviews ONLY if:
       // 1. User is a participant (enrolled in content)

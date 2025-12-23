@@ -632,6 +632,29 @@
           "reset": "Reset"
         }
       },
+      "account": {
+        "title": "Account & privacy",
+        "subtitle": "Export your data or permanently delete your account.",
+        "export": {
+          "title": "Download your data",
+          "description": "Get a JSON export of your quizzes, progress, and settings.",
+          "action": "Export data",
+          "loading": "Exporting...",
+          "success": "Export ready.",
+          "failed": "Export failed."
+        },
+        "delete": {
+          "title": "Delete account",
+          "description": "Permanently removes your account and personal data.",
+          "action": "Delete account",
+          "loading": "Deleting...",
+          "confirm": "Are you sure you want to delete your account and all data? This cannot be undone.",
+          "confirmFinal": "This will permanently remove all your data. Do you really want to continue?",
+          "success": "Account deleted.",
+          "failed": "Account deletion failed.",
+          "reauthFailed": "Reauthentication failed. Please try again."
+        }
+      },
       "notifications": {
         "title": "Notifications",
         "subtitle": "Push updates about your quizzes",

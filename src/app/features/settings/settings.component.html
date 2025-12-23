@@ -494,4 +494,79 @@
       }
     </div>
   </div>
+
+  <!-- Account & Privacy Section -->
+  <div class="settings-section">
+    <div class="section-header">
+      <div class="section-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 1a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/>
+          <path d="M5 22v-2a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v2"/>
+          <path d="M3 12h18"/>
+        </svg>
+      </div>
+      <div>
+        <h2>{{ 'settings.page.account.title' | translate }}</h2>
+        <p class="section-description">{{ 'settings.page.account.subtitle' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="settings-card account-card">
+      <div class="setting-item">
+        <div class="setting-info">
+          <div class="setting-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </div>
+          <div>
+            <strong>{{ 'settings.page.account.export.title' | translate }}</strong>
+            <p>{{ 'settings.page.account.export.description' | translate }}</p>
+          </div>
+        </div>
+
+        <button
+          class="btn btn-secondary btn-small"
+          type="button"
+          [disabled]="isExportingData()"
+          (click)="exportUserData()">
+          @if (isExportingData()) {
+            <span>{{ 'settings.page.account.export.loading' | translate }}</span>
+          } @else {
+            <span>{{ 'settings.page.account.export.action' | translate }}</span>
+          }
+        </button>
+      </div>
+
+      <div class="setting-item danger">
+        <div class="setting-info">
+          <div class="setting-icon danger">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18"/>
+              <path d="M8 6V4h8v2"/>
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            </svg>
+          </div>
+          <div>
+            <strong>{{ 'settings.page.account.delete.title' | translate }}</strong>
+            <p>{{ 'settings.page.account.delete.description' | translate }}</p>
+          </div>
+        </div>
+
+        <button
+          class="btn btn-danger btn-small"
+          type="button"
+          [disabled]="isDeletingAccount()"
+          (click)="deleteAccount()">
+          @if (isDeletingAccount()) {
+            <span>{{ 'settings.page.account.delete.loading' | translate }}</span>
+          } @else {
+            <span>{{ 'settings.page.account.delete.action' | translate }}</span>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

@@ -632,6 +632,29 @@
           "reset": "Zurücksetzen"
         }
       },
+      "account": {
+        "title": "Konto & Datenschutz",
+        "subtitle": "Exportiere deine Daten oder lösche dein Konto dauerhaft.",
+        "export": {
+          "title": "Datenexport",
+          "description": "Lade ein JSON mit deinen Quizzes, Fortschritt und Einstellungen herunter.",
+          "action": "Daten exportieren",
+          "loading": "Exportiere...",
+          "success": "Export erstellt.",
+          "failed": "Export fehlgeschlagen."
+        },
+        "delete": {
+          "title": "Konto löschen",
+          "description": "Entfernt dein Konto und alle personenbezogenen Daten dauerhaft.",
+          "action": "Konto löschen",
+          "loading": "Lösche...",
+          "confirm": "Möchtest du dein Konto und alle Daten wirklich löschen? Dies kann nicht rückgängig gemacht werden.",
+          "confirmFinal": "Dieser Schritt löscht alle Daten endgültig. Wirklich fortfahren?",
+          "success": "Konto gelöscht.",
+          "failed": "Konto konnte nicht gelöscht werden.",
+          "reauthFailed": "Re-Login fehlgeschlagen. Bitte erneut versuchen."
+        }
+      },
       "notifications": {
         "title": "Benachrichtigungen",
         "subtitle": "Push-Updates zu deinen Quizzes",

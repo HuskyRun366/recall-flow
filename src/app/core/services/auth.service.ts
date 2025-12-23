@@ -1,6 +1,6 @@
 import { Injectable, signal, computed, inject, Injector, runInInjectionContext, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Auth, GoogleAuthProvider, signInWithPopup, signOut, user, User as FirebaseUser, onAuthStateChanged } from '@angular/fire/auth';
+import { Auth, GoogleAuthProvider, signInWithPopup, signOut, user, User as FirebaseUser, onAuthStateChanged, reauthenticateWithPopup, deleteUser } from '@angular/fire/auth';
 import { Firestore, doc, getDoc, setDoc, serverTimestamp } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { User } from '../../models';
@@ -76,6 +76,23 @@ export class AuthService {
       console.error('Error signing out:', error);
       throw error;
     }
+  }
+
+  async reauthenticateWithGoogle(): Promise<void> {
+    const current = this.auth.currentUser;
+    if (!current) {
+      throw new Error('No authenticated user for reauthentication');
+    }
+    const provider = new GoogleAuthProvider();
+    await reauthenticateWithPopup(current, provider);
+  }
+
+  async deleteCurrentUser(): Promise<void> {
+    const current = this.auth.currentUser;
+    if (!current) {
+      throw new Error('No authenticated user to delete');
+    }
+    await deleteUser(current);
   }
 
   async ensureAuthenticated(): Promise<boolean> {

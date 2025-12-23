@@ -260,6 +260,36 @@
   &.font-size-setting {
     align-items: flex-start;
   }
+
+  &.danger {
+    align-items: flex-start;
+  }
+}
+
+.account-card {
+  background: linear-gradient(135deg, rgba(244, 67, 54, 0.04), rgba(244, 67, 54, 0.02));
+
+  .setting-icon.danger {
+    background: rgba(244, 67, 54, 0.15);
+    color: #f44336;
+  }
+
+  .btn-danger {
+    background: #f44336;
+    color: #ffffff;
+    border: 1px solid rgba(244, 67, 54, 0.5);
+
+    &:hover:not(:disabled) {
+      background: #e53935;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(244, 67, 54, 0.25);
+    }
+  }
+}
+
+.btn-small {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
 }
 
 .toggle {

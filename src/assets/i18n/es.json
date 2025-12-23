@@ -621,6 +621,29 @@
           "reset": "Restablecer"
         }
       },
+      "account": {
+        "title": "Cuenta y privacidad",
+        "subtitle": "Exporta tus datos o elimina tu cuenta de forma permanente.",
+        "export": {
+          "title": "Descargar tus datos",
+          "description": "Obtén un export JSON de tus cuestionarios, progreso y ajustes.",
+          "action": "Exportar datos",
+          "loading": "Exportando...",
+          "success": "Exportación lista.",
+          "failed": "La exportación falló."
+        },
+        "delete": {
+          "title": "Eliminar cuenta",
+          "description": "Elimina de forma permanente tu cuenta y datos personales.",
+          "action": "Eliminar cuenta",
+          "loading": "Eliminando...",
+          "confirm": "¿Seguro que quieres eliminar tu cuenta y todos los datos? Esta acción no se puede deshacer.",
+          "confirmFinal": "Esto eliminará tus datos de forma permanente. ¿Quieres continuar?",
+          "success": "Cuenta eliminada.",
+          "failed": "No se pudo eliminar la cuenta.",
+          "reauthFailed": "Falló la reautenticación. Inténtalo de nuevo."
+        }
+      },
       "notifications": {
         "title": "Notificaciones",
         "subtitle": "Actualizaciones push sobre tus cuestionarios",

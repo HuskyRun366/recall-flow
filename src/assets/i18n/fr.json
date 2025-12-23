@@ -621,6 +621,29 @@
           "reset": "Réinitialiser"
         }
       },
+      "account": {
+        "title": "Compte et confidentialité",
+        "subtitle": "Exportez vos données ou supprimez définitivement votre compte.",
+        "export": {
+          "title": "Télécharger vos données",
+          "description": "Recevez un export JSON de vos quiz, progrès et réglages.",
+          "action": "Exporter les données",
+          "loading": "Exportation...",
+          "success": "Export prêt.",
+          "failed": "Échec de l'export."
+        },
+        "delete": {
+          "title": "Supprimer le compte",
+          "description": "Supprime définitivement votre compte et vos données personnelles.",
+          "action": "Supprimer le compte",
+          "loading": "Suppression...",
+          "confirm": "Voulez-vous vraiment supprimer votre compte et toutes vos données ? Cette action est irréversible.",
+          "confirmFinal": "Cela supprimera définitivement vos données. Voulez-vous continuer ?",
+          "success": "Compte supprimé.",
+          "failed": "La suppression du compte a échoué.",
+          "reauthFailed": "La réauthentification a échoué. Veuillez réessayer."
+        }
+      },
       "notifications": {
         "title": "Notifications",
         "subtitle": "Mises à jour push sur vos quiz",
