@@ -69,7 +69,9 @@
             role="button"
             tabindex="0"
             [class.active]="activeThemeId() === theme.id"
-            (click)="selectTheme(theme.id)">
+            (click)="selectTheme(theme.id)"
+            (keydown.enter)="selectTheme(theme.id)"
+            (keydown.space)="selectTheme(theme.id); $event.preventDefault()">
             <div class="swatch" [style.background]="previewGradientForStoredTheme(theme)"></div>
             <div class="meta">
               <div class="name">{{ theme.name }}</div>

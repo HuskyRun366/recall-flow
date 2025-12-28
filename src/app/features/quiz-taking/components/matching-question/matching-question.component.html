@@ -24,6 +24,7 @@
         <select
           [disabled]="disabled || submitted()"
           [value]="selections().get(pair.id) || ''"
+          [attr.aria-label]="('quizSession.matching.selectMatchFor' | translate) + ': ' + pair.leftText"
           (change)="selectChoice(pair.id, $any($event.target).value)">
           <option value="" disabled>{{ 'quizSession.matching.pleaseSelect' | translate }}</option>
           <option *ngFor="let choice of question.matchingChoices || []" [value]="choice.id">

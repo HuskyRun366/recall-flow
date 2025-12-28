@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { ToastService } from './toast.service';
 import { ProgressService } from './progress.service';
 import { FirestoreService } from './firestore.service';
@@ -216,13 +217,13 @@ export class BackgroundSyncService {
         case 'quiz-update':
           // Delegate to FirestoreService
           const updates = action.data.updates;
-          await this.firestoreService.updateQuiz(action.data.quizId, updates).toPromise();
+          await firstValueFrom(this.firestoreService.updateQuiz(action.data.quizId, updates));
           break;
 
         case 'quiz-create':
           // Delegate to FirestoreService
           const quizData = action.data;
-          await this.firestoreService.createQuiz(quizData).toPromise();
+          await firstValueFrom(this.firestoreService.createQuiz(quizData));
           break;
 
         default:

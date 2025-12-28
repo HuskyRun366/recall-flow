@@ -785,6 +785,7 @@
     },
     "matching": {
       "pleaseSelect": "Veuillez sélectionner une option pour chaque paire.",
+      "selectMatchFor": "Sélectionner la correspondance pour",
       "correctMatching": "Appariement correct"
     },
     "result": {

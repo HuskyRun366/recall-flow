@@ -802,6 +802,7 @@
     },
     "matching": {
       "pleaseSelect": "Please select an option for each pair.",
+      "selectMatchFor": "Select match for",
       "correctMatching": "Correct matching"
     },
     "result": {

@@ -16,8 +16,9 @@
     margin-bottom: $spacing-sm;
     background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
+    color: var(--color-primary); // Fallback for non-WebKit browsers
+    -webkit-text-fill-color: transparent;
   }
 
   .subtitle {
@@ -151,6 +152,10 @@
   }
 
   .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-sm;
     background: var(--gradient-primary);
     color: var(--color-on-gradient);
     padding: $spacing-md $spacing-xl;
@@ -171,9 +176,9 @@
   .btn-primary .icon-plus {
     width: 18px;
     height: 18px;
-    margin-right: $spacing-sm;
     position: relative;
     display: inline-block;
+    flex-shrink: 0;
   }
 
   .btn-primary .icon-plus::before,

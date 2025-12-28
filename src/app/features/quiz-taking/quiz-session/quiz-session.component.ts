@@ -21,6 +21,7 @@ import { SwipeGestureDirective } from '../../../shared/directives/swipe-gesture.
 import { PullToRefreshDirective } from '../../../shared/directives/pull-to-refresh.directive';
 import { StatCardComponent } from '../../../shared/components';
 import { switchMap, map, catchError } from 'rxjs/operators';
+import { from } from 'rxjs';
 
 interface QuestionWithProgress {
   question: Question;
@@ -197,18 +198,20 @@ export class QuizSessionComponent implements OnInit, OnDestroy {
     // First check if user has access to this quiz
     this.firestoreService.getQuizById(quizId).pipe(
       takeUntilDestroyed(this.destroyRef),
-      switchMap(async (quiz) => {
+      switchMap((quiz) => {
         if (!quiz) {
           throw new Error('Quiz not found');
         }
 
         // Check access: public/unlisted quizzes are open, otherwise check participation
-        const hasAccess = await this.checkQuizAccess(quiz, userId);
-        if (!hasAccess) {
-          throw new Error('You do not have permission to access this quiz');
-        }
-
-        return quiz;
+        return from(this.checkQuizAccess(quiz, userId)).pipe(
+          map(hasAccess => {
+            if (!hasAccess) {
+              throw new Error('You do not have permission to access this quiz');
+            }
+            return quiz;
+          })
+        );
       }),
       switchMap((quiz) => {
         return this.questionService.getQuestionsByQuizId(quizId).pipe(

@@ -357,8 +357,12 @@ export class ProgressService {
   private convertUserQuizTimestamps(data: any): UserQuizProgress {
     return {
       ...data,
-      lastAttemptAt: data.lastAttemptAt?.toDate() || new Date(),
-      nextReviewAt: data.nextReviewAt?.toDate?.() || data.nextReviewAt
+      lastAttemptAt: data.lastAttemptAt instanceof Timestamp
+        ? data.lastAttemptAt.toDate()
+        : (data.lastAttemptAt || new Date()),
+      nextReviewAt: data.nextReviewAt instanceof Timestamp
+        ? data.nextReviewAt.toDate()
+        : data.nextReviewAt
     };
   }
 
@@ -368,8 +372,12 @@ export class ProgressService {
   private convertQuestionTimestamps(data: any): QuestionProgress {
     return {
       ...data,
-      lastAttemptAt: data.lastAttemptAt?.toDate() || new Date(),
-      nextReviewAt: data.nextReviewAt?.toDate?.() || data.nextReviewAt
+      lastAttemptAt: data.lastAttemptAt instanceof Timestamp
+        ? data.lastAttemptAt.toDate()
+        : (data.lastAttemptAt || new Date()),
+      nextReviewAt: data.nextReviewAt instanceof Timestamp
+        ? data.nextReviewAt.toDate()
+        : data.nextReviewAt
     };
   }
 
