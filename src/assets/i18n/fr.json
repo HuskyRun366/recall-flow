@@ -1314,6 +1314,28 @@
   "toast": {
     "ariaLabel": "Notifications"
   },
+  "follow": {
+    "follow": "Suivre",
+    "following": "Abonné",
+    "unfollow": "Ne plus suivre",
+    "followers": "Abonnés",
+    "followingCount": "Abonnements",
+    "followed": "Vous suivez maintenant cet auteur",
+    "unfollowed": "Vous ne suivez plus cet auteur",
+    "error": "Action échouée"
+  },
+  "followNotifications": {
+    "title": "Nouveaux quiz",
+    "empty": "Aucun nouveau quiz d'auteurs que vous suivez",
+    "newQuizText": "a publié un nouveau quiz :",
+    "markAllRead": "Tout marquer comme lu",
+    "clearAll": "Tout effacer"
+  },
+  "profile": {
+    "publicQuizzes": "Quiz publics",
+    "noQuizzes": "Pas encore de quiz publics",
+    "quizzes": "Quiz"
+  },
 
   "discover": {
     "title": "Découvrir",

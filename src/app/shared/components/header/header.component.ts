@@ -9,6 +9,7 @@ import { ModeService } from '../../../core/services/mode.service';
 import { UpdatesService } from '../../../core/services/updates.service';
 import { NetworkStatusComponent } from '../network-status/network-status.component';
 import { ModeSwitchComponent } from '../mode-switch/mode-switch.component';
+import { FollowNotificationsComponent } from '../follow-notifications/follow-notifications.component';
 
 @Component({
   selector: 'app-header',
@@ -19,7 +20,8 @@ import { ModeSwitchComponent } from '../mode-switch/mode-switch.component';
     A11yModule,
     TranslateModule,
     NetworkStatusComponent,
-    ModeSwitchComponent
+    ModeSwitchComponent,
+    FollowNotificationsComponent
   ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']

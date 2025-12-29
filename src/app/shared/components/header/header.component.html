@@ -59,6 +59,11 @@
         <app-network-status />
       }
 
+      <!-- Follow Notifications -->
+      @if (isAuthenticated()) {
+        <app-follow-notifications />
+      }
+
       <!-- Updates Badge -->
       @if (isAuthenticated()) {
         <a routerLink="/updates" class="updates-badge" [title]="hasNewUpdates() ? ('nav.newUpdates' | translate) : ('nav.viewUpdates' | translate)">

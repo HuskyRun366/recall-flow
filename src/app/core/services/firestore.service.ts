@@ -208,6 +208,27 @@ export class FirestoreService {
     );
   }
 
+  // Get public quizzes by a specific owner (for profile page)
+  getPublicQuizzesByOwner(ownerId: string): Observable<Quiz[]> {
+    const quizzesRef = collection(this.firestore, this.QUIZ_COLLECTION);
+    const ownerPublicQuery = query(
+      quizzesRef,
+      where('ownerId', '==', ownerId),
+      where('visibility', '==', 'public'),
+      orderBy('updatedAt', 'desc')
+    );
+
+    return from(
+      runInInjectionContext(this.injector, () => getDocs(ownerPublicQuery))
+    ).pipe(
+      map(snapshot => {
+        return snapshot.docs.map(doc =>
+          this.convertTimestamps(doc.data() as any)
+        );
+      })
+    );
+  }
+
   // Get quiz by join code
   getQuizByJoinCode(joinCode: string): Observable<Quiz | null> {
     const quizzesRef = collection(this.firestore, this.QUIZ_COLLECTION);

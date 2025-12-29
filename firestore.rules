@@ -55,7 +55,18 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if isAuthenticated();  // Allow reading user profiles for co-author lookup
       allow create: if isOwner(userId);
-      allow update: if isOwner(userId);
+      // Allow update by owner, or allow follower/following count updates by authenticated users
+      allow update: if isOwner(userId) || (
+        isAuthenticated() &&
+        request.resource.data.diff(resource.data).changedKeys().hasOnly(['followerCount']) &&
+        request.resource.data.followerCount is int &&
+        request.resource.data.followerCount >= 0
+      ) || (
+        isAuthenticated() &&
+        request.resource.data.diff(resource.data).changedKeys().hasOnly(['followingCount']) &&
+        request.resource.data.followingCount is int &&
+        request.resource.data.followingCount >= 0
+      );
 
       // User's quiz references
       match /userQuizzes/{quizId} {
@@ -65,6 +76,20 @@ service cloud.firestore {
         ) || canEditQuiz(quizId); // Or if quiz owner/co-author is inviting them
         allow update: if isOwner(userId) || canEditQuiz(quizId); // Allow quiz owner/co-author to update role
         allow delete: if isOwner(userId) || canEditQuiz(quizId); // Allow quiz owner/co-author to remove participant
+      }
+
+      // Following subcollection - who the user follows
+      match /following/{followedUserId} {
+        allow read: if isAuthenticated();
+        allow create: if isOwner(userId) && request.resource.data.followedUserId == followedUserId;
+        allow delete: if isOwner(userId);
+      }
+
+      // Followers subcollection - who follows the user
+      match /followers/{followerId} {
+        allow read: if isAuthenticated();
+        allow create: if isOwner(followerId); // Only the follower can add themselves
+        allow delete: if isOwner(followerId) || isOwner(userId); // Follower or profile owner can remove
       }
 
       // FCM tokens for push notifications
@@ -91,6 +116,20 @@ service cloud.firestore {
       allow update: if isAuthenticated() &&
                        resource.data.userId == request.auth.uid &&
                        request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // Follow notifications (new quiz from followed authors)
+    match /followNotifications/{notificationId} {
+      // Only the notification recipient can read their notifications
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      // Any authenticated user can create notifications (for followers)
+      allow create: if isAuthenticated();
+      // Only the recipient can mark as read
+      allow update: if isAuthenticated() &&
+                       resource.data.userId == request.auth.uid &&
+                       request.resource.data.diff(resource.data).changedKeys().hasOnly(['read']);
+      // Only the recipient can delete their notifications
       allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
     }
 

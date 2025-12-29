@@ -7,6 +7,7 @@ import { QuestionService } from '../../core/services/question.service';
 import { ParticipantService } from '../../core/services/participant.service';
 import { AuthService } from '../../core/services/auth.service';
 import { UserLookupService } from '../../core/services/user-lookup.service';
+import { FollowService } from '../../core/services/follow.service';
 import { Quiz, Question } from '../../models';
 import { firstValueFrom } from 'rxjs';
 import { ToonEditorComponent } from './components/toon-editor/toon-editor.component';
@@ -25,6 +26,7 @@ export class QuizEditorComponent implements OnInit {
   private participantService = inject(ParticipantService);
   private authService = inject(AuthService);
   private userLookupService = inject(UserLookupService);
+  private followService = inject(FollowService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
@@ -232,6 +234,12 @@ export class QuizEditorComponent implements OnInit {
 
         // Save co-authors
         await this.saveCoAuthors(newId);
+
+        // Notify followers if the new quiz is public
+        if (cleanQuizData.visibility === 'public' && cleanQuizData.ownerId) {
+          this.followService.notifyFollowers(newId, cleanQuizData.title || 'New Quiz', cleanQuizData.ownerId)
+            .catch(err => console.error('Failed to notify followers:', err));
+        }
 
         this.router.navigate(['/quiz', 'editor', newId], { replaceUrl: true });
         this.unsavedChanges.set(false);

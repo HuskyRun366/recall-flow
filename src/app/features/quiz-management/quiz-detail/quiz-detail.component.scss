@@ -78,6 +78,41 @@
         &.private { background: rgba(158,158,158,0.2); color: var(--color-text-secondary); }
       }
     }
+
+    .author-section {
+      margin-top: $spacing-md;
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+
+      .author-link {
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+        text-decoration: none;
+        color: var(--color-text-primary);
+        padding: $spacing-xs $spacing-sm;
+        border-radius: $radius-md;
+        transition: background-color $transition-fast;
+
+        &:hover {
+          background-color: var(--color-surface-elevated);
+        }
+
+        .author-avatar {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 2px solid var(--color-border);
+        }
+
+        .author-name {
+          font-weight: 600;
+          font-size: 0.95rem;
+        }
+      }
+    }
   }
 
   .hero-actions {

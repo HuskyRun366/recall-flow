@@ -5,4 +5,6 @@ export interface User {
   photoURL?: string;
   role: 'admin' | 'user';
   createdAt: Date;
+  followerCount?: number;
+  followingCount?: number;
 }

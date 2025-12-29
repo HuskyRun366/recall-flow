@@ -152,6 +152,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/discover/discover.component').then(m => m.DiscoverComponent)
   },
   {
+    path: 'profile/:userId',
+    canActivate: [authGuard],
+    data: { animationIndex: 55 },
+    loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent)
+  },
+  {
     path: 'settings/theme-editor/new',
     canActivate: [authGuard],
     data: { animationIndex: 31 },

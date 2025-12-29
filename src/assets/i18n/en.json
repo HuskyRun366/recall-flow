@@ -1339,6 +1339,33 @@
     "ariaLabel": "Notifications"
   },
 
+  "follow": {
+    "follow": "Follow",
+    "following": "Following",
+    "unfollow": "Unfollow",
+    "followers": "Followers",
+    "followingCount": "Following",
+    "followed": "You are now following this author",
+    "unfollowed": "You unfollowed this author",
+    "error": "Action failed"
+  },
+
+  "followNotifications": {
+    "title": "New Content",
+    "empty": "No new content from authors you follow",
+    "newQuizText": "published a new quiz:",
+    "newDeckText": "published a new flashcard deck:",
+    "newMaterialText": "published new learning material:",
+    "markAllRead": "Mark all as read",
+    "clearAll": "Clear all"
+  },
+
+  "profile": {
+    "publicQuizzes": "Public Quizzes",
+    "noQuizzes": "No public quizzes yet",
+    "quizzes": "Quizzes"
+  },
+
   "discover": {
     "title": "Discover",
     "subtitle": "Explore public content from the community",

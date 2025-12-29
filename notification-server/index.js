@@ -7,8 +7,30 @@ import admin from 'firebase-admin';
 
 console.log('🚀 Starting RecallFlow Notification Server...');
 
+// Validate required environment variables
+if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
+  console.error('❌ FIREBASE_SERVICE_ACCOUNT environment variable is required');
+  console.error('   Set it to the JSON content of your Firebase service account key');
+  process.exit(1);
+}
+
 // Initialize Firebase Admin with service account
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+let serviceAccount;
+try {
+  serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+} catch (error) {
+  console.error('❌ Invalid FIREBASE_SERVICE_ACCOUNT JSON:', error.message);
+  process.exit(1);
+}
+
+// Validate service account has required fields
+const requiredFields = ['project_id', 'private_key', 'client_email'];
+for (const field of requiredFields) {
+  if (!serviceAccount[field]) {
+    console.error(`❌ Service account missing required field: ${field}`);
+    process.exit(1);
+  }
+}
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -25,17 +47,80 @@ console.log(`📊 Project: ${serviceAccount.project_id}`);
 const quizLastUpdated = new Map();
 const quizQuestionCounts = new Map();
 
+// Track processed follow notifications to avoid duplicates
+const processedFollowNotifications = new Set();
+
+// Rate limiting: Track notifications per user (max 10 per minute)
+const userNotificationRates = new Map();
+const RATE_LIMIT_WINDOW = 60000; // 1 minute
+const RATE_LIMIT_MAX = 10;
+
+/**
+ * Check if user is rate limited
+ */
+function isRateLimited(userId) {
+  const now = Date.now();
+  const userRate = userNotificationRates.get(userId);
+
+  if (!userRate) {
+    userNotificationRates.set(userId, { count: 1, windowStart: now });
+    return false;
+  }
+
+  // Reset window if expired
+  if (now - userRate.windowStart > RATE_LIMIT_WINDOW) {
+    userNotificationRates.set(userId, { count: 1, windowStart: now });
+    return false;
+  }
+
+  // Check limit
+  if (userRate.count >= RATE_LIMIT_MAX) {
+    console.log(`  ⚠️  User ${userId.substring(0, 8)}... rate limited`);
+    return true;
+  }
+
+  userRate.count++;
+  return false;
+}
+
+/**
+ * Sanitize string input to prevent injection
+ */
+function sanitizeString(input, maxLength = 200) {
+  if (typeof input !== 'string') return '';
+  return input
+    .substring(0, maxLength)
+    .replace(/[<>]/g, '') // Remove potential HTML/script tags
+    .trim();
+}
+
+/**
+ * Validate Firebase document ID format
+ */
+function isValidDocId(id) {
+  if (typeof id !== 'string') return false;
+  if (id.length === 0 || id.length > 128) return false;
+  // Firebase doc IDs cannot contain: /, ., __, or start/end with whitespace
+  return !/[\/\.]|^__|__$|^\s|\s$/.test(id);
+}
+
 /**
  * Get all user FCM tokens
  */
 async function getUserTokens(userId) {
+  // Validate userId
+  if (!isValidDocId(userId)) {
+    console.error(`Invalid userId format: ${userId}`);
+    return [];
+  }
+
   try {
     const tokensSnapshot = await db.collection(`users/${userId}/fcmTokens`).get();
     const tokens = [];
 
     tokensSnapshot.forEach(doc => {
       const data = doc.data();
-      if (data.token) {
+      if (data.token && typeof data.token === 'string') {
         tokens.push(data.token);
       }
     });
@@ -48,13 +133,31 @@ async function getUserTokens(userId) {
 }
 
 /**
+ * Get the URL for a content type
+ */
+function getContentUrl(contentType, contentId) {
+  const baseUrl = 'https://recall-flow-app.web.app';
+  switch (contentType) {
+    case 'flashcardDeck':
+      return `${baseUrl}/flashcards/${contentId}`;
+    case 'learningMaterial':
+      return `${baseUrl}/materials/${contentId}`;
+    case 'quiz':
+    default:
+      return `${baseUrl}/quizzes/${contentId}`;
+  }
+}
+
+/**
  * Send push notification to users
  */
-async function sendNotification(tokens, title, body, quizId, type) {
+async function sendNotification(tokens, title, body, contentId, type, contentType = 'quiz') {
   if (tokens.length === 0) {
     console.log('  ⚠️  No tokens to send to');
     return;
   }
+
+  const contentUrl = getContentUrl(contentType, contentId);
 
   const payload = {
     tokens,
@@ -63,17 +166,20 @@ async function sendNotification(tokens, title, body, quizId, type) {
       body,
     },
     data: {
-      quizId,
+      contentId,
+      contentType,
       type,
-      action: 'view-quiz',
-      timestamp: Date.now().toString()
+      action: `view-${contentType}`,
+      timestamp: Date.now().toString(),
+      // Legacy field for backwards compatibility
+      quizId: contentType === 'quiz' ? contentId : ''
     },
     webpush: {
       notification: {
         icon: '/assets/icons/icon-192x192.png',
       },
       fcmOptions: {
-        link: `https://recall-flow-app.web.app/quizzes/${quizId}`,
+        link: contentUrl,
       },
     },
   };
@@ -327,11 +433,173 @@ function startQuestionListener() {
 }
 
 /**
+ * Get notification title and body based on content type
+ */
+function getNotificationText(contentType, authorName, contentTitle) {
+  switch (contentType) {
+    case 'flashcardDeck':
+      return {
+        title: `Neues Flashcard-Deck von ${authorName}`,
+        body: `"${contentTitle}" wurde gerade veröffentlicht`,
+        emoji: '🃏'
+      };
+    case 'learningMaterial':
+      return {
+        title: `Neues Lernmaterial von ${authorName}`,
+        body: `"${contentTitle}" wurde gerade veröffentlicht`,
+        emoji: '📚'
+      };
+    case 'quiz':
+    default:
+      return {
+        title: `Neues Quiz von ${authorName}`,
+        body: `"${contentTitle}" wurde gerade veröffentlicht`,
+        emoji: '📝'
+      };
+  }
+}
+
+/**
+ * Handle follow notification (new content from followed author)
+ */
+async function handleFollowNotification(notificationId, data) {
+  // Get content info - support both new generic fields and legacy quiz-only fields
+  const contentType = data.contentType || 'quiz';
+  const contentId = data.contentId || data.quizId;
+  const contentTitle = data.contentTitle || data.quizTitle;
+
+  // Validate required fields
+  if (!data.userId || !contentId || !data.authorDisplayName || !contentTitle) {
+    console.log(`  ⚠️  Follow notification ${notificationId} missing required fields`);
+    return;
+  }
+
+  // Validate IDs
+  if (!isValidDocId(data.userId) || !isValidDocId(contentId)) {
+    console.log(`  ⚠️  Follow notification ${notificationId} has invalid IDs`);
+    return;
+  }
+
+  // Skip if already processed (deduplication)
+  if (processedFollowNotifications.has(notificationId)) {
+    return;
+  }
+  processedFollowNotifications.add(notificationId);
+
+  // Clean up old processed notifications (keep last 1000)
+  if (processedFollowNotifications.size > 1000) {
+    const iterator = processedFollowNotifications.values();
+    for (let i = 0; i < 100; i++) {
+      processedFollowNotifications.delete(iterator.next().value);
+    }
+  }
+
+  // Rate limit check
+  if (isRateLimited(data.userId)) {
+    return;
+  }
+
+  // Sanitize strings
+  const authorName = sanitizeString(data.authorDisplayName, 50);
+  const sanitizedTitle = sanitizeString(contentTitle, 100);
+
+  // Get content-specific notification text
+  const notificationText = getNotificationText(contentType, authorName, sanitizedTitle);
+
+  console.log(`${notificationText.emoji} Follow notification: "${authorName}" published "${sanitizedTitle}" (${contentType})`);
+  console.log(`   Target user: ${data.userId.substring(0, 8)}...`);
+
+  // Get user's tokens
+  const tokens = await getUserTokens(data.userId);
+
+  if (tokens.length === 0) {
+    console.log('  ℹ️  No tokens for this user');
+    return;
+  }
+
+  // Send notification with content type for proper URL routing
+  await sendNotification(
+    tokens,
+    notificationText.title,
+    notificationText.body,
+    contentId,
+    `new-${contentType}-from-following`,
+    contentType
+  );
+
+  // Mark notification as sent in Firestore
+  try {
+    await db.doc(`followNotifications/${notificationId}`).update({
+      pushSent: true,
+      pushSentAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+  } catch (error) {
+    console.error(`  ⚠️  Could not mark notification as sent:`, error.message);
+  }
+}
+
+/**
+ * Start listening to follow notifications
+ */
+function startFollowNotificationListener() {
+  console.log('👂 Starting follow notification listener...');
+
+  // Valid notification types to process
+  const validTypes = ['new-quiz', 'new-flashcard-deck', 'new-material'];
+
+  // Listen only to unread notifications that haven't been push-sent yet
+  db.collection('followNotifications')
+    .where('read', '==', false)
+    .where('pushSent', '==', false)
+    .onSnapshot(snapshot => {
+      snapshot.docChanges().forEach(async change => {
+        if (change.type === 'added') {
+          const notificationId = change.doc.id;
+          const data = change.doc.data();
+
+          // Process all valid content type notifications
+          if (validTypes.includes(data.type)) {
+            await handleFollowNotification(notificationId, data);
+          }
+        }
+      });
+    }, error => {
+      console.error('❌ Follow notification listener error:', error);
+    });
+
+  // Also listen for notifications without pushSent field (backwards compatibility)
+  db.collection('followNotifications')
+    .where('read', '==', false)
+    .onSnapshot(snapshot => {
+      snapshot.docChanges().forEach(async change => {
+        if (change.type === 'added') {
+          const notificationId = change.doc.id;
+          const data = change.doc.data();
+
+          // Only process if pushSent is undefined (not yet processed)
+          if (validTypes.includes(data.type) && data.pushSent === undefined) {
+            await handleFollowNotification(notificationId, data);
+          }
+        }
+      });
+    }, error => {
+      // Ignore errors for this secondary listener
+    });
+
+  console.log('✅ Follow notification listener active');
+}
+
+/**
  * Health check endpoint for Render.com
  */
 import { createServer } from 'http';
 
 const server = createServer((req, res) => {
+  // Security headers
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Cache-Control', 'no-store');
+
   if (req.url === '/health' || req.url === '/') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
@@ -340,7 +608,8 @@ const server = createServer((req, res) => {
       timestamp: new Date().toISOString(),
       listeners: {
         quizzes: 'active',
-        questions: 'active'
+        questions: 'active',
+        followNotifications: 'active'
       }
     }));
   } else {
@@ -358,8 +627,13 @@ server.listen(PORT, () => {
   // Start Firestore listeners
   startQuizListener();
   startQuestionListener();
+  startFollowNotificationListener();
 
   console.log('\n🎉 Notification server is ready!\n');
+  console.log('📡 Active listeners:');
+  console.log('   - Quiz changes (updates, title, description)');
+  console.log('   - Question changes (added, deleted)');
+  console.log('   - Follow notifications (new quiz from followed author)\n');
 });
 
 // Graceful shutdown

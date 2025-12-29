@@ -13,6 +13,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { UserLookupService } from '../../../core/services/user-lookup.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ThemeService } from '../../../core/services/theme.service';
+import { FollowService } from '../../../core/services/follow.service';
 import { CodeMirrorHtmlConfigService } from '../../../shared/services/codemirror-html-config.service';
 import { LearningMaterial, ContentCategory, DifficultyLevel } from '../../../models';
 import { switchMap, catchError } from 'rxjs/operators';
@@ -39,6 +40,7 @@ export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit
   private authService = inject(AuthService);
   private userLookupService = inject(UserLookupService);
   private toastService = inject(ToastService);
+  private followService = inject(FollowService);
   private destroyRef = inject(DestroyRef);
   private themeService = inject(ThemeService);
   private codeMirrorConfig = inject(CodeMirrorHtmlConfigService);
@@ -517,6 +519,12 @@ export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit
             await this.saveCoAuthors(materialId);
           } catch (err) {
             console.error('Failed to save co-authors for new material:', err);
+          }
+
+          // Notify followers if the new material is public
+          if (materialData.visibility === 'public' && userId) {
+            this.followService.notifyFollowersOfMaterial(materialId, materialData.title, userId)
+              .catch(err => console.error('Failed to notify followers:', err));
           }
 
           this.successMessage.set('Lernunterlage erstellt!');

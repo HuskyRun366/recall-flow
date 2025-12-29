@@ -12,6 +12,20 @@
               {{ quiz()!.visibility === 'public' ? ('quiz.visibility.public' | translate) : quiz()!.visibility === 'unlisted' ? ('quiz.visibility.unlisted' | translate) : ('quiz.visibility.private' | translate) }}
             </span>
           </div>
+          <!-- Author Section -->
+          <div class="author-section" *ngIf="quizAuthor()">
+            <a [routerLink]="['/profile', quiz()!.ownerId]" class="author-link">
+              <img
+                [src]="quizAuthor()!.photoURL || 'assets/default-avatar.svg'"
+                [alt]="quizAuthor()!.displayName"
+                class="author-avatar" />
+              <span class="author-name">{{ quizAuthor()!.displayName }}</span>
+            </a>
+            <app-follow-button
+              *ngIf="quiz()!.ownerId !== currentUser()?.uid"
+              [userId]="quiz()!.ownerId"
+              [compact]="true" />
+          </div>
         </div>
       </div>
       <div class="hero-actions">

@@ -25,6 +25,8 @@ export interface Quiz {
   title: string;
   description: string;
   ownerId: string;
+  ownerDisplayName?: string; // Denormalized for display
+  ownerPhotoURL?: string; // Denormalized for display
   visibility: QuizVisibility;
   joinCode?: string; // For unlisted quizzes
   questionCount: number; // Denormalized for display

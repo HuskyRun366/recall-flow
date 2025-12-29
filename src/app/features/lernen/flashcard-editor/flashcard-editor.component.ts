@@ -12,6 +12,7 @@ import { DeckParticipantService } from '../../../core/services/deck-participant.
 import { AuthService } from '../../../core/services/auth.service';
 import { UserLookupService } from '../../../core/services/user-lookup.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { FollowService } from '../../../core/services/follow.service';
 import { FlashcardDeck, Flashcard, ContentCategory, DifficultyLevel } from '../../../models';
 import { switchMap, catchError } from 'rxjs/operators';
 import { firstValueFrom, of } from 'rxjs';
@@ -45,6 +46,7 @@ export class FlashcardEditorComponent implements OnInit {
   private authService = inject(AuthService);
   private userLookupService = inject(UserLookupService);
   private toastService = inject(ToastService);
+  private followService = inject(FollowService);
   private destroyRef = inject(DestroyRef);
 
   deckForm!: FormGroup;
@@ -279,6 +281,12 @@ export class FlashcardEditorComponent implements OnInit {
             await this.saveCoAuthors(deckId);
           } catch (err) {
             console.error('Failed to save co-authors for new deck:', err);
+          }
+
+          // Notify followers if the new deck is public
+          if (deckData.visibility === 'public' && userId) {
+            this.followService.notifyFollowersOfFlashcardDeck(deckId, deckData.title, userId)
+              .catch(err => console.error('Failed to notify followers:', err));
           }
 
           this.successMessage.set('Deck created successfully!');

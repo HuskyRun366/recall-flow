@@ -1339,6 +1339,33 @@
     "ariaLabel": "Benachrichtigungen"
   },
 
+  "follow": {
+    "follow": "Folgen",
+    "following": "Folgst du",
+    "unfollow": "Entfolgen",
+    "followers": "Follower",
+    "followingCount": "Folgt",
+    "followed": "Du folgst jetzt diesem Autor",
+    "unfollowed": "Du folgst diesem Autor nicht mehr",
+    "error": "Aktion fehlgeschlagen"
+  },
+
+  "followNotifications": {
+    "title": "Neue Inhalte",
+    "empty": "Keine neuen Inhalte von Autoren, denen du folgst",
+    "newQuizText": "hat ein neues Quiz veröffentlicht:",
+    "newDeckText": "hat ein neues Flashcard-Deck veröffentlicht:",
+    "newMaterialText": "hat neues Lernmaterial veröffentlicht:",
+    "markAllRead": "Alle als gelesen markieren",
+    "clearAll": "Alle löschen"
+  },
+
+  "profile": {
+    "publicQuizzes": "Öffentliche Quizzes",
+    "noQuizzes": "Noch keine öffentlichen Quizzes",
+    "quizzes": "Quizzes"
+  },
+
   "discover": {
     "title": "Entdecken",
     "subtitle": "Erkunde öffentliche Inhalte der Community",

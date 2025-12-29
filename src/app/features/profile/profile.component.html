@@ -1,0 +1,80 @@
+<div class="profile-page" *ngIf="!isLoading(); else loading">
+  <ng-container *ngIf="profileUser(); else errorBlock">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="profile-avatar-section">
+        <img
+          [src]="profileUser()!.photoURL || 'assets/default-avatar.svg'"
+          [alt]="profileUser()!.displayName"
+          class="profile-avatar" />
+      </div>
+
+      <div class="profile-info">
+        <h1 class="profile-name">{{ profileUser()!.displayName }}</h1>
+
+        <div class="profile-meta">
+          <div class="profile-stats">
+            <div class="stat">
+              <span class="stat-value">{{ followerCount() }}</span>
+              <span class="stat-label">{{ 'follow.followers' | translate }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">{{ followingCount() }}</span>
+              <span class="stat-label">{{ 'follow.followingCount' | translate }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">{{ getQuizCount() }}</span>
+              <span class="stat-label">{{ 'profile.quizzes' | translate }}</span>
+            </div>
+          </div>
+
+          <div class="profile-actions" *ngIf="!isOwnProfile()">
+            <app-follow-button [userId]="userId()" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Public Quizzes Section -->
+    <div class="quizzes-section">
+      <h2>{{ 'profile.publicQuizzes' | translate }}</h2>
+
+      <div class="quizzes-grid" *ngIf="publicQuizzes().length > 0; else noQuizzes">
+        <div class="quiz-card" *ngFor="let quiz of publicQuizzes()">
+          <a [routerLink]="['/quiz', quiz.id]" class="quiz-link">
+            <div class="quiz-avatar">{{ quiz.title.charAt(0).toUpperCase() }}</div>
+            <div class="quiz-info">
+              <h3 class="quiz-title">{{ quiz.title }}</h3>
+              <p class="quiz-description" *ngIf="quiz.description">{{ quiz.description }}</p>
+              <div class="quiz-meta">
+                <span class="quiz-questions">{{ quiz.questionCount }} {{ 'quiz.questions' | translate }}</span>
+                <span class="quiz-rating" *ngIf="quiz.averageRating">
+                  {{ quiz.averageRating | number:'1.1-1' }}
+                </span>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <ng-template #noQuizzes>
+        <div class="empty-state">
+          <p>{{ 'profile.noQuizzes' | translate }}</p>
+        </div>
+      </ng-template>
+    </div>
+  </ng-container>
+</div>
+
+<ng-template #loading>
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>{{ 'common.loading' | translate }}</p>
+  </div>
+</ng-template>
+
+<ng-template #errorBlock>
+  <div class="error-state">
+    {{ error() ? error() : ('errors.loadingFailed' | translate) }}
+  </div>
+</ng-template>

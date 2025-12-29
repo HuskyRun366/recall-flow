@@ -7,6 +7,7 @@ import { FileProcessingService } from '../../core/services/file-processing.servi
 import { FirestoreService } from '../../core/services/firestore.service';
 import { QuestionService } from '../../core/services/question.service';
 import { AuthService } from '../../core/services/auth.service';
+import { FollowService } from '../../core/services/follow.service';
 import { ToonParser } from '../../shared/utils/toon-parser';
 import { environment } from '../../../environments/environment';
 
@@ -23,6 +24,7 @@ export class AiQuizGeneratorComponent implements OnInit {
   private firestoreService = inject(FirestoreService);
   private questionService = inject(QuestionService);
   private authService = inject(AuthService);
+  private followService = inject(FollowService);
   private router = inject(Router);
 
   // State
@@ -311,6 +313,12 @@ export class AiQuizGeneratorComponent implements OnInit {
       }));
 
       await this.questionService.createQuestionsBatch(questionsWithQuizId);
+
+      // Notify followers if the new quiz is public
+      if (quizData.visibility === 'public' && userId) {
+        this.followService.notifyFollowers(quizId, quizData.title, userId)
+          .catch(err => console.error('Failed to notify followers:', err));
+      }
 
       // Step 6: Navigate to editor
       this.generationProgress.set('aiGenerator.progress.openingQuiz');

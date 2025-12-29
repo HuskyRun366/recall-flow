@@ -1,0 +1,27 @@
+@if (!isOwnProfile()) {
+  <button
+    mat-button
+    [class.following]="isFollowing()"
+    [class.compact]="compact()"
+    [disabled]="isLoading()"
+    (click)="toggleFollow()"
+    [attr.aria-label]="isFollowing() ? ('follow.unfollow' | translate) : ('follow.follow' | translate)"
+    [attr.aria-pressed]="isFollowing()">
+
+    @if (isLoading()) {
+      <mat-spinner diameter="18" class="button-spinner"></mat-spinner>
+    } @else {
+      @if (isFollowing()) {
+        <mat-icon>person_remove</mat-icon>
+        @if (!compact()) {
+          <span class="button-text">{{ 'follow.following' | translate }}</span>
+        }
+      } @else {
+        <mat-icon>person_add</mat-icon>
+        @if (!compact()) {
+          <span class="button-text">{{ 'follow.follow' | translate }}</span>
+        }
+      }
+    }
+  </button>
+}

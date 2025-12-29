@@ -6,9 +6,28 @@ Kostenloser Push-Notification Server für die RecallFlow Quiz-App.
 
 - 🔔 Automatische Push-Benachrichtigungen bei Quiz-Änderungen
 - 👥 Benachrichtigt nur Owner und Co-Autoren
+- 📬 Follow-Notifications: Benachrichtigt Follower bei neuen Quizzen
 - 🔄 Real-time Firestore Listeners
+- 🔒 Rate Limiting & Input Validation
 - 🆓 100% kostenlos auf Render.com
 - ⚡ Keine Wartung nötig
+
+## Notification Types
+
+| Type | Beschreibung | Empfänger |
+|------|--------------|-----------|
+| Quiz Update | Quiz-Titel oder Beschreibung geändert | Owner & Co-Autoren |
+| Question Added | Neue Frage hinzugefügt | Owner & Co-Autoren |
+| Question Deleted | Frage gelöscht | Owner & Co-Autoren |
+| **New Quiz (Follow)** | Gefolgter Autor hat neues Quiz veröffentlicht | Follower |
+
+## Security
+
+- **Rate Limiting**: Max 10 Notifications pro User pro Minute
+- **Input Validation**: Alle IDs und Strings werden validiert/sanitized
+- **Deduplication**: Verhindert doppelte Notifications
+- **Security Headers**: X-Content-Type-Options, X-Frame-Options
+- **Environment Variables**: Keine Secrets im Code
 
 ## Deployment auf Render.com
 
@@ -68,6 +87,10 @@ Im Render Dashboard:
   📝 Quiz updated: "Angular Basics" - Titel wurde geändert
   👥 Notifying 2 users...
   ✅ Sent 2/2 notifications
+
+  📬 Follow notification: "Max Mustermann" published "React Grundlagen"
+     Target user: abc12345...
+  ✅ Sent 1/1 notifications
   ```
 
 ## Troubleshooting

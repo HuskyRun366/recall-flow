@@ -8,17 +8,19 @@ import { ParticipantService } from '../../../core/services/participant.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ReviewService } from '../../../core/services/review.service';
-import { Quiz, Question, Review } from '../../../models';
+import { FollowService } from '../../../core/services/follow.service';
+import { Quiz, Question, Review, User } from '../../../models';
 import { StatCardComponent } from '../../../shared/components';
 import { StarRatingComponent } from '../../../shared/components/star-rating/star-rating.component';
 import { ReviewDialogComponent } from '../../../shared/components/review-dialog/review-dialog.component';
+import { FollowButtonComponent } from '../../../shared/components/follow-button/follow-button.component';
 
 type EnrollState = 'idle' | 'loading' | 'removing';
 
 @Component({
   selector: 'app-quiz-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule, StatCardComponent, StarRatingComponent, ReviewDialogComponent],
+  imports: [CommonModule, RouterModule, TranslateModule, StatCardComponent, StarRatingComponent, ReviewDialogComponent, FollowButtonComponent],
   templateUrl: './quiz-detail.component.html',
   styleUrls: ['./quiz-detail.component.scss']
 })
@@ -31,6 +33,7 @@ export class QuizDetailComponent implements OnInit {
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
   private reviewService = inject(ReviewService);
+  private followService = inject(FollowService);
 
   quiz = signal<Quiz | null>(null);
   questions = signal<Question[]>([]);
@@ -43,6 +46,9 @@ export class QuizDetailComponent implements OnInit {
   canEdit = signal(false);
   copySuccess = signal(false);
   exportSuccess = signal(false);
+
+  // Author-related signals
+  quizAuthor = signal<User | null>(null);
 
   // Review-related signals
   reviews = signal<Review[]>([]);
@@ -83,6 +89,7 @@ export class QuizDetailComponent implements OnInit {
         this.loadQuestions(id);
         this.loadEnrollment(id);
         this.loadReviews(id);
+        this.loadAuthor(q.ownerId);
 
         // Check edit permission
         const userId = this.currentUser()?.uid;
@@ -113,6 +120,13 @@ export class QuizDetailComponent implements OnInit {
     this.participantService.getParticipant(quizId, uid).subscribe({
       next: (p) => this.isEnrolled.set(!!p && p.role === 'participant' || p?.role === 'co-author'),
       error: (err) => console.error('Enrollment laden fehlgeschlagen', err)
+    });
+  }
+
+  private loadAuthor(ownerId: string): void {
+    this.authService.getUserById(ownerId).subscribe({
+      next: (user) => this.quizAuthor.set(user),
+      error: (err) => console.error('Author laden fehlgeschlagen', err)
     });
   }
 

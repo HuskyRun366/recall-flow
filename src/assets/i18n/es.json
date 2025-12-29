@@ -1314,6 +1314,28 @@
   "toast": {
     "ariaLabel": "Notificaciones"
   },
+  "follow": {
+    "follow": "Seguir",
+    "following": "Siguiendo",
+    "unfollow": "Dejar de seguir",
+    "followers": "Seguidores",
+    "followingCount": "Siguiendo",
+    "followed": "Ahora sigues a este autor",
+    "unfollowed": "Has dejado de seguir a este autor",
+    "error": "Acción fallida"
+  },
+  "followNotifications": {
+    "title": "Nuevos cuestionarios",
+    "empty": "No hay nuevos cuestionarios de autores a los que sigues",
+    "newQuizText": "publicó un nuevo cuestionario:",
+    "markAllRead": "Marcar todo como leído",
+    "clearAll": "Borrar todo"
+  },
+  "profile": {
+    "publicQuizzes": "Cuestionarios públicos",
+    "noQuizzes": "Aún no hay cuestionarios públicos",
+    "quizzes": "Cuestionarios"
+  },
 
   "discover": {
     "title": "Descubrir",
