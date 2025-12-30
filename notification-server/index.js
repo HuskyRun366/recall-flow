@@ -257,9 +257,12 @@ async function getNotifiableUsers(quizId, excludeUserId = null) {
 
 /**
  * Handle quiz update
+ * Only notifies co-authors, NOT the owner (to avoid duplicate notifications)
+ * Owner/followers are notified via the follow notification system instead
  */
 async function handleQuizUpdate(quizId, beforeData, afterData) {
   const title = afterData.title || 'Unbenanntes Quiz';
+  const ownerId = afterData.ownerId;
 
   // Determine what changed
   let changeDescription = 'wurde aktualisiert';
@@ -273,15 +276,16 @@ async function handleQuizUpdate(quizId, beforeData, afterData) {
 
   console.log(`📝 Quiz updated: "${title}" - ${changeDescription}`);
 
-  // Get users to notify
-  const userIds = await getNotifiableUsers(quizId);
+  // Get users to notify, excluding the owner
+  // (Owner is notified via follow notification system if they have followers)
+  const userIds = await getNotifiableUsers(quizId, ownerId);
 
   if (userIds.length === 0) {
-    console.log('  ℹ️  No users to notify');
+    console.log('  ℹ️  No co-authors to notify');
     return;
   }
 
-  console.log(`  👥 Notifying ${userIds.length} users...`);
+  console.log(`  👥 Notifying ${userIds.length} co-authors...`);
 
   // Get all tokens
   const allTokens = [];
@@ -302,8 +306,9 @@ async function handleQuizUpdate(quizId, beforeData, afterData) {
 
 /**
  * Handle question count change
+ * Only notifies co-authors, NOT the owner (to avoid duplicate notifications)
  */
-async function handleQuestionCountChange(quizId, quizTitle, oldCount, newCount) {
+async function handleQuestionCountChange(quizId, quizTitle, oldCount, newCount, ownerId) {
   const diff = newCount - oldCount;
 
   if (diff === 0) return;
@@ -314,15 +319,15 @@ async function handleQuestionCountChange(quizId, quizTitle, oldCount, newCount) 
 
   console.log(`${diff > 0 ? '➕' : '➖'} ${absDiff} Frage${absDiff > 1 ? 'n' : ''} ${action}: "${quizTitle}"`);
 
-  // Get users to notify
-  const userIds = await getNotifiableUsers(quizId);
+  // Get users to notify, excluding the owner
+  const userIds = await getNotifiableUsers(quizId, ownerId);
 
   if (userIds.length === 0) {
-    console.log('  ℹ️  No users to notify');
+    console.log('  ℹ️  No co-authors to notify');
     return;
   }
 
-  console.log(`  👥 Notifying ${userIds.length} users...`);
+  console.log(`  👥 Notifying ${userIds.length} co-authors...`);
 
   // Get all tokens
   const allTokens = [];
@@ -377,12 +382,14 @@ function startQuizListener() {
 
           // If only question count changed, send a single question-change notification.
           // Otherwise, send a single general update notification.
+          // Note: These only notify CO-AUTHORS, not the owner (to avoid duplicates with follow notifications)
           if (questionCountChanged && !titleChanged && !descriptionChanged) {
             await handleQuestionCountChange(
               quizId,
               data.title || 'Quiz',
               previousData?.questionCount || 0,
-              data.questionCount || 0
+              data.questionCount || 0,
+              data.ownerId
             );
           } else {
             await handleQuizUpdate(quizId, previousData || null, data);
@@ -475,6 +482,12 @@ async function handleFollowNotification(notificationId, data) {
   // Validate IDs
   if (!isValidDocId(data.userId) || !isValidDocId(contentId)) {
     console.log(`  ⚠️  Follow notification ${notificationId} has invalid IDs`);
+    return;
+  }
+
+  // Skip if recipient is the author (shouldn't get notified about their own content)
+  if (data.userId === data.authorId) {
+    console.log(`  ℹ️  Skipping notification - recipient is the author`);
     return;
   }
 

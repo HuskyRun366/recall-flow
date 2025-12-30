@@ -20,13 +20,23 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 // Handle background messages
+// Note: When the payload contains a 'notification' field, FCM automatically displays
+// the notification. We only need to manually show it for data-only messages.
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] Received background message ', payload);
 
-  const notificationTitle = payload.notification?.title || 'RecallFlow';
+  // If there's already a notification field, FCM will show it automatically.
+  // Only show manually if it's a data-only message.
+  if (payload.notification) {
+    console.log('[firebase-messaging-sw.js] Notification field present - FCM will display automatically');
+    return;
+  }
+
+  // Data-only message - show notification manually
+  const notificationTitle = payload.data?.title || 'RecallFlow';
   const notificationOptions = {
-    body: payload.notification?.body || 'New notification',
-    icon: payload.notification?.icon || '/icons/icon-192x192.png',
+    body: payload.data?.body || 'New notification',
+    icon: '/icons/icon-192x192.png',
     badge: '/icons/icon-72x72.png',
     tag: 'quiz-notification',
     data: payload.data
