@@ -258,7 +258,7 @@ export class FollowService {
   }
 
   /**
-   * Generic method to notify all followers when a user publishes new content.
+   * Generic method to notify all followers when a user publishes or updates content.
    * Creates a notification document for each follower.
    * Uses batches of 500 (Firestore limit) for large follower counts.
    */
@@ -266,7 +266,8 @@ export class FollowService {
     contentId: string,
     contentTitle: string,
     contentType: FollowNotificationContentType,
-    authorId: string
+    authorId: string,
+    isUpdate: boolean = false
   ): Promise<void> {
     const currentUser = this.authService.currentUser();
     if (!currentUser) return;
@@ -279,11 +280,19 @@ export class FollowService {
     const notificationsCol = collection(this.firestore, 'followNotifications');
 
     // Map content type to notification type
-    const typeMap: Record<FollowNotificationContentType, FollowNotificationType> = {
+    const newTypeMap: Record<FollowNotificationContentType, FollowNotificationType> = {
       'quiz': 'new-quiz',
       'flashcardDeck': 'new-flashcard-deck',
       'learningMaterial': 'new-material'
     };
+
+    const updateTypeMap: Record<FollowNotificationContentType, FollowNotificationType> = {
+      'quiz': 'updated-quiz',
+      'flashcardDeck': 'updated-flashcard-deck',
+      'learningMaterial': 'updated-material'
+    };
+
+    const notificationType = isUpdate ? updateTypeMap[contentType] : newTypeMap[contentType];
 
     // Batch in groups of 500 (Firestore limit)
     const BATCH_SIZE = 500;
@@ -305,7 +314,7 @@ export class FollowService {
           // Legacy fields for backwards compatibility
           quizId: contentType === 'quiz' ? contentId : null,
           quizTitle: contentType === 'quiz' ? contentTitle : null,
-          type: typeMap[contentType],
+          type: notificationType,
           createdAt: Timestamp.now(),
           read: false,
           pushSent: false  // Allows notification server to track which notifications have been pushed
@@ -320,21 +329,42 @@ export class FollowService {
    * Notify followers of a new quiz (convenience method)
    */
   async notifyFollowers(quizId: string, quizTitle: string, authorId: string): Promise<void> {
-    return this.notifyFollowersOfContent(quizId, quizTitle, 'quiz', authorId);
+    return this.notifyFollowersOfContent(quizId, quizTitle, 'quiz', authorId, false);
+  }
+
+  /**
+   * Notify followers of an updated quiz
+   */
+  async notifyFollowersOfQuizUpdate(quizId: string, quizTitle: string, authorId: string): Promise<void> {
+    return this.notifyFollowersOfContent(quizId, quizTitle, 'quiz', authorId, true);
   }
 
   /**
    * Notify followers of a new flashcard deck
    */
   async notifyFollowersOfFlashcardDeck(deckId: string, deckTitle: string, authorId: string): Promise<void> {
-    return this.notifyFollowersOfContent(deckId, deckTitle, 'flashcardDeck', authorId);
+    return this.notifyFollowersOfContent(deckId, deckTitle, 'flashcardDeck', authorId, false);
+  }
+
+  /**
+   * Notify followers of an updated flashcard deck
+   */
+  async notifyFollowersOfFlashcardDeckUpdate(deckId: string, deckTitle: string, authorId: string): Promise<void> {
+    return this.notifyFollowersOfContent(deckId, deckTitle, 'flashcardDeck', authorId, true);
   }
 
   /**
    * Notify followers of new learning material
    */
   async notifyFollowersOfMaterial(materialId: string, materialTitle: string, authorId: string): Promise<void> {
-    return this.notifyFollowersOfContent(materialId, materialTitle, 'learningMaterial', authorId);
+    return this.notifyFollowersOfContent(materialId, materialTitle, 'learningMaterial', authorId, false);
+  }
+
+  /**
+   * Notify followers of updated learning material
+   */
+  async notifyFollowersOfMaterialUpdate(materialId: string, materialTitle: string, authorId: string): Promise<void> {
+    return this.notifyFollowersOfContent(materialId, materialTitle, 'learningMaterial', authorId, true);
   }
 
   /**

@@ -1356,6 +1356,9 @@
     "newQuizText": "published a new quiz:",
     "newDeckText": "published a new flashcard deck:",
     "newMaterialText": "published new learning material:",
+    "updatedQuizText": "updated a quiz:",
+    "updatedDeckText": "updated a flashcard deck:",
+    "updatedMaterialText": "updated learning material:",
     "markAllRead": "Mark all as read",
     "clearAll": "Clear all"
   },
@@ -1495,5 +1498,32 @@
       "selectDifficulty": "Select difficulty",
       "selectLanguage": "Select language"
     }
+  },
+
+  "discovery": {
+    "trending": "Trending",
+    "trendingQuizzes": "Trending Quizzes",
+    "trendingDescription": "Most popular quizzes this week",
+    "recommendations": "Recommended for you",
+    "recommendationsDescription": "Based on your learning history",
+    "noTrending": "No trending data available yet",
+    "noRecommendations": "No recommendations available yet",
+    "reasonFollowedAuthor": "From an author you follow",
+    "reasonCategoryMatch": "Matches your interests",
+    "reasonDifficultyMatch": "Matching difficulty",
+    "reasonPopular": "Popular with others",
+    "rank": "Rank",
+    "score": "Score",
+    "lastUpdated": "Last updated",
+    "viewAll": "View all"
+  },
+
+  "storage": {
+    "title": "Storage",
+    "used": "Used",
+    "available": "Available",
+    "limit": "Limit",
+    "warningNearLimit": "You are approaching your storage limit",
+    "errorLimitReached": "Storage limit reached"
   }
 }

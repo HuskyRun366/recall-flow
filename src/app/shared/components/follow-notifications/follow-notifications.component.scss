@@ -278,7 +278,29 @@
 // Mobile responsiveness
 @media (max-width: 480px) {
   .dropdown {
-    width: calc(100vw - 16px);
-    right: -8px;
+    position: fixed;
+    top: 60px;
+    left: 8px;
+    right: 8px;
+    width: auto;
+    max-width: none;
+  }
+
+  .notification-text {
+    font-size: 13px;
+  }
+
+  .notification-avatar {
+    width: 36px;
+    height: 36px;
+
+    .avatar-placeholder {
+      font-size: 14px;
+    }
+  }
+
+  .notification-item {
+    padding: 10px 12px;
+    gap: 10px;
   }
 }

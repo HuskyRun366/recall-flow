@@ -1325,9 +1325,14 @@
     "error": "Acción fallida"
   },
   "followNotifications": {
-    "title": "Nuevos cuestionarios",
-    "empty": "No hay nuevos cuestionarios de autores a los que sigues",
+    "title": "Nuevo contenido",
+    "empty": "No hay contenido nuevo de autores a los que sigues",
     "newQuizText": "publicó un nuevo cuestionario:",
+    "newDeckText": "publicó un nuevo mazo de flashcards:",
+    "newMaterialText": "publicó nuevo material de aprendizaje:",
+    "updatedQuizText": "actualizó un cuestionario:",
+    "updatedDeckText": "actualizó un mazo de flashcards:",
+    "updatedMaterialText": "actualizó material de aprendizaje:",
     "markAllRead": "Marcar todo como leído",
     "clearAll": "Borrar todo"
   },
@@ -1466,5 +1471,30 @@
       "selectDifficulty": "Seleccionar dificultad",
       "selectLanguage": "Seleccionar idioma"
     }
+  },
+  "discovery": {
+    "trending": "Tendencias",
+    "trendingQuizzes": "Cuestionarios en tendencia",
+    "trendingDescription": "Los cuestionarios más populares de esta semana",
+    "recommendations": "Recomendado para ti",
+    "recommendationsDescription": "Basado en tu historial de aprendizaje",
+    "noTrending": "Aún no hay datos de tendencias",
+    "noRecommendations": "Aún no hay recomendaciones",
+    "reasonFollowedAuthor": "De un autor que sigues",
+    "reasonCategoryMatch": "Coincide con tus intereses",
+    "reasonDifficultyMatch": "Dificultad similar",
+    "reasonPopular": "Popular entre otros",
+    "rank": "Posición",
+    "score": "Puntuación",
+    "lastUpdated": "Última actualización",
+    "viewAll": "Ver todo"
+  },
+  "storage": {
+    "title": "Almacenamiento",
+    "used": "Usado",
+    "available": "Disponible",
+    "limit": "Límite",
+    "warningNearLimit": "Te estás acercando a tu límite de almacenamiento",
+    "errorLimitReached": "Límite de almacenamiento alcanzado"
   }
 }

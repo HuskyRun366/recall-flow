@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { A11yModule } from '@angular/cdk/a11y';
 import { FollowNotificationsService } from '../../../core/services/follow-notifications.service';
+import { FollowNotification } from '../../../models';
 
 @Component({
   selector: 'app-follow-notifications',
@@ -60,5 +61,43 @@ export class FollowNotificationsComponent {
     if (days < 7) return `${days}d`;
 
     return date.toLocaleDateString('de-DE', { day: 'numeric', month: 'short' });
+  }
+
+  getContentRoute(notification: FollowNotification): string[] {
+    switch (notification.contentType) {
+      case 'flashcardDeck':
+        return ['/lernen/flashcards', notification.contentId];
+      case 'learningMaterial':
+        return ['/lernen/material', notification.contentId];
+      case 'quiz':
+      default:
+        return ['/quiz', notification.contentId];
+    }
+  }
+
+  getNotificationTextKey(notification: FollowNotification): string {
+    const isUpdate = notification.type?.startsWith('updated-');
+
+    if (isUpdate) {
+      switch (notification.contentType) {
+        case 'flashcardDeck':
+          return 'followNotifications.updatedDeckText';
+        case 'learningMaterial':
+          return 'followNotifications.updatedMaterialText';
+        case 'quiz':
+        default:
+          return 'followNotifications.updatedQuizText';
+      }
+    }
+
+    switch (notification.contentType) {
+      case 'flashcardDeck':
+        return 'followNotifications.newDeckText';
+      case 'learningMaterial':
+        return 'followNotifications.newMaterialText';
+      case 'quiz':
+      default:
+        return 'followNotifications.newQuizText';
+    }
   }
 }

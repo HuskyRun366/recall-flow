@@ -57,7 +57,7 @@
         <div class="notifications-list">
           @for (notification of notifications(); track notification.id) {
             <a
-              [routerLink]="['/quiz', notification.quizId]"
+              [routerLink]="getContentRoute(notification)"
               class="notification-item"
               [class.unread]="!notification.read"
               (click)="onNotificationClick(notification.id)">
@@ -71,9 +71,9 @@
               <div class="notification-content">
                 <p class="notification-text">
                   <strong>{{ notification.authorDisplayName }}</strong>
-                  {{ 'followNotifications.newQuizText' | translate }}
+                  {{ getNotificationTextKey(notification) | translate }}
                 </p>
-                <p class="notification-quiz">{{ notification.quizTitle }}</p>
+                <p class="notification-quiz">{{ notification.contentTitle }}</p>
                 <span class="notification-time">{{ formatTimeAgo(notification.createdAt) }}</span>
               </div>
               <button

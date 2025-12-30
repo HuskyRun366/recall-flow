@@ -597,6 +597,16 @@ export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit
         console.error('Failed to save co-authors:', err);
       }
 
+      // Notify followers if the updated material is public
+      const material = this.material();
+      if (updates.visibility === 'public' && material?.ownerId) {
+        this.followService.notifyFollowersOfMaterialUpdate(
+          this.materialId()!,
+          updates.title || material.title,
+          material.ownerId
+        ).catch(err => console.error('Failed to notify followers of update:', err));
+      }
+
       const hasCoAuthorErrors = this.coAuthorErrors().length > 0;
       this.unsavedChanges.set(hasCoAuthorErrors);
       this.successMessage.set(hasCoAuthorErrors ? 'Gespeichert (Mit-Autoren teilweise fehlgeschlagen)' : 'Alle Änderungen gespeichert');

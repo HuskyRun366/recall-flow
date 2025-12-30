@@ -345,6 +345,16 @@ export class FlashcardEditorComponent implements OnInit {
           this.unsavedChanges.set(false);
           this.successMessage.set('Changes saved');
           setTimeout(() => this.successMessage.set(null), 2000);
+
+          // Notify followers if the updated deck is public
+          const deck = this.deck();
+          if (updates.visibility === 'public' && deck?.ownerId) {
+            this.followService.notifyFollowersOfFlashcardDeckUpdate(
+              this.deckId()!,
+              updates.title || deck.title,
+              deck.ownerId
+            ).catch(err => console.error('Failed to notify followers of update:', err));
+          }
         },
         error: (err) => {
           console.error('Error saving deck:', err);

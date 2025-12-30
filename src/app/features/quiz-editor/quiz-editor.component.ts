@@ -8,6 +8,7 @@ import { ParticipantService } from '../../core/services/participant.service';
 import { AuthService } from '../../core/services/auth.service';
 import { UserLookupService } from '../../core/services/user-lookup.service';
 import { FollowService } from '../../core/services/follow.service';
+import { ToastService } from '../../core/services/toast.service';
 import { Quiz, Question } from '../../models';
 import { firstValueFrom } from 'rxjs';
 import { ToonEditorComponent } from './components/toon-editor/toon-editor.component';
@@ -27,6 +28,7 @@ export class QuizEditorComponent implements OnInit {
   private authService = inject(AuthService);
   private userLookupService = inject(UserLookupService);
   private followService = inject(FollowService);
+  private toastService = inject(ToastService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
@@ -193,7 +195,11 @@ export class QuizEditorComponent implements OnInit {
     // Comprehensive validation
     const validationErrors = this.validateQuiz(quizData, questionsData);
     if (validationErrors.length > 0 || !quizData) {
-      this.error.set(validationErrors.length > 0 ? validationErrors.join(' • ') : 'Quiz data is missing');
+      const errorMessage = validationErrors.length > 0
+        ? validationErrors.join(' • ')
+        : 'Quiz data is missing';
+      this.error.set(errorMessage);
+      this.toastService.error(errorMessage);
       return;
     }
 
@@ -212,12 +218,9 @@ export class QuizEditorComponent implements OnInit {
     try {
       if (this.quizId === 'new') {
         // Create new quiz
-        const newId = await new Promise<string>((resolve, reject) => {
-          this.firestoreService.createQuiz(cleanQuizData as Omit<Quiz, 'id'>).subscribe({
-            next: resolve,
-            error: reject
-          });
-        });
+        const newId = await firstValueFrom(
+          this.firestoreService.createQuiz(cleanQuizData as Omit<Quiz, 'id'>)
+        );
 
         this.quizId = newId;
 
@@ -246,12 +249,9 @@ export class QuizEditorComponent implements OnInit {
         this.isSaving.set(false);
       } else if (this.quizId) {
         // Update existing quiz
-        await new Promise<void>((resolve, reject) => {
-          this.firestoreService.updateQuiz(this.quizId!, cleanQuizData).subscribe({
-            next: () => resolve(),
-            error: reject
-          });
-        });
+        await firstValueFrom(
+          this.firestoreService.updateQuiz(this.quizId!, cleanQuizData)
+        );
 
         // Delete old questions and create new ones
         // Note: In production, you might want a more sophisticated sync algorithm
@@ -268,6 +268,12 @@ export class QuizEditorComponent implements OnInit {
 
         // Save co-authors
         await this.saveCoAuthors(this.quizId);
+
+        // Notify followers if the updated quiz is public
+        if (cleanQuizData.visibility === 'public' && cleanQuizData.ownerId) {
+          this.followService.notifyFollowersOfQuizUpdate(this.quizId, cleanQuizData.title || 'Quiz', cleanQuizData.ownerId)
+            .catch(err => console.error('Failed to notify followers of update:', err));
+        }
 
         this.unsavedChanges.set(false);
         this.isSaving.set(false);

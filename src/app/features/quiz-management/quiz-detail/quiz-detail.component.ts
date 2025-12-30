@@ -118,7 +118,7 @@ export class QuizDetailComponent implements OnInit {
     const uid = this.currentUser()?.uid;
     if (!uid) return;
     this.participantService.getParticipant(quizId, uid).subscribe({
-      next: (p) => this.isEnrolled.set(!!p && p.role === 'participant' || p?.role === 'co-author'),
+      next: (p) => this.isEnrolled.set(!!p && (p.role === 'participant' || p.role === 'co-author')),
       error: (err) => console.error('Enrollment laden fehlgeschlagen', err)
     });
   }

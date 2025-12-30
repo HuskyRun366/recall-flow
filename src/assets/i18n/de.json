@@ -1356,6 +1356,9 @@
     "newQuizText": "hat ein neues Quiz veröffentlicht:",
     "newDeckText": "hat ein neues Flashcard-Deck veröffentlicht:",
     "newMaterialText": "hat neues Lernmaterial veröffentlicht:",
+    "updatedQuizText": "hat ein Quiz aktualisiert:",
+    "updatedDeckText": "hat ein Flashcard-Deck aktualisiert:",
+    "updatedMaterialText": "hat Lernmaterial aktualisiert:",
     "markAllRead": "Alle als gelesen markieren",
     "clearAll": "Alle löschen"
   },
@@ -1495,5 +1498,32 @@
       "selectDifficulty": "Schwierigkeit wählen",
       "selectLanguage": "Sprache wählen"
     }
+  },
+
+  "discovery": {
+    "trending": "Trending",
+    "trendingQuizzes": "Beliebte Quizze",
+    "trendingDescription": "Die beliebtesten Quizze dieser Woche",
+    "recommendations": "Für dich empfohlen",
+    "recommendationsDescription": "Basierend auf deiner Lernhistorie",
+    "noTrending": "Noch keine Trending-Daten verfügbar",
+    "noRecommendations": "Noch keine Empfehlungen verfügbar",
+    "reasonFollowedAuthor": "Von einem Autor, dem du folgst",
+    "reasonCategoryMatch": "Passt zu deinen Interessen",
+    "reasonDifficultyMatch": "Passende Schwierigkeit",
+    "reasonPopular": "Beliebt bei anderen",
+    "rank": "Platz",
+    "score": "Punkte",
+    "lastUpdated": "Zuletzt aktualisiert",
+    "viewAll": "Alle anzeigen"
+  },
+
+  "storage": {
+    "title": "Speicherplatz",
+    "used": "Verwendet",
+    "available": "Verfügbar",
+    "limit": "Limit",
+    "warningNearLimit": "Du erreichst bald dein Speicherlimit",
+    "errorLimitReached": "Speicherlimit erreicht"
   }
 }

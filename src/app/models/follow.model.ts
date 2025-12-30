@@ -37,7 +37,9 @@ export type FollowNotificationContentType = 'quiz' | 'flashcardDeck' | 'learning
 /**
  * Notification types for follow system
  */
-export type FollowNotificationType = 'new-quiz' | 'new-flashcard-deck' | 'new-material';
+export type FollowNotificationType =
+  | 'new-quiz' | 'new-flashcard-deck' | 'new-material'
+  | 'updated-quiz' | 'updated-flashcard-deck' | 'updated-material';
 
 /**
  * Notification when a followed author publishes new content

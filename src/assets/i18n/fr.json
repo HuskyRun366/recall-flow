@@ -1325,9 +1325,14 @@
     "error": "Action échouée"
   },
   "followNotifications": {
-    "title": "Nouveaux quiz",
-    "empty": "Aucun nouveau quiz d'auteurs que vous suivez",
+    "title": "Nouveaux contenus",
+    "empty": "Aucun nouveau contenu d'auteurs que vous suivez",
     "newQuizText": "a publié un nouveau quiz :",
+    "newDeckText": "a publié un nouveau deck de flashcards :",
+    "newMaterialText": "a publié un nouveau contenu d'apprentissage :",
+    "updatedQuizText": "a mis à jour un quiz :",
+    "updatedDeckText": "a mis à jour un deck de flashcards :",
+    "updatedMaterialText": "a mis à jour un contenu d'apprentissage :",
     "markAllRead": "Tout marquer comme lu",
     "clearAll": "Tout effacer"
   },
@@ -1466,5 +1471,30 @@
       "selectDifficulty": "Sélectionner une difficulté",
       "selectLanguage": "Sélectionner une langue"
     }
+  },
+  "discovery": {
+    "trending": "Tendances",
+    "trendingQuizzes": "Quiz en tendance",
+    "trendingDescription": "Les quiz les plus populaires cette semaine",
+    "recommendations": "Recommandé pour vous",
+    "recommendationsDescription": "Basé sur votre historique d’apprentissage",
+    "noTrending": "Aucune donnée de tendance pour le moment",
+    "noRecommendations": "Aucune recommandation pour le moment",
+    "reasonFollowedAuthor": "D’un auteur que vous suivez",
+    "reasonCategoryMatch": "Correspond à vos intérêts",
+    "reasonDifficultyMatch": "Difficulté correspondante",
+    "reasonPopular": "Populaire auprès des autres",
+    "rank": "Classement",
+    "score": "Score",
+    "lastUpdated": "Dernière mise à jour",
+    "viewAll": "Tout voir"
+  },
+  "storage": {
+    "title": "Stockage",
+    "used": "Utilisé",
+    "available": "Disponible",
+    "limit": "Limite",
+    "warningNearLimit": "Vous approchez de votre limite de stockage",
+    "errorLimitReached": "Limite de stockage atteinte"
   }
 }

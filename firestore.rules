@@ -495,5 +495,27 @@ service cloud.firestore {
       allow read: if true;  // Anyone can read config (including featuredContent)
       allow write: if false;  // Only admin SDK can write (server-side)
     }
+
+    // =============================================
+    // TRENDING & RECOMMENDATIONS (server-calculated)
+    // =============================================
+
+    // Trending quizzes (calculated by notification server)
+    match /trending/{quizId} {
+      allow read: if true;  // Anyone can read trending (public data)
+      allow write: if false;  // Only admin SDK can write (server-side)
+    }
+
+    // User recommendations (stored per user by notification server)
+    match /users/{userId}/recommendations/{quizId} {
+      allow read: if isOwner(userId);  // Only owner can read their recommendations
+      allow write: if false;  // Only admin SDK can write (server-side)
+    }
+
+    // System stats (cleanup, storage, trending stats)
+    match /system/{docId} {
+      allow read: if isAuthenticated();  // Authenticated users can read system stats
+      allow write: if false;  // Only admin SDK can write (server-side)
+    }
   }
 }
