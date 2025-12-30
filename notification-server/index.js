@@ -113,7 +113,7 @@ function isValidDocId(id) {
 }
 
 /**
- * Get all user FCM tokens
+ * Get all user FCM tokens (with doc refs for cleanup)
  */
 async function getUserTokens(userId) {
   // Validate userId
@@ -125,18 +125,20 @@ async function getUserTokens(userId) {
   try {
     const tokensSnapshot = await db.collection(`users/${userId}/fcmTokens`).get();
     const tokens = [];
+    const tokenDocs = [];
 
     tokensSnapshot.forEach(doc => {
       const data = doc.data();
       if (data.token && typeof data.token === 'string') {
         tokens.push(data.token);
+        tokenDocs.push({ token: data.token, ref: doc.ref });
       }
     });
 
-    return tokens;
+    return { tokens, tokenDocs };
   } catch (error) {
     console.error(`Error getting tokens for user ${userId}:`, error);
-    return [];
+    return { tokens: [], tokenDocs: [] };
   }
 }
 
@@ -159,7 +161,7 @@ function getContentUrl(contentType, contentId) {
 /**
  * Send push notification to users
  */
-async function sendNotification(tokens, title, body, contentId, type, contentType = 'quiz') {
+async function sendNotification(tokens, title, body, contentId, type, contentType = 'quiz', tokenDocs = []) {
   if (tokens.length === 0) {
     console.log('  ⚠️  No tokens to send to');
     return;
@@ -213,8 +215,19 @@ async function sendNotification(tokens, title, body, contentId, type, contentTyp
 
       if (failedTokens.length > 0) {
         console.log(`  🧹 Cleaning up ${failedTokens.length} invalid tokens...`);
-        // Note: Token cleanup would require knowing which user they belong to
-        // In production, you'd want to store user-token mapping
+
+        const deletes = [];
+        failedTokens.forEach((token, idx) => {
+          const docInfo = tokenDocs[idx];
+          if (docInfo?.ref && docInfo.token === token) {
+            deletes.push(docInfo.ref.delete());
+          }
+        });
+
+        if (deletes.length > 0) {
+          await Promise.all(deletes);
+          console.log(`  ✅ Removed ${deletes.length} invalid token docs`);
+        }
       }
     }
   } catch (error) {
@@ -289,9 +302,11 @@ async function handleQuizUpdate(quizId, beforeData, afterData) {
 
   // Get all tokens
   const allTokens = [];
+  const allTokenDocs = [];
   for (const userId of userIds) {
-    const tokens = await getUserTokens(userId);
+    const { tokens, tokenDocs } = await getUserTokens(userId);
     allTokens.push(...tokens);
+    allTokenDocs.push(...tokenDocs);
   }
 
   // Send notification
@@ -300,7 +315,9 @@ async function handleQuizUpdate(quizId, beforeData, afterData) {
     `Quiz aktualisiert: ${title}`,
     `Das Quiz "${title}" ${changeDescription}`,
     quizId,
-    'quiz-updated'
+    'quiz-updated',
+    'quiz',
+    allTokenDocs
   );
 }
 
@@ -331,9 +348,11 @@ async function handleQuestionCountChange(quizId, quizTitle, oldCount, newCount, 
 
   // Get all tokens
   const allTokens = [];
+  const allTokenDocs = [];
   for (const userId of userIds) {
-    const tokens = await getUserTokens(userId);
+    const { tokens, tokenDocs } = await getUserTokens(userId);
     allTokens.push(...tokens);
+    allTokenDocs.push(...tokenDocs);
   }
 
   // Send notification
@@ -342,7 +361,9 @@ async function handleQuestionCountChange(quizId, quizTitle, oldCount, newCount, 
     diff > 0 ? `Neue Frage: ${quizTitle}` : `Frage gelöscht: ${quizTitle}`,
     `${absDiff} Frage${absDiff > 1 ? 'n' : ''} ${action} in "${quizTitle}"`,
     quizId,
-    type
+    type,
+    'quiz',
+    allTokenDocs
   );
 }
 
@@ -522,7 +543,7 @@ async function handleFollowNotification(notificationId, data) {
   console.log(`   Target user: ${data.userId.substring(0, 8)}...`);
 
   // Get user's tokens
-  const tokens = await getUserTokens(data.userId);
+  const { tokens, tokenDocs } = await getUserTokens(data.userId);
 
   if (tokens.length === 0) {
     console.log('  ℹ️  No tokens for this user');
@@ -537,7 +558,8 @@ async function handleFollowNotification(notificationId, data) {
     notificationText.body,
     contentId,
     notificationType,
-    contentType
+    contentType,
+    tokenDocs
   );
 
   // Mark notification as sent in Firestore
