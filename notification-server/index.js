@@ -63,6 +63,12 @@ const userNotificationRates = new Map();
 const RATE_LIMIT_WINDOW = 60000; // 1 minute
 const RATE_LIMIT_MAX = 10;
 
+// Notification localization (single language per user)
+const DEFAULT_LANGUAGE = 'de';
+const SUPPORTED_LANGUAGES = new Set(['de', 'en', 'fr', 'es']);
+const userLanguageCache = new Map();
+const LANGUAGE_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
 /**
  * Check if user is rate limited
  */
@@ -102,6 +108,31 @@ function sanitizeString(input, maxLength = 200) {
     .trim();
 }
 
+function normalizeLanguage(lang) {
+  if (typeof lang !== 'string') return DEFAULT_LANGUAGE;
+  const normalized = lang.toLowerCase();
+  return SUPPORTED_LANGUAGES.has(normalized) ? normalized : DEFAULT_LANGUAGE;
+}
+
+async function getUserLanguage(userId) {
+  const cached = userLanguageCache.get(userId);
+  const now = Date.now();
+  if (cached && now - cached.updatedAt < LANGUAGE_CACHE_TTL) {
+    return cached.language;
+  }
+
+  try {
+    const userDoc = await db.doc(`users/${userId}`).get();
+    const data = userDoc.exists ? userDoc.data() : null;
+    const language = normalizeLanguage(data?.language || data?.preferredLanguage);
+    userLanguageCache.set(userId, { language, updatedAt: now });
+    return language;
+  } catch (error) {
+    console.error(`Error getting language for user ${userId}:`, error);
+    return DEFAULT_LANGUAGE;
+  }
+}
+
 /**
  * Validate Firebase document ID format
  */
@@ -119,7 +150,7 @@ async function getUserTokens(userId) {
   // Validate userId
   if (!isValidDocId(userId)) {
     console.error(`Invalid userId format: ${userId}`);
-    return [];
+    return { tokens: [], tokenDocs: [] };
   }
 
   try {
@@ -140,6 +171,289 @@ async function getUserTokens(userId) {
     console.error(`Error getting tokens for user ${userId}:`, error);
     return { tokens: [], tokenDocs: [] };
   }
+}
+
+async function getTokensGroupedByLanguage(userIds) {
+  const buckets = new Map();
+
+  for (const userId of userIds) {
+    const { tokens, tokenDocs } = await getUserTokens(userId);
+    if (!tokens.length) continue;
+
+    const language = await getUserLanguage(userId);
+    const bucket = buckets.get(language) || { tokens: [], tokenDocs: [] };
+    bucket.tokens.push(...tokens);
+    bucket.tokenDocs.push(...tokenDocs);
+    buckets.set(language, bucket);
+  }
+
+  return buckets;
+}
+
+const NOTIFICATION_TEXT = {
+  de: {
+    quizUpdate: {
+      title: (title, author) => `Quiz ${title} von ${author} aktualisiert`,
+      body: (title, author) => `Quiz ${title} von ${author} aktualisiert`,
+      changes: {
+        updated: 'wurde aktualisiert',
+        title: 'Titel wurde geändert',
+        description: 'Beschreibung wurde geändert',
+        questions: 'Fragen wurden hinzugefügt/entfernt'
+      }
+    },
+    questionChange: {
+      titleAdd: (title) => `Neue Frage: ${title}`,
+      titleRemove: (title) => `Frage gelöscht: ${title}`,
+      actionAdd: 'hinzugefügt',
+      actionRemove: 'entfernt',
+      body: (count, action, title) => `${count} Frage${count === 1 ? '' : 'n'} ${action} in "${title}"`
+    },
+    follow: {
+      quiz: {
+        new: (author, title) => ({
+          title: `Neues Quiz von ${author}`,
+          body: `"${title}" wurde gerade veröffentlicht`,
+          emoji: '📝'
+        }),
+        updated: (author, title) => ({
+          title: `Quiz ${title} von ${author} aktualisiert`,
+          body: `Quiz ${title} von ${author} aktualisiert`,
+          emoji: '📝'
+        })
+      },
+      flashcardDeck: {
+        new: (author, title) => ({
+          title: `Neues Flashcard-Deck von ${author}`,
+          body: `"${title}" wurde gerade veröffentlicht`,
+          emoji: '🃏'
+        }),
+        updated: (author, title) => ({
+          title: `Flashcard-Deck aktualisiert von ${author}`,
+          body: `"${title}" wurde aktualisiert`,
+          emoji: '🃏'
+        })
+      },
+      learningMaterial: {
+        new: (author, title) => ({
+          title: `Neues Lernmaterial von ${author}`,
+          body: `"${title}" wurde gerade veröffentlicht`,
+          emoji: '📚'
+        }),
+        updated: (author, title) => ({
+          title: `Lernmaterial aktualisiert von ${author}`,
+          body: `"${title}" wurde aktualisiert`,
+          emoji: '📚'
+        })
+      }
+    }
+  },
+  en: {
+    quizUpdate: {
+      title: (title, author) => `Quiz ${title} updated by ${author}`,
+      body: (title, author) => `Quiz ${title} updated by ${author}`,
+      changes: {
+        updated: 'was updated',
+        title: 'title was changed',
+        description: 'description was changed',
+        questions: 'questions were added/removed'
+      }
+    },
+    questionChange: {
+      titleAdd: (title) => `New question: ${title}`,
+      titleRemove: (title) => `Question removed: ${title}`,
+      actionAdd: 'added',
+      actionRemove: 'removed',
+      body: (count, action, title) => `${count} question${count === 1 ? '' : 's'} ${action} in "${title}"`
+    },
+    follow: {
+      quiz: {
+        new: (author, title) => ({
+          title: `New quiz from ${author}`,
+          body: `"${title}" was just published`,
+          emoji: '📝'
+        }),
+        updated: (author, title) => ({
+          title: `Quiz ${title} updated by ${author}`,
+          body: `Quiz ${title} updated by ${author}`,
+          emoji: '📝'
+        })
+      },
+      flashcardDeck: {
+        new: (author, title) => ({
+          title: `New flashcard deck from ${author}`,
+          body: `"${title}" was just published`,
+          emoji: '🃏'
+        }),
+        updated: (author, title) => ({
+          title: `Flashcard deck updated by ${author}`,
+          body: `"${title}" was updated`,
+          emoji: '🃏'
+        })
+      },
+      learningMaterial: {
+        new: (author, title) => ({
+          title: `New learning material from ${author}`,
+          body: `"${title}" was just published`,
+          emoji: '📚'
+        }),
+        updated: (author, title) => ({
+          title: `Learning material updated by ${author}`,
+          body: `"${title}" was updated`,
+          emoji: '📚'
+        })
+      }
+    }
+  },
+  fr: {
+    quizUpdate: {
+      title: (title, author) => `Quiz ${title} de ${author} mis à jour`,
+      body: (title, author) => `Quiz ${title} de ${author} mis à jour`,
+      changes: {
+        updated: 'a été mis à jour',
+        title: 'a changé de titre',
+        description: 'a changé de description',
+        questions: 'a ajouté/supprimé des questions'
+      }
+    },
+    questionChange: {
+      titleAdd: (title) => `Nouvelle question : ${title}`,
+      titleRemove: (title) => `Question supprimée : ${title}`,
+      actionAdd: 'ajoutée',
+      actionRemove: 'supprimée',
+      body: (count, action, title) => `${count} question${count === 1 ? '' : 's'} ${action} dans "${title}"`
+    },
+    follow: {
+      quiz: {
+        new: (author, title) => ({
+          title: `Nouveau quiz de ${author}`,
+          body: `"${title}" vient d'être publié`,
+          emoji: '📝'
+        }),
+        updated: (author, title) => ({
+          title: `Quiz ${title} de ${author} mis à jour`,
+          body: `Quiz ${title} de ${author} mis à jour`,
+          emoji: '📝'
+        })
+      },
+      flashcardDeck: {
+        new: (author, title) => ({
+          title: `Nouveau deck de flashcards de ${author}`,
+          body: `"${title}" vient d'être publié`,
+          emoji: '🃏'
+        }),
+        updated: (author, title) => ({
+          title: `Deck de flashcards mis à jour par ${author}`,
+          body: `"${title}" a été mis à jour`,
+          emoji: '🃏'
+        })
+      },
+      learningMaterial: {
+        new: (author, title) => ({
+          title: `Nouveau contenu d'apprentissage de ${author}`,
+          body: `"${title}" vient d'être publié`,
+          emoji: '📚'
+        }),
+        updated: (author, title) => ({
+          title: `Contenu d'apprentissage mis à jour par ${author}`,
+          body: `"${title}" a été mis à jour`,
+          emoji: '📚'
+        })
+      }
+    }
+  },
+  es: {
+    quizUpdate: {
+      title: (title, author) => `Cuestionario ${title} de ${author} actualizado`,
+      body: (title, author) => `Cuestionario ${title} de ${author} actualizado`,
+      changes: {
+        updated: 'fue actualizado',
+        title: 'cambió de título',
+        description: 'cambió de descripción',
+        questions: 'agregó/eliminó preguntas'
+      }
+    },
+    questionChange: {
+      titleAdd: (title) => `Nueva pregunta: ${title}`,
+      titleRemove: (title) => `Pregunta eliminada: ${title}`,
+      actionAdd: 'agregada',
+      actionRemove: 'eliminada',
+      body: (count, action, title) => `${count} pregunta${count === 1 ? '' : 's'} ${action} en "${title}"`
+    },
+    follow: {
+      quiz: {
+        new: (author, title) => ({
+          title: `Nuevo cuestionario de ${author}`,
+          body: `"${title}" se acaba de publicar`,
+          emoji: '📝'
+        }),
+        updated: (author, title) => ({
+          title: `Cuestionario ${title} de ${author} actualizado`,
+          body: `Cuestionario ${title} de ${author} actualizado`,
+          emoji: '📝'
+        })
+      },
+      flashcardDeck: {
+        new: (author, title) => ({
+          title: `Nuevo mazo de flashcards de ${author}`,
+          body: `"${title}" se acaba de publicar`,
+          emoji: '🃏'
+        }),
+        updated: (author, title) => ({
+          title: `Mazo de flashcards actualizado por ${author}`,
+          body: `"${title}" fue actualizado`,
+          emoji: '🃏'
+        })
+      },
+      learningMaterial: {
+        new: (author, title) => ({
+          title: `Nuevo material de aprendizaje de ${author}`,
+          body: `"${title}" se acaba de publicar`,
+          emoji: '📚'
+        }),
+        updated: (author, title) => ({
+          title: `Material de aprendizaje actualizado por ${author}`,
+          body: `"${title}" fue actualizado`,
+          emoji: '📚'
+        })
+      }
+    }
+  }
+};
+
+function getQuizUpdateChangeKey(beforeData, afterData) {
+  if (!beforeData) return 'updated';
+  if (beforeData.title !== afterData.title) return 'title';
+  if (beforeData.description !== afterData.description) return 'description';
+  if (beforeData.questionCount !== afterData.questionCount) return 'questions';
+  return 'updated';
+}
+
+function getQuizUpdateText(lang, title, author, beforeData, afterData) {
+  const t = NOTIFICATION_TEXT[lang] || NOTIFICATION_TEXT[DEFAULT_LANGUAGE];
+  const changeKey = getQuizUpdateChangeKey(beforeData, afterData);
+  const changeDescription = t.quizUpdate.changes[changeKey] || t.quizUpdate.changes.updated;
+  return {
+    title: t.quizUpdate.title(title, author),
+    body: t.quizUpdate.body(title, author)
+  };
+}
+
+function getQuestionChangeText(lang, quizTitle, diff) {
+  const t = NOTIFICATION_TEXT[lang] || NOTIFICATION_TEXT[DEFAULT_LANGUAGE];
+  const absDiff = Math.abs(diff);
+  const action = diff > 0 ? t.questionChange.actionAdd : t.questionChange.actionRemove;
+  const title = diff > 0 ? t.questionChange.titleAdd(quizTitle) : t.questionChange.titleRemove(quizTitle);
+  const body = t.questionChange.body(absDiff, action, quizTitle);
+  return { title, body };
+}
+
+function getFollowNotificationText(lang, contentType, authorName, contentTitle, isUpdate) {
+  const t = NOTIFICATION_TEXT[lang] || NOTIFICATION_TEXT[DEFAULT_LANGUAGE];
+  const contentGroup = t.follow[contentType] || t.follow.quiz;
+  return isUpdate
+    ? contentGroup.updated(authorName, contentTitle)
+    : contentGroup.new(authorName, contentTitle);
 }
 
 /**
@@ -276,16 +590,11 @@ async function getNotifiableUsers(quizId, excludeUserId = null) {
 async function handleQuizUpdate(quizId, beforeData, afterData) {
   const title = afterData.title || 'Unbenanntes Quiz';
   const ownerId = afterData.ownerId;
+  const authorName = sanitizeString(afterData.ownerDisplayName || 'Unknown', 50);
 
   // Determine what changed
-  let changeDescription = 'wurde aktualisiert';
-  if (beforeData && beforeData.title !== afterData.title) {
-    changeDescription = 'Titel wurde geändert';
-  } else if (beforeData && beforeData.description !== afterData.description) {
-    changeDescription = 'Beschreibung wurde geändert';
-  } else if (beforeData && beforeData.questionCount !== afterData.questionCount) {
-    changeDescription = 'Fragen wurden hinzugefügt/entfernt';
-  }
+  const changeKey = getQuizUpdateChangeKey(beforeData, afterData);
+  const changeDescription = NOTIFICATION_TEXT[DEFAULT_LANGUAGE].quizUpdate.changes[changeKey];
 
   console.log(`📝 Quiz updated: "${title}" - ${changeDescription}`);
 
@@ -300,25 +609,24 @@ async function handleQuizUpdate(quizId, beforeData, afterData) {
 
   console.log(`  👥 Notifying ${userIds.length} co-authors...`);
 
-  // Get all tokens
-  const allTokens = [];
-  const allTokenDocs = [];
-  for (const userId of userIds) {
-    const { tokens, tokenDocs } = await getUserTokens(userId);
-    allTokens.push(...tokens);
-    allTokenDocs.push(...tokenDocs);
+  const tokenBuckets = await getTokensGroupedByLanguage(userIds);
+  if (tokenBuckets.size === 0) {
+    console.log('  ℹ️  No tokens to notify');
+    return;
   }
 
-  // Send notification
-  await sendNotification(
-    allTokens,
-    `Quiz aktualisiert: ${title}`,
-    `Das Quiz "${title}" ${changeDescription}`,
-    quizId,
-    'quiz-updated',
-    'quiz',
-    allTokenDocs
-  );
+  for (const [lang, bucket] of tokenBuckets.entries()) {
+    const text = getQuizUpdateText(lang, title, authorName, beforeData, afterData);
+    await sendNotification(
+      bucket.tokens,
+      text.title,
+      text.body,
+      quizId,
+      'quiz-updated',
+      'quiz',
+      bucket.tokenDocs
+    );
+  }
 }
 
 /**
@@ -346,25 +654,24 @@ async function handleQuestionCountChange(quizId, quizTitle, oldCount, newCount, 
 
   console.log(`  👥 Notifying ${userIds.length} co-authors...`);
 
-  // Get all tokens
-  const allTokens = [];
-  const allTokenDocs = [];
-  for (const userId of userIds) {
-    const { tokens, tokenDocs } = await getUserTokens(userId);
-    allTokens.push(...tokens);
-    allTokenDocs.push(...tokenDocs);
+  const tokenBuckets = await getTokensGroupedByLanguage(userIds);
+  if (tokenBuckets.size === 0) {
+    console.log('  ℹ️  No tokens to notify');
+    return;
   }
 
-  // Send notification
-  await sendNotification(
-    allTokens,
-    diff > 0 ? `Neue Frage: ${quizTitle}` : `Frage gelöscht: ${quizTitle}`,
-    `${absDiff} Frage${absDiff > 1 ? 'n' : ''} ${action} in "${quizTitle}"`,
-    quizId,
-    type,
-    'quiz',
-    allTokenDocs
-  );
+  for (const [lang, bucket] of tokenBuckets.entries()) {
+    const text = getQuestionChangeText(lang, quizTitle, diff);
+    await sendNotification(
+      bucket.tokens,
+      text.title,
+      text.body,
+      quizId,
+      type,
+      'quiz',
+      bucket.tokenDocs
+    );
+  }
 }
 
 /**
@@ -431,58 +738,6 @@ function startQuizListener() {
 }
 
 /**
- * Get notification title and body based on content type and whether it's an update
- */
-function getNotificationText(contentType, authorName, contentTitle, isUpdate = false) {
-  if (isUpdate) {
-    switch (contentType) {
-      case 'flashcardDeck':
-        return {
-          title: `Flashcard-Deck aktualisiert von ${authorName}`,
-          body: `"${contentTitle}" wurde aktualisiert`,
-          emoji: '🃏'
-        };
-      case 'learningMaterial':
-        return {
-          title: `Lernmaterial aktualisiert von ${authorName}`,
-          body: `"${contentTitle}" wurde aktualisiert`,
-          emoji: '📚'
-        };
-      case 'quiz':
-      default:
-        return {
-          title: `Quiz aktualisiert von ${authorName}`,
-          body: `"${contentTitle}" wurde aktualisiert`,
-          emoji: '📝'
-        };
-    }
-  }
-
-  // New content
-  switch (contentType) {
-    case 'flashcardDeck':
-      return {
-        title: `Neues Flashcard-Deck von ${authorName}`,
-        body: `"${contentTitle}" wurde gerade veröffentlicht`,
-        emoji: '🃏'
-      };
-    case 'learningMaterial':
-      return {
-        title: `Neues Lernmaterial von ${authorName}`,
-        body: `"${contentTitle}" wurde gerade veröffentlicht`,
-        emoji: '📚'
-      };
-    case 'quiz':
-    default:
-      return {
-        title: `Neues Quiz von ${authorName}`,
-        body: `"${contentTitle}" wurde gerade veröffentlicht`,
-        emoji: '📝'
-      };
-  }
-}
-
-/**
  * Handle follow notification (new or updated content from followed author)
  */
 async function handleFollowNotification(notificationId, data) {
@@ -536,7 +791,8 @@ async function handleFollowNotification(notificationId, data) {
   const sanitizedTitle = sanitizeString(contentTitle, 100);
 
   // Get content-specific notification text
-  const notificationText = getNotificationText(contentType, authorName, sanitizedTitle, isUpdate);
+  const language = await getUserLanguage(data.userId);
+  const notificationText = getFollowNotificationText(language, contentType, authorName, sanitizedTitle, isUpdate);
   const action = isUpdate ? 'updated' : 'published';
 
   console.log(`${notificationText.emoji} Follow notification: "${authorName}" ${action} "${sanitizedTitle}" (${contentType})`);

@@ -7,4 +7,5 @@ export interface User {
   createdAt: Date;
   followerCount?: number;
   followingCount?: number;
+  language?: 'de' | 'en' | 'fr' | 'es';
 }

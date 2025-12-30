@@ -1,5 +1,7 @@
 import { Injectable, inject, signal, computed, effect } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Firestore, doc, updateDoc, serverTimestamp } from '@angular/fire/firestore';
+import { AuthService } from './auth.service';
 
 export type SupportedLanguage = 'de' | 'en' | 'fr' | 'es';
 
@@ -23,6 +25,10 @@ export interface LanguageInfo {
 export class LanguageService {
   private readonly LANGUAGE_STORAGE_KEY = 'app-language';
   private translateService = inject(TranslateService);
+  private authService = inject(AuthService);
+  private firestore = inject(Firestore);
+  private lastSyncedUserId: string | null = null;
+  private lastSyncedLanguage: SupportedLanguage | null = null;
 
   // Available languages
   readonly availableLanguages: LanguageInfo[] = [
@@ -53,6 +59,32 @@ export class LanguageService {
     effect(() => {
       const lang = this.languageSignal();
       localStorage.setItem(this.LANGUAGE_STORAGE_KEY, lang);
+    });
+
+    // Persist language to the user profile (one language per user)
+    effect(() => {
+      const lang = this.languageSignal();
+      const user = this.authService.currentUser();
+
+      if (!user) {
+        this.lastSyncedUserId = null;
+        this.lastSyncedLanguage = null;
+        return;
+      }
+
+      if (this.lastSyncedUserId === user.uid && this.lastSyncedLanguage === lang) {
+        return;
+      }
+
+      this.lastSyncedUserId = user.uid;
+      this.lastSyncedLanguage = lang;
+
+      updateDoc(doc(this.firestore, `users/${user.uid}`), {
+        language: lang,
+        languageUpdatedAt: serverTimestamp()
+      }).catch(error => {
+        console.warn('Could not update user language:', error);
+      });
     });
   }
 
