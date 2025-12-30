@@ -347,49 +347,54 @@ async function handleQuestionCountChange(quizId, quizTitle, oldCount, newCount) 
 function startQuizListener() {
   console.log('👂 Starting quiz change listener...');
 
-  db.collection('quizzes').onSnapshot(snapshot => {
-    snapshot.docChanges().forEach(async change => {
-      const quizId = change.doc.id;
-      const data = change.doc.data();
-      const currentUpdate = data.updatedAt?.toDate() || new Date();
-      const lastUpdate = quizLastUpdated.get(quizId);
-      const previousData = quizLastData.get(quizId);
+  db.collection('quizzes').onSnapshot(async snapshot => {
+    // Process changes sequentially to avoid race conditions and properly handle errors
+    for (const change of snapshot.docChanges()) {
+      try {
+        const quizId = change.doc.id;
+        const data = change.doc.data();
+        const currentUpdate = data.updatedAt?.toDate() || new Date();
+        const lastUpdate = quizLastUpdated.get(quizId);
+        const previousData = quizLastData.get(quizId);
 
-      if (change.type === 'added') {
-        quizLastUpdated.set(quizId, currentUpdate);
-        quizLastData.set(quizId, data);
-        return;
-      }
-
-      if (change.type === 'modified') {
-        // Skip if this is initial load or not a real update
-        if (!lastUpdate || currentUpdate <= lastUpdate) {
+        if (change.type === 'added') {
           quizLastUpdated.set(quizId, currentUpdate);
           quizLastData.set(quizId, data);
-          return;
+          continue;
         }
 
-        const questionCountChanged = previousData && previousData.questionCount !== data.questionCount;
-        const titleChanged = previousData && previousData.title !== data.title;
-        const descriptionChanged = previousData && previousData.description !== data.description;
+        if (change.type === 'modified') {
+          // Skip if this is initial load or not a real update
+          if (!lastUpdate || currentUpdate <= lastUpdate) {
+            quizLastUpdated.set(quizId, currentUpdate);
+            quizLastData.set(quizId, data);
+            continue;
+          }
 
-        // If only question count changed, send a single question-change notification.
-        // Otherwise, send a single general update notification.
-        if (questionCountChanged && !titleChanged && !descriptionChanged) {
-          await handleQuestionCountChange(
-            quizId,
-            data.title || 'Quiz',
-            previousData?.questionCount || 0,
-            data.questionCount || 0
-          );
-        } else {
-          await handleQuizUpdate(quizId, previousData || null, data);
+          const questionCountChanged = previousData && previousData.questionCount !== data.questionCount;
+          const titleChanged = previousData && previousData.title !== data.title;
+          const descriptionChanged = previousData && previousData.description !== data.description;
+
+          // If only question count changed, send a single question-change notification.
+          // Otherwise, send a single general update notification.
+          if (questionCountChanged && !titleChanged && !descriptionChanged) {
+            await handleQuestionCountChange(
+              quizId,
+              data.title || 'Quiz',
+              previousData?.questionCount || 0,
+              data.questionCount || 0
+            );
+          } else {
+            await handleQuizUpdate(quizId, previousData || null, data);
+          }
+
+          quizLastUpdated.set(quizId, currentUpdate);
+          quizLastData.set(quizId, data);
         }
-
-        quizLastUpdated.set(quizId, currentUpdate);
-        quizLastData.set(quizId, data);
+      } catch (error) {
+        console.error(`❌ Error processing quiz change ${change.doc.id}:`, error);
       }
-    });
+    }
   }, error => {
     console.error('❌ Quiz listener error:', error);
   });
@@ -549,20 +554,25 @@ function startFollowNotificationListener() {
   // Handles both new notifications (pushSent: false) and legacy ones (pushSent: undefined)
   db.collection('followNotifications')
     .where('read', '==', false)
-    .onSnapshot(snapshot => {
-      snapshot.docChanges().forEach(async change => {
-        if (change.type === 'added') {
-          const notificationId = change.doc.id;
-          const data = change.doc.data();
+    .onSnapshot(async snapshot => {
+      // Process changes sequentially to avoid race conditions and properly handle errors
+      for (const change of snapshot.docChanges()) {
+        try {
+          if (change.type === 'added') {
+            const notificationId = change.doc.id;
+            const data = change.doc.data();
 
-          // Only process if:
-          // 1. Valid notification type
-          // 2. Push hasn't been sent yet (pushSent is false or undefined)
-          if (validTypes.includes(data.type) && data.pushSent !== true) {
-            await handleFollowNotification(notificationId, data);
+            // Only process if:
+            // 1. Valid notification type
+            // 2. Push hasn't been sent yet (pushSent is false or undefined)
+            if (validTypes.includes(data.type) && data.pushSent !== true) {
+              await handleFollowNotification(notificationId, data);
+            }
           }
+        } catch (error) {
+          console.error(`❌ Error processing follow notification ${change.doc.id}:`, error);
         }
-      });
+      }
     }, error => {
       console.error('❌ Follow notification listener error:', error);
     });
@@ -1167,6 +1177,17 @@ const server = createServer(async (req, res) => {
     await updateStorageQuotas();
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ success: true, message: 'Storage quotas updated' }));
+  }
+  // Wake endpoint - called by Angular app when notifications are created
+  // This wakes the server on Render.com free tier so listeners can process notifications
+  else if (path === '/api/wake' && (req.method === 'POST' || req.method === 'GET')) {
+    console.log('👋 Wake request received from Angular app');
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      status: 'awake',
+      timestamp: new Date().toISOString(),
+      message: 'Server is now active and processing notifications'
+    }));
   }
   // Get system stats
   else if (path === '/api/stats' && req.method === 'GET') {

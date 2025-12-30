@@ -17,6 +17,7 @@ import {
 import { Observable, from, map } from 'rxjs';
 import { FollowingEntry, FollowerEntry, User, FollowNotificationContentType, FollowNotificationType } from '../../models';
 import { AuthService } from './auth.service';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -323,6 +324,10 @@ export class FollowService {
 
       await batch.commit();
     }
+
+    // Wake up the notification server to process the new notifications
+    // This is non-blocking and best-effort
+    this.wakeNotificationServer();
   }
 
   /**
@@ -432,5 +437,38 @@ export class FollowService {
       }
     });
     return result;
+  }
+
+  /**
+   * Wake up the notification server on Render.com free tier.
+   * This is called after creating notifications to ensure the server
+   * is awake and can process push notifications via Firestore listeners.
+   */
+  private async wakeNotificationServer(): Promise<void> {
+    const serverConfig = (environment as any).notificationServer;
+
+    // Skip if not configured or disabled
+    if (!serverConfig?.enabled || !serverConfig?.url) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${serverConfig.url}/api/wake`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        console.log('✅ Notification server woken up successfully');
+      } else {
+        console.warn('⚠️ Failed to wake notification server:', response.status);
+      }
+    } catch (error) {
+      // Don't throw - this is a best-effort wake call
+      // The server might already be awake or temporarily unavailable
+      console.warn('⚠️ Could not reach notification server:', error);
+    }
   }
 }

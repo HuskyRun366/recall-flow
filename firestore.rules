@@ -94,8 +94,7 @@ service cloud.firestore {
 
       // FCM tokens for push notifications
       match /fcmTokens/{token} {
-        allow create, delete: if request.auth != null && request.auth.uid == userId;
-        allow read: if request.auth != null && request.auth.uid == userId;
+        allow read, create, update, delete: if request.auth != null && request.auth.uid == userId;
       }
     }
 

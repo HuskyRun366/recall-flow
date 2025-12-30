@@ -28,5 +28,9 @@ export const environment = {
     country: '',
     streetAndHouseNumber: '',
     city: ''
+  },
+  notificationServer: {
+    url: 'https://your-notification-server.onrender.com', // Render.com notification server URL
+    enabled: true // Set to false to disable server wake calls
   }
 };

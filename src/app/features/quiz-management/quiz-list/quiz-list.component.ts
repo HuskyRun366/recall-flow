@@ -12,7 +12,7 @@ import { ToastService } from '../../../core/services/toast.service';
 import { SkeletonLoaderComponent } from '../../../shared/components/skeleton-loader/skeleton-loader.component';
 import { StatCardComponent, StatCardConfig } from '../../../shared/components';
 import { Quiz, UserQuizReference } from '../../../models';
-import { combineLatest, forkJoin, of, timeout } from 'rxjs';
+import { combineLatest, forkJoin, of, timeout, firstValueFrom } from 'rxjs';
 import { switchMap, map, catchError } from 'rxjs/operators';
 import { PullToRefreshDirective } from '../../../shared/directives/pull-to-refresh.directive';
 
@@ -449,12 +449,9 @@ export class QuizListComponent implements OnInit {
 
     try {
       // Look up quiz by join code
-      const quiz = await new Promise<Quiz | null>((resolve, reject) => {
-        this.firestoreService.getQuizByJoinCode(code).subscribe({
-          next: resolve,
-          error: reject
-        });
-      });
+      const quiz = await firstValueFrom(
+        this.firestoreService.getQuizByJoinCode(code)
+      );
 
       if (!quiz) {
         this.joinError.set('Kein Quiz mit diesem Code gefunden.');

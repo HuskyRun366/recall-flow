@@ -1,6 +1,6 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, effect } from '@angular/core';
 import { Messaging, getToken, onMessage } from '@angular/fire/messaging';
-import { Firestore, doc, setDoc, deleteDoc } from '@angular/fire/firestore';
+import { Firestore, doc, setDoc, deleteDoc, collection, getDocs } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 import { PwaDetectionService } from './pwa-detection.service';
 import { environment } from '../../../environments/environment';
@@ -13,6 +13,9 @@ export class PushNotificationService {
   private firestore = inject(Firestore);
   private authService = inject(AuthService);
   private pwaDetection = inject(PwaDetectionService);
+  private deviceInfo = this.getDeviceInfo();
+  private deviceId = this.getOrCreateDeviceId();
+  private deviceFingerprint = this.deviceInfo.fingerprint;
 
   // Signals
   notificationPermission = signal<NotificationPermission>('default');
@@ -25,6 +28,16 @@ export class PushNotificationService {
     this.checkPermission();
     this.loadUserPreference();
     this.listenForMessages();
+
+    // Sync token automatically when user is logged in and permission is already granted
+    effect(() => {
+      const user = this.authService.currentUser();
+      if (!user) return;
+      if (!this.isSupported()) return;
+      if (this.notificationPermission() !== 'granted') return;
+      if (this.isUserDisabled()) return;
+      this.syncTokenForUser(user.uid);
+    });
   }
 
   /**
@@ -140,20 +153,26 @@ export class PushNotificationService {
 
   /**
    * Store FCM token in Firestore
-   * Stored at: users/{userId}/fcmTokens/{token}
+   * Stored at: users/{userId}/fcmTokens/{deviceId}
    */
   private async storeTokenInFirestore(token: string, userId: string): Promise<void> {
     try {
-      const tokenDoc = doc(this.firestore, `users/${userId}/fcmTokens/${token}`);
+      const tokenDoc = doc(this.firestore, `users/${userId}/fcmTokens/${this.deviceId}`);
 
       await setDoc(tokenDoc, {
         token,
+        deviceId: this.deviceId,
+        deviceFingerprint: this.deviceFingerprint,
         createdAt: new Date(),
-        userAgent: navigator.userAgent,
-        platform: navigator.platform
-      });
+        updatedAt: new Date(),
+        userAgent: this.deviceInfo.userAgent,
+        platform: this.deviceInfo.platform
+      }, { merge: true });
 
       console.log('✅ FCM token stored in Firestore');
+
+      // Clean up duplicates for this device
+      await this.cleanupDuplicateTokens(userId, token);
     } catch (error) {
       console.error('Error storing FCM token:', error);
     }
@@ -175,8 +194,18 @@ export class PushNotificationService {
     }
 
     try {
-      const tokenDoc = doc(this.firestore, `users/${currentUser.uid}/fcmTokens/${token}`);
-      await deleteDoc(tokenDoc);
+      // Remove current device token doc
+      const deviceDoc = doc(this.firestore, `users/${currentUser.uid}/fcmTokens/${this.deviceId}`);
+      await deleteDoc(deviceDoc);
+
+      // Remove legacy token doc (old schema)
+      if (token) {
+        const legacyTokenDoc = doc(this.firestore, `users/${currentUser.uid}/fcmTokens/${token}`);
+        await deleteDoc(legacyTokenDoc);
+      }
+
+      // Remove any other duplicates for this device
+      await this.removeTokensForCurrentDevice(currentUser.uid, token || null);
 
       this.fcmToken.set(null);
 
@@ -223,6 +252,157 @@ export class PushNotificationService {
           requireInteraction: false
         });
       });
+    }
+  }
+
+  /**
+   * Sync token if permission is already granted (no user interaction required)
+   */
+  private async syncTokenForUser(userId: string): Promise<void> {
+    try {
+      const token = await this.getFCMToken();
+      if (token) {
+        await this.storeTokenInFirestore(token, userId);
+      }
+    } catch (error) {
+      console.error('Error syncing FCM token:', error);
+    }
+  }
+
+  /**
+   * Remove duplicate tokens for the current device.
+   * Keeps the current device doc, removes older/legacy duplicates.
+   */
+  private async cleanupDuplicateTokens(userId: string, token: string): Promise<void> {
+    try {
+      const tokensSnapshot = await getDocs(collection(this.firestore, `users/${userId}/fcmTokens`));
+      const deletions: Promise<void>[] = [];
+
+      tokensSnapshot.forEach(docSnap => {
+        const data = docSnap.data() as any;
+        const isCurrentDoc = docSnap.id === this.deviceId;
+        const sameDeviceId = data.deviceId && data.deviceId === this.deviceId;
+        const sameFingerprint = data.deviceFingerprint && data.deviceFingerprint === this.deviceFingerprint;
+        const sameLegacySignature = !data.deviceFingerprint
+          && data.userAgent === this.deviceInfo.userAgent
+          && data.platform === this.deviceInfo.platform;
+        const sameToken = data.token === token;
+
+        if (!isCurrentDoc && (sameDeviceId || sameFingerprint || sameLegacySignature || sameToken)) {
+          deletions.push(deleteDoc(docSnap.ref));
+        }
+      });
+
+      if (deletions.length > 0) {
+        await Promise.all(deletions);
+        console.log(`🧹 Cleaned up ${deletions.length} duplicate FCM tokens`);
+      }
+    } catch (error) {
+      console.error('Error cleaning up duplicate tokens:', error);
+    }
+  }
+
+  /**
+   * Remove all tokens that match the current device fingerprint (opt-out for this device).
+   */
+  private async removeTokensForCurrentDevice(userId: string, token: string | null): Promise<void> {
+    try {
+      const tokensSnapshot = await getDocs(collection(this.firestore, `users/${userId}/fcmTokens`));
+      const deletions: Promise<void>[] = [];
+
+      tokensSnapshot.forEach(docSnap => {
+        const data = docSnap.data() as any;
+        const sameDeviceId = data.deviceId && data.deviceId === this.deviceId;
+        const sameFingerprint = data.deviceFingerprint && data.deviceFingerprint === this.deviceFingerprint;
+        const sameLegacySignature = !data.deviceFingerprint
+          && data.userAgent === this.deviceInfo.userAgent
+          && data.platform === this.deviceInfo.platform;
+        const sameToken = token && data.token === token;
+
+        if (sameDeviceId || sameFingerprint || sameLegacySignature || sameToken) {
+          deletions.push(deleteDoc(docSnap.ref));
+        }
+      });
+
+      if (deletions.length > 0) {
+        await Promise.all(deletions);
+        console.log(`🧹 Removed ${deletions.length} tokens for this device`);
+      }
+    } catch (error) {
+      console.error('Error removing tokens for current device:', error);
+    }
+  }
+
+  private getOrCreateDeviceId(): string {
+    try {
+      if (typeof window === 'undefined') {
+        return 'server';
+      }
+      const key = 'fcm-device-id';
+      const existing = localStorage.getItem(key);
+      if (existing) return existing;
+
+      const newId = typeof crypto !== 'undefined' && 'randomUUID' in crypto
+        ? crypto.randomUUID()
+        : `dev-${Math.random().toString(36).slice(2)}-${Date.now().toString(36)}`;
+      localStorage.setItem(key, newId);
+      return newId;
+    } catch {
+      return `dev-${Math.random().toString(36).slice(2)}-${Date.now().toString(36)}`;
+    }
+  }
+
+  private getDeviceInfo(): {
+    userAgent: string;
+    platform: string;
+    language: string;
+    screenWidth: number | null;
+    screenHeight: number | null;
+    devicePixelRatio: number | null;
+    fingerprint: string;
+  } {
+    try {
+      if (typeof window === 'undefined') {
+        return {
+          userAgent: '',
+          platform: '',
+          language: '',
+          screenWidth: null,
+          screenHeight: null,
+          devicePixelRatio: null,
+          fingerprint: 'server'
+        };
+      }
+      const info = {
+        userAgent: navigator.userAgent || '',
+        platform: navigator.platform || '',
+        language: navigator.language || '',
+        screenWidth: typeof screen !== 'undefined' ? screen.width : null,
+        screenHeight: typeof screen !== 'undefined' ? screen.height : null,
+        devicePixelRatio: typeof window !== 'undefined' ? window.devicePixelRatio : null
+      };
+      const parts = [
+        info.userAgent,
+        info.platform,
+        info.language,
+        String(info.screenWidth ?? ''),
+        String(info.screenHeight ?? ''),
+        String(info.devicePixelRatio ?? '')
+      ];
+      return {
+        ...info,
+        fingerprint: parts.join('|')
+      };
+    } catch {
+      return {
+        userAgent: '',
+        platform: '',
+        language: '',
+        screenWidth: null,
+        screenHeight: null,
+        devicePixelRatio: null,
+        fingerprint: 'unknown'
+      };
     }
   }
 
