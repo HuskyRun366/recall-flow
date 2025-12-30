@@ -21,11 +21,10 @@
 
 #main-content {
   position: relative;
-  min-height: calc(100vh - 64px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); // Account for header height + iOS safe areas
+  min-height: calc(100vh - 64px); // Account for header height
   overflow-x: hidden;
   background: var(--color-background);
   isolation: isolate;
-  padding-bottom: env(safe-area-inset-bottom);
 
   &.route-transitioning {
     overflow: hidden;
@@ -38,13 +37,13 @@
 
 @supports (height: 100dvh) {
   #main-content {
-    min-height: calc(100dvh - 64px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    min-height: calc(100dvh - 64px);
   }
 }
 
 @supports (-webkit-touch-callout: none) {
   #main-content {
-    min-height: calc(-webkit-fill-available - 64px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    min-height: calc(-webkit-fill-available - 64px);
   }
 }
 
