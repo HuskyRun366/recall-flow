@@ -53,7 +53,7 @@ console.log(`📊 Project: ${serviceAccount.project_id}`);
 
 // Track last known state of each quiz to detect real changes
 const quizLastUpdated = new Map();
-const quizQuestionCounts = new Map();
+const quizLastData = new Map();
 
 // Track processed follow notifications to avoid duplicates
 const processedFollowNotifications = new Set();
@@ -351,33 +351,43 @@ function startQuizListener() {
     snapshot.docChanges().forEach(async change => {
       const quizId = change.doc.id;
       const data = change.doc.data();
+      const currentUpdate = data.updatedAt?.toDate() || new Date();
+      const lastUpdate = quizLastUpdated.get(quizId);
+      const previousData = quizLastData.get(quizId);
+
+      if (change.type === 'added') {
+        quizLastUpdated.set(quizId, currentUpdate);
+        quizLastData.set(quizId, data);
+        return;
+      }
 
       if (change.type === 'modified') {
-        // Get previous state
-        const lastUpdate = quizLastUpdated.get(quizId);
-        const currentUpdate = data.updatedAt?.toDate() || new Date();
-
         // Skip if this is initial load or not a real update
         if (!lastUpdate || currentUpdate <= lastUpdate) {
           quizLastUpdated.set(quizId, currentUpdate);
+          quizLastData.set(quizId, data);
           return;
         }
 
-        // Real update detected
-        await handleQuizUpdate(quizId, null, data);
-        quizLastUpdated.set(quizId, currentUpdate);
-      }
+        const questionCountChanged = previousData && previousData.questionCount !== data.questionCount;
+        const titleChanged = previousData && previousData.title !== data.title;
+        const descriptionChanged = previousData && previousData.description !== data.description;
 
-      // Track question count for this quiz
-      if (data.questionCount !== undefined) {
-        const oldCount = quizQuestionCounts.get(quizId);
-        const newCount = data.questionCount;
-
-        if (oldCount !== undefined && oldCount !== newCount) {
-          await handleQuestionCountChange(quizId, data.title, oldCount, newCount);
+        // If only question count changed, send a single question-change notification.
+        // Otherwise, send a single general update notification.
+        if (questionCountChanged && !titleChanged && !descriptionChanged) {
+          await handleQuestionCountChange(
+            quizId,
+            data.title || 'Quiz',
+            previousData?.questionCount || 0,
+            data.questionCount || 0
+          );
+        } else {
+          await handleQuizUpdate(quizId, previousData || null, data);
         }
 
-        quizQuestionCounts.set(quizId, newCount);
+        quizLastUpdated.set(quizId, currentUpdate);
+        quizLastData.set(quizId, data);
       }
     });
   }, error => {
@@ -385,59 +395,6 @@ function startQuizListener() {
   });
 
   console.log('✅ Quiz listener active');
-}
-
-/**
- * Start listening to question changes
- */
-function startQuestionListener() {
-  console.log('👂 Starting question change listener...');
-
-  // Track question counts per quiz
-  const questionCountsByQuiz = new Map();
-
-  db.collection('questions').onSnapshot(snapshot => {
-    // Count questions per quiz
-    const currentCounts = new Map();
-
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      const quizId = data.quizId;
-
-      if (quizId) {
-        currentCounts.set(quizId, (currentCounts.get(quizId) || 0) + 1);
-      }
-    });
-
-    // Check for changes
-    snapshot.docChanges().forEach(async change => {
-      const data = change.doc.data();
-      const quizId = data.quizId;
-
-      if (!quizId) return;
-
-      // Get quiz info
-      const quizDoc = await db.doc(`quizzes/${quizId}`).get();
-      if (!quizDoc.exists) return;
-
-      const quizTitle = quizDoc.data().title || 'Quiz';
-      const oldCount = questionCountsByQuiz.get(quizId) || 0;
-      const newCount = currentCounts.get(quizId) || 0;
-
-      if (oldCount !== newCount && oldCount > 0) {
-        await handleQuestionCountChange(quizId, quizTitle, oldCount, newCount);
-      }
-    });
-
-    // Update tracked counts
-    currentCounts.forEach((count, quizId) => {
-      questionCountsByQuiz.set(quizId, count);
-    });
-  }, error => {
-    console.error('❌ Question listener error:', error);
-  });
-
-  console.log('✅ Question listener active');
 }
 
 /**
@@ -1245,7 +1202,6 @@ server.listen(PORT, () => {
 
   // Start Firestore listeners
   startQuizListener();
-  startQuestionListener();
   startFollowNotificationListener();
 
   // Start scheduled background jobs
@@ -1254,7 +1210,6 @@ server.listen(PORT, () => {
   console.log('\n🎉 Notification server is ready!\n');
   console.log('📡 Active listeners:');
   console.log('   - Quiz changes (updates, title, description)');
-  console.log('   - Question changes (added, deleted)');
   console.log('   - Follow notifications (new/updated content from followed author)');
   console.log('');
   console.log('🔄 Scheduled jobs:');
