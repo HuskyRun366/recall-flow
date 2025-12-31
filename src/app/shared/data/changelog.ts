@@ -13,6 +13,54 @@ export interface ChangelogItem {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '2.8',
+    date: new Date('2025-12-30'),
+    title: 'Benachrichtigungs-System Verbesserungen',
+    changes: [
+      { type: 'feature', text: 'Mehrsprachige Push-Benachrichtigungen (DE, EN, FR, ES) basierend auf Benutzersprache' },
+      { type: 'feature', text: 'Server Wake-Up Mechanismus für zuverlässige Push-Zustellung auf Render.com Free Tier' },
+      { type: 'bugfix', text: 'Doppelte Push-Benachrichtigungen beim Quiz-Update behoben (Service Worker Fix)' },
+      { type: 'bugfix', text: 'Quiz-Besitzer erhalten keine Benachrichtigungen mehr über eigene Änderungen' },
+      { type: 'improvement', text: 'Optimierter Quiz-Listener mit besserer Update-Erkennung' },
+      { type: 'improvement', text: 'Verbesserte Min-Height Berechnung für Main Content' }
+    ]
+  },
+  {
+    version: '2.7',
+    date: new Date('2025-12-29'),
+    title: 'Folgen-System & Hintergrund-Sync',
+    changes: [
+      { type: 'feature', text: 'Autoren folgen: Follow/Unfollow Button auf Quiz-Detailseite und Autorenprofil' },
+      { type: 'feature', text: 'Follower-Benachrichtigungen: Push-Notifications bei neuen/aktualisierten Inhalten von gefolgten Autoren' },
+      { type: 'feature', text: 'Autorenprofil-Seite mit öffentlichen Quizzen und Follower-Statistiken' },
+      { type: 'improvement', text: 'Verbesserter Background Sync für Progress-Daten' },
+      { type: 'improvement', text: 'Optimierte Loading States bei Theme-Auswahl' },
+      { type: 'improvement', text: 'Theme-Auswahl mit verbesserter Barrierefreiheit' }
+    ]
+  },
+  {
+    version: '2.6',
+    date: new Date('2025-12-23'),
+    title: 'AI Material Generator & Kontoverwaltung',
+    changes: [
+      { type: 'feature', text: 'AI Material Generator: Automatische Erstellung von Lernmaterialien mit Datei-Upload (Bilder/PDFs)' },
+      { type: 'feature', text: 'Konfigurierbare AI-Generierung mit Sprachauswahl und Detailgrad' },
+      { type: 'feature', text: 'Datenexport: Alle persönlichen Daten als JSON herunterladen' },
+      { type: 'feature', text: 'Konto löschen: Vollständige Löschung aller Benutzerdaten mit Bestätigung' }
+    ]
+  },
+  {
+    version: '2.5',
+    date: new Date('2025-12-22'),
+    title: 'Quiz Analytics & Barrierefreiheit',
+    changes: [
+      { type: 'feature', text: 'Quiz Analytics Dashboard mit detaillierten Statistiken und Visualisierungen' },
+      { type: 'feature', text: 'Fragen-Performance Analyse: Schwierigkeitsgrad, Erfolgsquoten, häufige Fehler' },
+      { type: 'feature', text: 'Teilnehmer-Statistiken: Lernfortschritt und Aktivitäts-Timeline' },
+      { type: 'feature', text: 'OpenDyslexic Schriftart für verbesserte Lesbarkeit bei Legasthenie' }
+    ]
+  },
+  {
     version: '2.4.1',
     date: new Date('2025-12-21'),
     title: 'Flashcard-Antworten & Lokalisierung',

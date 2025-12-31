@@ -1,5 +1,20 @@
 @use '../styles/variables' as *;
 
+// Host element - flex container for proper iOS PWA layout
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background: var(--color-background);
+}
+
+// iOS PWA - ensure host fills available space
+@supports (-webkit-touch-callout: none) {
+  :host {
+    min-height: -webkit-fill-available;
+  }
+}
+
 // Skip link for accessibility
 .skip-link {
   position: absolute;
@@ -25,6 +40,8 @@
   overflow-x: hidden;
   background: var(--color-background);
   isolation: isolate;
+  // Ensure content can extend to bottom on iOS
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 
   &.route-transitioning {
     overflow: hidden;
@@ -41,9 +58,13 @@
   }
 }
 
+// iOS PWA - fill available space and handle safe areas
 @supports (-webkit-touch-callout: none) {
   #main-content {
-    min-height: calc(-webkit-fill-available - 64px);
+    // Use calc with -webkit-fill-available fallback
+    min-height: calc(100vh - 64px);
+    // Flex grow to fill available space
+    flex: 1 0 auto;
   }
 }
 

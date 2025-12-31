@@ -20,6 +20,7 @@ html {
 
 html, body {
   height: 100%;
+  min-height: 100%;
   font-family: var(--app-font-family, var(--app-font-family-default));
   background-color: var(--color-background);
   color: var(--color-text-primary);
@@ -36,17 +37,35 @@ body {
   // iOS Safe Area Support - prevents Dynamic Island & notch overlap
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
-  padding-bottom: 0;
+  // Don't add bottom padding - let content extend to edge, individual components handle safe area
 }
 
-// iOS PWA viewport fix (fills available height to avoid bottom bars)
+// iOS PWA viewport fix - ensures app fills entire screen including safe areas
 @supports (-webkit-touch-callout: none) {
   html {
-    height: -webkit-fill-available;
+    height: 100%;
+    // Use -webkit-fill-available to fill entire screen in PWA mode
+    min-height: -webkit-fill-available;
   }
 
   body {
+    height: 100%;
     min-height: -webkit-fill-available;
+    // Ensure background extends to bottom edge
+    position: relative;
+  }
+
+  // Fix for iOS PWA bottom gap - extend background to safe area
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: env(safe-area-inset-bottom, 0px);
+    background-color: var(--color-background);
+    z-index: -1;
+    pointer-events: none;
   }
 }
 
@@ -54,9 +73,6 @@ body {
 @supports (height: 100dvh) {
   html, body {
     height: 100dvh;
-  }
-
-  body {
     min-height: 100dvh;
   }
 }
