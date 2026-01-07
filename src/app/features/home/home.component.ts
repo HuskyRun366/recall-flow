@@ -526,19 +526,32 @@ export class HomeComponent implements OnInit {
     const userId = this.currentUser()?.uid;
     if (!userId) return;
 
+    const previousFolderId = this.quizzesWithProgress()
+      .find(q => q.quiz.id === quizId)?.userRef?.folderId ?? null;
+
+    // Optimistic UI update
+    this.quizzesWithProgress.update(quizzes =>
+      quizzes.map(q => {
+        if (q.quiz.id === quizId && q.userRef) {
+          return { ...q, userRef: { ...q.userRef, folderId: folderId ?? undefined } };
+        }
+        return q;
+      })
+    );
+
     try {
       await this.participantService.setFolder(userId, quizId, folderId);
-      // Update local state
+    } catch (error) {
+      console.error('Error changing folder:', error);
+      // Rollback
       this.quizzesWithProgress.update(quizzes =>
         quizzes.map(q => {
           if (q.quiz.id === quizId && q.userRef) {
-            return { ...q, userRef: { ...q.userRef, folderId: folderId ?? undefined } };
+            return { ...q, userRef: { ...q.userRef, folderId: previousFolderId ?? undefined } };
           }
           return q;
         })
       );
-    } catch (error) {
-      console.error('Error changing folder:', error);
     }
   }
 

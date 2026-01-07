@@ -12,7 +12,7 @@ import { FollowService } from '../../../core/services/follow.service';
 import { Quiz, Question, Review, User } from '../../../models';
 import { StatCardComponent } from '../../../shared/components';
 import { StarRatingComponent } from '../../../shared/components/star-rating/star-rating.component';
-import { ReviewDialogComponent } from '../../../shared/components/review-dialog/review-dialog.component';
+import { ReviewDialogComponent, ReviewOptimisticChange } from '../../../shared/components/review-dialog/review-dialog.component';
 import { FollowButtonComponent } from '../../../shared/components/follow-button/follow-button.component';
 
 type EnrollState = 'idle' | 'loading' | 'removing';
@@ -147,6 +147,9 @@ export class QuizDetailComponent implements OnInit {
     const user = this.currentUser();
     if (!q || !user || this.enrollState() !== 'idle') return;
 
+    const wasEnrolled = this.isEnrolled();
+    // Optimistic UI update
+    this.isEnrolled.set(true);
     this.enrollState.set('loading');
     try {
       await this.participantService.addParticipant(
@@ -157,10 +160,10 @@ export class QuizDetailComponent implements OnInit {
         user.uid,
         'accepted'
       );
-      this.isEnrolled.set(true);
       this.toastService.info(this.translateService.instant('toast.info.addedToLibrary'));
     } catch (err) {
       console.error('Enroll failed', err);
+      this.isEnrolled.set(wasEnrolled);
       this.toastService.error(this.translateService.instant('toast.error.generic'));
     } finally {
       this.enrollState.set('idle');
@@ -172,13 +175,16 @@ export class QuizDetailComponent implements OnInit {
     const user = this.currentUser();
     if (!q || !user || this.enrollState() !== 'idle') return;
 
+    const wasEnrolled = this.isEnrolled();
+    // Optimistic UI update
+    this.isEnrolled.set(false);
     this.enrollState.set('removing');
     try {
       await this.participantService.removeParticipant(q.id, user.uid);
-      this.isEnrolled.set(false);
       this.toastService.info(this.translateService.instant('toast.info.removedFromLibrary'));
     } catch (err) {
       console.error('Unenroll failed', err);
+      this.isEnrolled.set(wasEnrolled);
       this.toastService.error(this.translateService.instant('toast.error.generic'));
     } finally {
       this.enrollState.set('idle');
@@ -341,6 +347,27 @@ export class QuizDetailComponent implements OnInit {
     this.showReviewDialog.set(false);
   }
 
+  onReviewOptimistic(change: ReviewOptimisticChange): void {
+    const quizId = this.quiz()?.id;
+    if (!quizId) return;
+
+    if (change.rollback) {
+      this.loadReviews(quizId);
+      this.firestoreService.getQuizById(quizId).subscribe({
+        next: (q) => {
+          if (q) this.quiz.set(q);
+        }
+      });
+      return;
+    }
+
+    if (change.action === 'upsert' && change.review) {
+      this.applyOptimisticReview(change.review, change.previous ?? null);
+    } else if (change.action === 'delete') {
+      this.applyOptimisticDelete(change);
+    }
+  }
+
   onReviewSubmitted(): void {
     const quizId = this.quiz()?.id;
     if (quizId) {
@@ -352,5 +379,66 @@ export class QuizDetailComponent implements OnInit {
         }
       });
     }
+  }
+
+  private applyOptimisticReview(review: Review, previous: Review | null): void {
+    this.reviews.update(reviews => {
+      const filtered = reviews.filter(r => r.userId !== review.userId);
+      return [review, ...filtered];
+    });
+    this.userReview.set(review);
+    this.updateRatingSummary(review.rating, previous?.rating ?? null);
+  }
+
+  private applyOptimisticDelete(change: ReviewOptimisticChange): void {
+    const previous = change.previous ?? null;
+    const targetUserId = previous?.userId ?? null;
+    const reviewId = change.reviewId ?? null;
+
+    this.reviews.update(reviews =>
+      reviews.filter(r => {
+        if (targetUserId) return r.userId !== targetUserId;
+        if (reviewId) return r.id !== reviewId;
+        return true;
+      })
+    );
+
+    if (targetUserId && this.userReview()?.userId === targetUserId) {
+      this.userReview.set(null);
+    }
+
+    this.updateRatingSummary(null, previous?.rating ?? null);
+  }
+
+  private updateRatingSummary(newRating: number | null, previousRating: number | null): void {
+    const q = this.quiz();
+    if (!q) return;
+
+    const currentCount = q.ratingCount ?? 0;
+    const currentAverage = q.averageRating ?? 0;
+    let nextCount = currentCount;
+    let nextAverage = currentAverage;
+
+    if (previousRating !== null && newRating !== null) {
+      nextAverage = currentCount > 0
+        ? (currentAverage * currentCount - previousRating + newRating) / currentCount
+        : newRating;
+    } else if (previousRating === null && newRating !== null) {
+      nextCount = currentCount + 1;
+      nextAverage = (currentAverage * currentCount + newRating) / nextCount;
+    } else if (previousRating !== null && newRating === null) {
+      nextCount = Math.max(0, currentCount - 1);
+      nextAverage = nextCount > 0
+        ? (currentAverage * currentCount - previousRating) / nextCount
+        : 0;
+    } else {
+      return;
+    }
+
+    this.quiz.set({
+      ...q,
+      averageRating: nextAverage,
+      ratingCount: nextCount
+    });
   }
 }

@@ -241,28 +241,25 @@ export class FlashcardSessionComponent implements OnInit {
       this.incorrectAnswers.update(count => count + 1);
     }
 
-    try {
-      // Update progress in Firestore
-      const updatedProgress = await this.progressService.updateCardProgress(
-        deckId,
-        userId,
-        card.flashcard.id,
-        isCorrect,
-        responseTimeMs
-      );
-
-      this.updateLocalProgress(card.flashcard.id, updatedProgress);
-
-      if (!isCorrect) {
-        this.scheduleRepeat(card);
-      }
-
-      // Move to next card
-      await this.nextCard();
-    } catch (err) {
-      console.error('Error updating progress:', err);
-      this.error.set('Failed to update progress');
+    if (!isCorrect) {
+      this.scheduleRepeat(card);
     }
+
+    // Move to next card immediately (optimistic UI)
+    await this.nextCard();
+
+    // Update progress in the background
+    this.progressService.updateCardProgress(
+      deckId,
+      userId,
+      card.flashcard.id,
+      isCorrect,
+      responseTimeMs
+    ).then((updatedProgress) => {
+      this.updateLocalProgress(card.flashcard.id, updatedProgress);
+    }).catch((err) => {
+      console.error('Error updating progress:', err);
+    });
   }
 
   async nextCard(): Promise<void> {

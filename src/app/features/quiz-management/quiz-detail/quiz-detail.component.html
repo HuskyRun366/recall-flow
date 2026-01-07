@@ -175,6 +175,7 @@
   [contentType]="'quiz'"
   [contentTitle]="quiz()!.title"
   [existingReview]="userReview()"
+  (optimisticChange)="onReviewOptimistic($event)"
   (close)="closeReviewDialog()"
   (submitted)="onReviewSubmitted()"
 />

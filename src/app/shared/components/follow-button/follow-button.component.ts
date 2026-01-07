@@ -77,17 +77,18 @@ export class FollowButtonComponent implements OnInit, OnDestroy {
 
     const targetUserId = this.userId();
     const currentlyFollowing = this.isFollowing();
+    const nextFollowing = !currentlyFollowing;
 
     this.isLoading.set(true);
+    // Optimistic UI update
+    this.isFollowing.set(nextFollowing);
 
     try {
       if (currentlyFollowing) {
         await this.followService.unfollowUser(targetUserId);
-        this.isFollowing.set(false);
         this.toastService.info(this.translate.instant('follow.unfollowed'));
       } else {
         await this.followService.followUser(targetUserId);
-        this.isFollowing.set(true);
         this.toastService.success(this.translate.instant('follow.followed'));
       }
     } catch (error) {

@@ -201,6 +201,7 @@
   [contentType]="'deck'"
   [contentTitle]="deck()!.title"
   [existingReview]="userReview()"
+  (optimisticChange)="onReviewOptimistic($event)"
   (close)="closeReviewDialog()"
   (submitted)="onReviewSubmitted()"
 />

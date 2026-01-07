@@ -29,7 +29,7 @@ import { SearchBarComponent } from '../../shared/components/search-bar/search-ba
 import { MarketplaceCardComponent } from '../../shared/components/marketplace-card/marketplace-card.component';
 import { FilterPanelComponent } from '../../shared/components/filter-panel/filter-panel.component';
 import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader/skeleton-loader.component';
-import { ReviewDialogComponent } from '../../shared/components/review-dialog/review-dialog.component';
+import { ReviewDialogComponent, ReviewOptimisticChange } from '../../shared/components/review-dialog/review-dialog.component';
 
 @Component({
   selector: 'app-discover',
@@ -241,6 +241,8 @@ export class DiscoverComponent implements OnInit {
       return;
     }
 
+    const previousEnrollmentSets = this.cloneEnrollmentSets(this.enrollmentSets());
+
     try {
       if (item.type === 'theme') {
         // Install theme
@@ -263,6 +265,9 @@ export class DiscoverComponent implements OnInit {
         const userId = user.uid;
         const email = user.email || '';
 
+        // Optimistic UI update
+        this.markEnrolled(item);
+
         switch (item.type) {
           case 'quiz':
             await this.participantService.addParticipant(
@@ -276,7 +281,6 @@ export class DiscoverComponent implements OnInit {
             this.toastService.success(
               this.translateService.instant('discover.added.quiz', { title: item.content.title })
             );
-            this.markEnrolled(item);
             break;
 
           case 'deck':
@@ -291,7 +295,6 @@ export class DiscoverComponent implements OnInit {
             this.toastService.success(
               this.translateService.instant('discover.added.deck', { title: item.content.title })
             );
-            this.markEnrolled(item);
             break;
 
           case 'material':
@@ -306,12 +309,16 @@ export class DiscoverComponent implements OnInit {
             this.toastService.success(
               this.translateService.instant('discover.added.material', { title: item.content.title })
             );
-            this.markEnrolled(item);
             break;
         }
       }
     } catch (error) {
       console.error('Failed to add content:', error);
+      if (previousEnrollmentSets) {
+        this.enrollmentSets.set(previousEnrollmentSets);
+      } else {
+        this.unmarkEnrolled(item);
+      }
       this.toastService.error(
         this.translateService.instant('discover.addFailed')
       );
@@ -380,6 +387,42 @@ export class DiscoverComponent implements OnInit {
     this.enrollmentSets.set(next);
   }
 
+  private unmarkEnrolled(item: MarketplaceItem): void {
+    const sets = this.enrollmentSets();
+    if (!sets) return;
+
+    const next = {
+      quizIds: new Set(sets.quizIds),
+      deckIds: new Set(sets.deckIds),
+      materialIds: new Set(sets.materialIds)
+    };
+
+    switch (item.type) {
+      case 'quiz':
+        next.quizIds.delete(item.content.id);
+        break;
+      case 'deck':
+        next.deckIds.delete(item.content.id);
+        break;
+      case 'material':
+        next.materialIds.delete(item.content.id);
+        break;
+      default:
+        return;
+    }
+
+    this.enrollmentSets.set(next);
+  }
+
+  private cloneEnrollmentSets(sets: { quizIds: Set<string>; deckIds: Set<string>; materialIds: Set<string> } | null) {
+    if (!sets) return null;
+    return {
+      quizIds: new Set(sets.quizIds),
+      deckIds: new Set(sets.deckIds),
+      materialIds: new Set(sets.materialIds)
+    };
+  }
+
   isItemEnrolled(item: MarketplaceItem): boolean {
     if (item.type === 'theme') {
       return this.colorThemeService.isThemeInstalled(item.content.id);
@@ -425,6 +468,37 @@ export class DiscoverComponent implements OnInit {
     this.existingReview.set(null);
   }
 
+  onReviewOptimistic(change: ReviewOptimisticChange): void {
+    if (change.rollback) {
+      this.loadFeatured();
+      this.loadTopChart(this.activeChart());
+      this.performSearch();
+      return;
+    }
+
+    const contentId = change.review?.contentId ?? this.reviewContentId();
+    const contentType = change.review?.contentType ?? this.reviewContentType();
+
+    if (!contentId || !contentType) {
+      return;
+    }
+
+    const previousRating = change.previous?.rating ?? null;
+    const newRating = change.action === 'delete'
+      ? null
+      : (change.review?.rating ?? null);
+
+    if (newRating !== null || previousRating !== null) {
+      this.updateMarketplaceRating(contentType, contentId, newRating, previousRating);
+    }
+
+    if (change.action === 'upsert' && change.review) {
+      this.existingReview.set(change.review);
+    } else if (change.action === 'delete') {
+      this.existingReview.set(null);
+    }
+  }
+
   onReviewSubmitted(): void {
     // Reload items to get updated ratings
     this.loadFeatured();
@@ -432,5 +506,52 @@ export class DiscoverComponent implements OnInit {
     this.performSearch();
     this.closeReviewDialog();
     this.toastService.success(this.translateService.instant('toast.success.saved'));
+  }
+
+  private updateMarketplaceRating(
+    contentType: ContentType,
+    contentId: string,
+    newRating: number | null,
+    previousRating: number | null
+  ): void {
+    const updateItems = (items: MarketplaceItem[]) => items.map(item => {
+      if (item.type !== contentType || item.content.id !== contentId) {
+        return item;
+      }
+
+      const currentAverage = item.content.averageRating ?? 0;
+      const currentCount = item.content.ratingCount ?? 0;
+      let nextCount = currentCount;
+      let nextAverage = currentAverage;
+
+      if (previousRating !== null && newRating !== null) {
+        nextAverage = currentCount > 0
+          ? (currentAverage * currentCount - previousRating + newRating) / currentCount
+          : newRating;
+      } else if (previousRating === null && newRating !== null) {
+        nextCount = currentCount + 1;
+        nextAverage = (currentAverage * currentCount + newRating) / nextCount;
+      } else if (previousRating !== null && newRating === null) {
+        nextCount = Math.max(0, currentCount - 1);
+        nextAverage = nextCount > 0
+          ? (currentAverage * currentCount - previousRating) / nextCount
+          : 0;
+      } else {
+        return item;
+      }
+
+      return {
+        ...item,
+        content: {
+          ...item.content,
+          averageRating: nextAverage,
+          ratingCount: nextCount
+        }
+      };
+    });
+
+    this.featuredItems.update(updateItems);
+    this.searchResults.update(updateItems);
+    this.topChartItems.update(updateItems);
   }
 }

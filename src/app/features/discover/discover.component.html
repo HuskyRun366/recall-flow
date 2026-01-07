@@ -187,6 +187,7 @@
   [contentType]="reviewContentType()!"
   [contentTitle]="reviewContentTitle()!"
   [existingReview]="existingReview()"
+  (optimisticChange)="onReviewOptimistic($event)"
   (close)="closeReviewDialog()"
   (submitted)="onReviewSubmitted()"
 />

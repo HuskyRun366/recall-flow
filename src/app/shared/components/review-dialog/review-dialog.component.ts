@@ -8,6 +8,14 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { StarRatingComponent } from '../star-rating/star-rating.component';
 
+export type ReviewOptimisticChange = {
+  action: 'upsert' | 'delete';
+  review?: Review;
+  reviewId?: string;
+  previous?: Review | null;
+  rollback?: boolean;
+};
+
 @Component({
   selector: 'app-review-dialog',
   standalone: true,
@@ -28,6 +36,7 @@ export class ReviewDialogComponent implements OnInit {
 
   close = output<void>();
   submitted = output<void>();
+  optimisticChange = output<ReviewOptimisticChange>();
 
   rating = signal(0);
   comment = signal('');
@@ -61,6 +70,29 @@ export class ReviewDialogComponent implements OnInit {
       return;
     }
 
+    const existing = this.existingReview();
+    const now = new Date();
+    const optimisticReview: Review = {
+      id: existing?.id ?? `optimistic-${Date.now()}`,
+      contentId: this.contentId(),
+      contentType: this.contentType(),
+      userId: user.uid,
+      userDisplayName: user.displayName || 'Anonymous',
+      userPhotoUrl: user.photoURL || undefined,
+      rating: this.rating(),
+      comment: this.comment() || undefined,
+      createdAt: existing?.createdAt ?? now,
+      updatedAt: now
+    };
+
+    // Optimistic UI update
+    this.optimisticChange.emit({
+      action: 'upsert',
+      review: optimisticReview,
+      previous: existing ?? null
+    });
+    this.close.emit();
+
     try {
       await this.reviewService.submitReview(
         this.contentId(),
@@ -74,10 +106,15 @@ export class ReviewDialogComponent implements OnInit {
 
       this.toastService.success(this.translateService.instant('discover.rating.thankYou'));
       this.submitted.emit();
-      this.close.emit();
     } catch (error) {
       console.error('Failed to submit review:', error);
       this.toastService.error('Failed to submit review');
+      this.optimisticChange.emit({
+        action: 'upsert',
+        review: optimisticReview,
+        previous: existing ?? null,
+        rollback: true
+      });
     } finally {
       this.isSubmitting.set(false);
     }
@@ -93,6 +130,14 @@ export class ReviewDialogComponent implements OnInit {
     this.isDeleting.set(true);
 
     try {
+      // Optimistic UI update
+      this.optimisticChange.emit({
+        action: 'delete',
+        reviewId: existing.id,
+        previous: existing
+      });
+      this.close.emit();
+
       await this.reviewService.deleteReview(
         existing.id,
         this.contentId(),
@@ -101,10 +146,15 @@ export class ReviewDialogComponent implements OnInit {
 
       this.toastService.success('discover.rating.deleted');
       this.submitted.emit();
-      this.close.emit();
     } catch (error) {
       console.error('Failed to delete review:', error);
       this.toastService.error('Failed to delete review');
+      this.optimisticChange.emit({
+        action: 'delete',
+        reviewId: existing.id,
+        previous: existing,
+        rollback: true
+      });
     } finally {
       this.isDeleting.set(false);
     }

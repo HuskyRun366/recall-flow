@@ -149,6 +149,7 @@
   [contentType]="'material'"
   [contentTitle]="material()!.title"
   [existingReview]="userReview()"
+  (optimisticChange)="onReviewOptimistic($event)"
   (close)="closeReviewDialog()"
   (submitted)="onReviewSubmitted()"
 />
