@@ -48,6 +48,7 @@
   border: 2px solid var(--color-border);
   box-shadow: var(--shadow-lg);
   background: var(--color-surface);
+  overflow: hidden;
 }
 
 .flashcard-front {
@@ -64,6 +65,10 @@
 .face-content {
   text-align: center;
   width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .card-label {
@@ -82,6 +87,8 @@
   line-height: 1.6;
   margin-bottom: $spacing-lg;
   white-space: pre-line;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .question-text {

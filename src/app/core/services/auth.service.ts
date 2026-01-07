@@ -1,7 +1,7 @@
 import { Injectable, signal, computed, inject, Injector, runInInjectionContext, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Auth, GoogleAuthProvider, signInWithPopup, signOut, user, User as FirebaseUser, onAuthStateChanged, reauthenticateWithPopup, deleteUser } from '@angular/fire/auth';
-import { Firestore, doc, getDoc, setDoc, serverTimestamp } from '@angular/fire/firestore';
+import { Firestore, doc, getDoc, setDoc, updateDoc, serverTimestamp } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { User } from '../../models';
 import { UserLookupService } from './user-lookup.service';
@@ -119,11 +119,14 @@ export class AuthService {
         const userData = userDoc.data() as User;
         this.currentUser.set({
           ...userData,
-          createdAt: (userData.createdAt as any).toDate()
+          createdAt: (userData.createdAt as any).toDate(),
+          lastLoginAt: (userData.lastLoginAt as any)?.toDate?.() ?? userData.lastLoginAt
         });
+        this.updateLastLogin(firebaseUser.uid);
       } else {
         // Create user document if it doesn't exist
         await this.ensureUserDocument(firebaseUser);
+        this.updateLastLogin(firebaseUser.uid);
       }
     } catch (error) {
       console.error('Error loading user data:', error);
@@ -146,7 +149,8 @@ export class AuthService {
 
       await setDoc(userDocRef, {
         ...newUser,
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
+        lastLoginAt: serverTimestamp()
       });
 
       // Create email lookup for this user (don't fail login if this fails)
@@ -164,8 +168,10 @@ export class AuthService {
       const userData = userDoc.data() as User;
       this.currentUser.set({
         ...userData,
-        createdAt: (userData.createdAt as any).toDate()
+        createdAt: (userData.createdAt as any).toDate(),
+        lastLoginAt: (userData.lastLoginAt as any)?.toDate?.() ?? userData.lastLoginAt
       });
+      this.updateLastLogin(firebaseUser.uid);
 
       // Ensure email lookup exists for existing users (backfill)
       if (firebaseUser.email) {
@@ -217,5 +223,15 @@ export class AuthService {
         unsubscribe();
       });
     });
+  }
+
+  private async updateLastLogin(userId: string): Promise<void> {
+    try {
+      await updateDoc(doc(this.firestore, `users/${userId}`), {
+        lastLoginAt: serverTimestamp()
+      });
+    } catch (error) {
+      console.warn('Failed to update lastLoginAt:', error);
+    }
   }
 }

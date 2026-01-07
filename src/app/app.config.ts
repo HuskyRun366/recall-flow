@@ -43,6 +43,9 @@ export const appConfig: ApplicationConfig = {
       const isStandalone =
         typeof window !== 'undefined' &&
         (window.matchMedia?.('(display-mode: standalone)').matches || (navigator as any).standalone === true);
+      const transportSettings = !isDevMode()
+        ? { experimentalAutoDetectLongPolling: true, useFetchStreams: false }
+        : {};
 
       // iOS PWA: use single-tab persistence (more reliable than multi-tab on iOS).
       if (isIOS && isStandalone) {
@@ -50,12 +53,14 @@ export const appConfig: ApplicationConfig = {
           return initializeFirestore(app, {
             localCache: persistentLocalCache({
               tabManager: persistentSingleTabManager({ forceOwnership: true })
-            })
+            }),
+            ...transportSettings
           });
         } catch (error) {
           console.warn('⚠️ iOS PWA single-tab persistence unavailable, using memory cache:', error);
           return initializeFirestore(app, {
-            localCache: memoryLocalCache()
+            localCache: memoryLocalCache(),
+            ...transportSettings
           });
         }
       }
@@ -64,7 +69,8 @@ export const appConfig: ApplicationConfig = {
         return initializeFirestore(app, {
           localCache: persistentLocalCache({
             tabManager: persistentMultipleTabManager()
-          })
+          }),
+          ...transportSettings
         });
       } catch (error) {
         console.warn('⚠️ Multi-tab persistence unavailable, falling back:', error);
@@ -72,12 +78,14 @@ export const appConfig: ApplicationConfig = {
           return initializeFirestore(app, {
             localCache: persistentLocalCache({
               tabManager: persistentSingleTabManager({})
-            })
+            }),
+            ...transportSettings
           });
         } catch (fallbackError) {
           console.warn('⚠️ Persistent cache unavailable, using memory cache:', fallbackError);
           return initializeFirestore(app, {
-            localCache: memoryLocalCache()
+            localCache: memoryLocalCache(),
+            ...transportSettings
           });
         }
       }

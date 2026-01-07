@@ -8,4 +8,5 @@ export interface User {
   followerCount?: number;
   followingCount?: number;
   language?: 'de' | 'en' | 'fr' | 'es';
+  lastLoginAt?: Date;
 }
