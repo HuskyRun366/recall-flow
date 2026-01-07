@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FlashcardDeckService } from '../../../core/services/flashcard-deck.service';
 import { FlashcardService } from '../../../core/services/flashcard.service';
 import { FlashcardProgressService } from '../../../core/services/flashcard-progress.service';
@@ -9,10 +9,11 @@ import { DeckParticipantService } from '../../../core/services/deck-participant.
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ReviewService } from '../../../core/services/review.service';
-import { FlashcardDeck, Flashcard, CardProgress, DeckParticipant, Review } from '../../../models';
+import { FlashcardDeck, Flashcard, CardProgress, DeckParticipant, Review, User } from '../../../models';
 import { StatCardComponent, BadgeComponent, LevelBadgeComponent } from '../../../shared/components';
 import { StarRatingComponent } from '../../../shared/components/star-rating/star-rating.component';
 import { ReviewDialogComponent } from '../../../shared/components/review-dialog/review-dialog.component';
+import { FollowButtonComponent } from '../../../shared/components/follow-button/follow-button.component';
 import { PullToRefreshDirective } from '../../../shared/directives/pull-to-refresh.directive';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -27,7 +28,7 @@ interface FlashcardWithProgress {
 @Component({
   selector: 'app-deck-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule, StatCardComponent, BadgeComponent, LevelBadgeComponent, PullToRefreshDirective, StarRatingComponent, ReviewDialogComponent],
+  imports: [CommonModule, RouterModule, TranslateModule, StatCardComponent, BadgeComponent, LevelBadgeComponent, PullToRefreshDirective, StarRatingComponent, ReviewDialogComponent, FollowButtonComponent],
   templateUrl: './deck-detail.component.html',
   styleUrls: ['./deck-detail.component.scss']
 })
@@ -40,6 +41,7 @@ export class DeckDetailComponent implements OnInit {
   private participantService = inject(DeckParticipantService);
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
+  private translateService = inject(TranslateService);
   private reviewService = inject(ReviewService);
 
   deck = signal<FlashcardDeck | null>(null);
@@ -47,6 +49,7 @@ export class DeckDetailComponent implements OnInit {
   coAuthors = signal<DeckParticipant[]>([]);
   isLoading = signal(true);
   error = signal<string | null>(null);
+  deckAuthor = signal<User | null>(null);
 
   currentUser = this.authService.currentUser;
   isEnrolled = signal(false);
@@ -95,6 +98,7 @@ export class DeckDetailComponent implements OnInit {
         this.loadEnrollment(id);
         this.loadCoAuthors(id);
         this.loadReviews(id);
+        this.loadAuthor(d.ownerId);
 
         // Check edit permission
         const userId = this.currentUser()?.uid;
@@ -169,6 +173,13 @@ export class DeckDetailComponent implements OnInit {
     });
   }
 
+  private loadAuthor(ownerId: string): void {
+    this.authService.getUserById(ownerId).subscribe({
+      next: (user) => this.deckAuthor.set(user),
+      error: (err) => console.error('Author laden fehlgeschlagen', err)
+    });
+  }
+
   private async checkCanEdit(deck: FlashcardDeck, userId: string): Promise<void> {
     if (deck.ownerId === userId) {
       this.canEdit.set(true);
@@ -196,10 +207,10 @@ export class DeckDetailComponent implements OnInit {
         'accepted'
       );
       this.isEnrolled.set(true);
-      this.toastService.success('Deck hinzugefügt');
+      this.toastService.info(this.translateService.instant('toast.info.addedToLibrary'));
     } catch (err) {
       console.error('Enroll failed', err);
-      this.toastService.error('Hinzufügen fehlgeschlagen');
+      this.toastService.error(this.translateService.instant('toast.error.generic'));
     } finally {
       this.enrollState.set('idle');
     }
@@ -214,10 +225,10 @@ export class DeckDetailComponent implements OnInit {
     try {
       await this.participantService.removeParticipant(d.id, user.uid);
       this.isEnrolled.set(false);
-      this.toastService.success('Deck entfernt');
+      this.toastService.info(this.translateService.instant('toast.info.removedFromLibrary'));
     } catch (err) {
       console.error('Unenroll failed', err);
-      this.toastService.error('Entfernen fehlgeschlagen');
+      this.toastService.error(this.translateService.instant('toast.error.generic'));
     } finally {
       this.enrollState.set('idle');
     }
@@ -240,12 +251,12 @@ export class DeckDetailComponent implements OnInit {
     navigator.clipboard.writeText(code).then(
       () => {
         this.copySuccess.set(true);
-        this.toastService.success('Code kopiert!');
+        this.toastService.success(this.translateService.instant('toast.success.copied'));
         setTimeout(() => this.copySuccess.set(false), 2000);
       },
       (err) => {
         console.error('Failed to copy join code:', err);
-        this.toastService.error('Fehler beim Kopieren des Codes');
+        this.toastService.error(this.translateService.instant('toast.error.generic'));
       }
     );
   }
@@ -356,6 +367,7 @@ export class DeckDetailComponent implements OnInit {
           this.loadFlashcards(id);
           this.loadEnrollment(id);
           this.loadCoAuthors(id);
+          this.loadAuthor(d.ownerId);
 
           const userId = this.currentUser()?.uid;
           if (userId) {

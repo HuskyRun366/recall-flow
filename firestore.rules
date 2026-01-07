@@ -51,6 +51,18 @@ service cloud.firestore {
         );
     }
 
+    function isValidQuizRatingUpdate(quizId) {
+      return isAuthenticated() &&
+        canAccessQuiz(quizId) &&
+        request.resource.data.diff(resource.data).changedKeys().hasOnly(['averageRating', 'ratingCount', 'updatedAt']) &&
+        request.resource.data.averageRating is number &&
+        request.resource.data.averageRating >= 0 &&
+        request.resource.data.averageRating <= 5 &&
+        request.resource.data.ratingCount is int &&
+        request.resource.data.ratingCount >= 0 &&
+        request.resource.data.updatedAt is timestamp;
+    }
+
     // Users collection
     match /users/{userId} {
       allow read: if isAuthenticated();  // Allow reading user profiles for co-author lookup
@@ -67,6 +79,7 @@ service cloud.firestore {
         request.resource.data.followingCount is int &&
         request.resource.data.followingCount >= 0
       );
+      allow delete: if isOwner(userId);
 
       // User's quiz references
       match /userQuizzes/{quizId} {
@@ -82,7 +95,8 @@ service cloud.firestore {
       match /following/{followedUserId} {
         allow read: if isAuthenticated();
         allow create: if isOwner(userId) && request.resource.data.followedUserId == followedUserId;
-        allow delete: if isOwner(userId);
+        allow delete: if isOwner(userId) ||
+          (isAuthenticated() && resource.data.followedUserId == request.auth.uid);
       }
 
       // Followers subcollection - who follows the user
@@ -95,6 +109,14 @@ service cloud.firestore {
       // FCM tokens for push notifications
       match /fcmTokens/{token} {
         allow read, create, update, delete: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // User folders for organizing content
+      match /folders/{folderId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId);
+        allow update: if isOwner(userId);
+        allow delete: if isOwner(userId);
       }
     }
 
@@ -121,15 +143,17 @@ service cloud.firestore {
     // Follow notifications (new quiz from followed authors)
     match /followNotifications/{notificationId} {
       // Only the notification recipient can read their notifications
-      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow read: if isAuthenticated() &&
+        (resource.data.userId == request.auth.uid || resource.data.authorId == request.auth.uid);
       // Any authenticated user can create notifications (for followers)
       allow create: if isAuthenticated();
       // Only the recipient can mark as read
       allow update: if isAuthenticated() &&
                        resource.data.userId == request.auth.uid &&
                        request.resource.data.diff(resource.data).changedKeys().hasOnly(['read']);
-      // Only the recipient can delete their notifications
-      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      // Recipient or author can delete (needed for account deletion)
+      allow delete: if isAuthenticated() &&
+        (resource.data.userId == request.auth.uid || resource.data.authorId == request.auth.uid);
     }
 
     // Quizzes collection
@@ -142,7 +166,9 @@ service cloud.firestore {
                      (isAuthenticated() && resource.data.ownerId == request.auth.uid) ||
                      (isAuthenticated() && exists(/databases/$(database)/documents/quizParticipants/$(quizId)/participants/$(request.auth.uid)));
       allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
-      allow update: if canEditQuiz(quizId) || isValidQuizParticipantCountUpdate(quizId);
+      allow update: if canEditQuiz(quizId) ||
+        isValidQuizParticipantCountUpdate(quizId) ||
+        isValidQuizRatingUpdate(quizId);
       allow delete: if isQuizOwner(quizId);
     }
 
@@ -174,12 +200,14 @@ service cloud.firestore {
     // Quiz progress
     match /quizProgress/{quizId}/userProgress/{userId} {
       allow read: if isOwner(userId) || canEditQuiz(quizId);
-      allow write: if isOwner(userId) && canAccessQuiz(quizId);
+      allow create, update: if isOwner(userId) && canAccessQuiz(quizId);
+      allow delete: if isOwner(userId);
 
       // Question progress subcollection
       match /questionProgress/{questionId} {
         allow read: if isOwner(userId) || canEditQuiz(quizId);
-        allow write: if isOwner(userId) && canAccessQuiz(quizId);
+        allow create, update: if isOwner(userId) && canAccessQuiz(quizId);
+        allow delete: if isOwner(userId);
       }
     }
 
@@ -239,6 +267,18 @@ service cloud.firestore {
         );
     }
 
+    function isValidDeckRatingUpdate(deckId) {
+      return isAuthenticated() &&
+        canAccessDeck(deckId) &&
+        request.resource.data.diff(resource.data).changedKeys().hasOnly(['averageRating', 'ratingCount', 'updatedAt']) &&
+        request.resource.data.averageRating is number &&
+        request.resource.data.averageRating >= 0 &&
+        request.resource.data.averageRating <= 5 &&
+        request.resource.data.ratingCount is int &&
+        request.resource.data.ratingCount >= 0 &&
+        request.resource.data.updatedAt is timestamp;
+    }
+
     // User's deck references (denormalized for user queries)
     match /users/{userId}/userDecks/{deckId} {
       allow read: if isOwner(userId);
@@ -255,7 +295,9 @@ service cloud.firestore {
                      (isAuthenticated() && resource.data.ownerId == request.auth.uid) ||
                      (isAuthenticated() && exists(/databases/$(database)/documents/deckParticipants/$(deckId)/participants/$(request.auth.uid)));
       allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
-      allow update: if canEditDeck(deckId) || isValidDeckStudentCountUpdate(deckId);
+      allow update: if canEditDeck(deckId) ||
+        isValidDeckStudentCountUpdate(deckId) ||
+        isValidDeckRatingUpdate(deckId);
       allow delete: if isDeckOwner(deckId);
     }
 
@@ -287,12 +329,14 @@ service cloud.firestore {
     // Flashcard progress
     match /flashcardProgress/{deckId}/userProgress/{userId} {
       allow read: if isOwner(userId) || canEditDeck(deckId);
-      allow write: if isOwner(userId) && canAccessDeck(deckId);
+      allow create, update: if isOwner(userId) && canAccessDeck(deckId);
+      allow delete: if isOwner(userId);
 
       // Card progress subcollection
       match /cardProgress/{cardId} {
         allow read: if isOwner(userId) || canEditDeck(deckId);
-        allow write: if isOwner(userId) && canAccessDeck(deckId);
+        allow create, update: if isOwner(userId) && canAccessDeck(deckId);
+        allow delete: if isOwner(userId);
       }
     }
 
@@ -340,6 +384,18 @@ service cloud.firestore {
         );
     }
 
+    function isValidMaterialRatingUpdate(materialId) {
+      return isAuthenticated() &&
+        canAccessMaterial(materialId) &&
+        request.resource.data.diff(resource.data).changedKeys().hasOnly(['averageRating', 'ratingCount', 'updatedAt']) &&
+        request.resource.data.averageRating is number &&
+        request.resource.data.averageRating >= 0 &&
+        request.resource.data.averageRating <= 5 &&
+        request.resource.data.ratingCount is int &&
+        request.resource.data.ratingCount >= 0 &&
+        request.resource.data.updatedAt is timestamp;
+    }
+
     // User's material references (denormalized for user queries)
     match /users/{userId}/userMaterials/{materialId} {
       allow read: if isOwner(userId);
@@ -356,7 +412,9 @@ service cloud.firestore {
                      (isAuthenticated() && resource.data.ownerId == request.auth.uid) ||
                      (isAuthenticated() && exists(/databases/$(database)/documents/materialParticipants/$(materialId)/participants/$(request.auth.uid)));
       allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
-      allow update: if canEditMaterial(materialId) || isValidMaterialStudentCountUpdate(materialId);
+      allow update: if canEditMaterial(materialId) ||
+        isValidMaterialStudentCountUpdate(materialId) ||
+        isValidMaterialRatingUpdate(materialId);
       allow delete: if isMaterialOwner(materialId);
     }
 
@@ -393,6 +451,18 @@ service cloud.firestore {
         );
     }
 
+    function isValidThemeRatingUpdate() {
+      return isAuthenticated() &&
+        resource.data.visibility == 'public' &&
+        request.resource.data.diff(resource.data).changedKeys().hasOnly(['averageRating', 'ratingCount', 'updatedAt']) &&
+        request.resource.data.averageRating is number &&
+        request.resource.data.averageRating >= 0 &&
+        request.resource.data.averageRating <= 5 &&
+        request.resource.data.ratingCount is int &&
+        request.resource.data.ratingCount >= 0 &&
+        request.resource.data.updatedAt is timestamp;
+    }
+
     match /themes/{themeId} {
       allow read: if resource.data.visibility == 'public' || isOwner(resource.data.ownerId);
 
@@ -405,7 +475,7 @@ service cloud.firestore {
         resource.data.ownerId == request.auth.uid &&
         request.resource.data.ownerId == request.auth.uid &&
         request.resource.data.visibility in ['public', 'private']
-      ) || isValidThemeInstallUpdate();
+      ) || isValidThemeInstallUpdate() || isValidThemeRatingUpdate();
 
       allow delete: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
     }
@@ -462,13 +532,13 @@ service cloud.firestore {
       );
 
       // Authenticated users can create reviews ONLY if:
-      // 1. User is a participant (enrolled in content)
+      // 1. User is a participant (enrolled in content) OR content owner
       // 2. Rating is valid (1-5)
       // 3. User ID matches authenticated user
-      // Note: Temporarily removed owner check for debugging
       allow create: if isAuthenticated() &&
                        request.resource.data.userId == request.auth.uid &&
-                       isParticipant(request.resource.data.contentType, request.resource.data.contentId) &&
+                       (isParticipant(request.resource.data.contentType, request.resource.data.contentId) ||
+                        isContentOwner(request.resource.data.contentType, request.resource.data.contentId)) &&
                        request.resource.data.rating >= 1 &&
                        request.resource.data.rating <= 5;
 

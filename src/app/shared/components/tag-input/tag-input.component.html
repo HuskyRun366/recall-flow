@@ -1,0 +1,50 @@
+<div class="tag-input-container" [class.focused]="isFocused()" [class.disabled]="disabled()">
+  <div class="tags-wrapper">
+    @for (tag of tags(); track tag) {
+      <span class="tag-chip">
+        <span class="tag-text">{{ tag }}</span>
+        @if (!disabled()) {
+          <button
+            type="button"
+            class="tag-remove"
+            (click)="removeTag(tag)"
+            [attr.aria-label]="'Remove ' + tag">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        }
+      </span>
+    }
+
+    @if (!disabled() && tags().length < maxTags()) {
+      <input
+        #inputField
+        type="text"
+        class="tag-input"
+        [value]="inputValue()"
+        [placeholder]="(placeholder() | translate)"
+        [disabled]="disabled()"
+        (input)="onInputChange($any($event.target).value)"
+        (keydown)="onKeyDown($event)"
+        (focus)="onFocus()"
+        (blur)="onBlur()" />
+    }
+  </div>
+
+  @if (showSuggestions()) {
+    <ul class="suggestions-dropdown" role="listbox">
+      @for (suggestion of filteredSuggestions(); track suggestion; let i = $index) {
+        <li
+          class="suggestion-item"
+          [class.selected]="i === selectedSuggestionIndex()"
+          role="option"
+          [attr.aria-selected]="i === selectedSuggestionIndex()"
+          (click)="selectSuggestion(suggestion)">
+          {{ suggestion }}
+        </li>
+      }
+    </ul>
+  }
+</div>

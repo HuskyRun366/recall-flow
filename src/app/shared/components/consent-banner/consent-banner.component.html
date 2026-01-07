@@ -1,0 +1,17 @@
+@if (showBanner()) {
+  <div class="consent-banner" role="dialog" aria-live="polite">
+    <div class="consent-content">
+      <div class="consent-text">
+        <h2>{{ 'consent.title' | translate }}</h2>
+        <p>
+          {{ 'consent.description' | translate }}
+          <a routerLink="/privacy">{{ 'consent.learnMore' | translate }}</a>
+        </p>
+      </div>
+      <div class="consent-actions">
+        <button class="btn btn-secondary" (click)="decline()">{{ 'consent.decline' | translate }}</button>
+        <button class="btn btn-primary" (click)="accept()">{{ 'consent.accept' | translate }}</button>
+      </div>
+    </div>
+  </div>
+}

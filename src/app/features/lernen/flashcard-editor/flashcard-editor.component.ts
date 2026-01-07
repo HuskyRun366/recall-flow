@@ -4,7 +4,7 @@ import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray, FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FlashcardDeckService } from '../../../core/services/flashcard-deck.service';
 import { FlashcardService } from '../../../core/services/flashcard.service';
 import { FlashcardProgressService } from '../../../core/services/flashcard-progress.service';
@@ -47,6 +47,7 @@ export class FlashcardEditorComponent implements OnInit {
   private userLookupService = inject(UserLookupService);
   private toastService = inject(ToastService);
   private followService = inject(FollowService);
+  private translateService = inject(TranslateService);
   private destroyRef = inject(DestroyRef);
 
   deckForm!: FormGroup;
@@ -291,6 +292,7 @@ export class FlashcardEditorComponent implements OnInit {
 
           this.successMessage.set('Deck created successfully!');
           this.isSaving.set(false);
+          this.toastService.success(this.translateService.instant('toast.deck.created'));
 
           // Navigate to the editor for this deck
           this.router.navigate(['/lernen/deck-editor', deckId], {
@@ -304,12 +306,14 @@ export class FlashcardEditorComponent implements OnInit {
         error: (err) => {
           console.error('Error creating deck:', err);
           this.error.set('Failed to create deck. Please try again.');
+          this.toastService.error(this.translateService.instant('toast.error.save'));
           this.isSaving.set(false);
         }
       });
     } catch (err: any) {
       console.error('Error creating deck:', err);
       this.error.set(err.message || 'Failed to create deck');
+      this.toastService.error(this.translateService.instant('toast.error.save'));
       this.isSaving.set(false);
     }
   }
@@ -344,6 +348,7 @@ export class FlashcardEditorComponent implements OnInit {
           this.isSaving.set(false);
           this.unsavedChanges.set(false);
           this.successMessage.set('Changes saved');
+          this.toastService.success(this.translateService.instant('toast.deck.saved'));
           setTimeout(() => this.successMessage.set(null), 2000);
 
           // Notify followers if the updated deck is public
@@ -359,11 +364,13 @@ export class FlashcardEditorComponent implements OnInit {
         error: (err) => {
           console.error('Error saving deck:', err);
           this.error.set('Failed to save changes');
+          this.toastService.error(this.translateService.instant('toast.error.save'));
           this.isSaving.set(false);
         }
       });
     } catch (err) {
       console.error('Error saving deck:', err);
+      this.toastService.error(this.translateService.instant('toast.error.save'));
       this.isSaving.set(false);
     }
   }
@@ -582,10 +589,12 @@ export class FlashcardEditorComponent implements OnInit {
       const hasCoAuthorErrors = this.coAuthorErrors().length > 0;
       this.unsavedChanges.set(hasCoAuthorErrors);
       this.successMessage.set(hasCoAuthorErrors ? 'Deck gespeichert (Mit-Autoren teilweise fehlgeschlagen)' : 'Alle Änderungen gespeichert');
+      this.toastService.success(this.translateService.instant('toast.deck.saved'));
       setTimeout(() => this.successMessage.set(null), 2000);
     } catch (err) {
       console.error('Error saving deck:', err);
       this.error.set('Fehler beim Speichern');
+      this.toastService.error(this.translateService.instant('toast.error.save'));
     } finally {
       this.isSaving.set(false);
     }
@@ -759,11 +768,13 @@ export class FlashcardEditorComponent implements OnInit {
         this.participantService
       );
 
+      this.toastService.success(this.translateService.instant('toast.deck.deleted'));
       // Navigate back to lernen page
       this.router.navigate(['/lernen']);
     } catch (err) {
       console.error('Error deleting deck:', err);
       this.error.set('Fehler beim Löschen des Decks');
+      this.toastService.error(this.translateService.instant('toast.error.delete'));
       this.isSaving.set(false);
     }
   }

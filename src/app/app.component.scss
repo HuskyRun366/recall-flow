@@ -15,25 +15,6 @@
   }
 }
 
-// Skip link for accessibility
-.skip-link {
-  position: absolute;
-  top: -40px;
-  left: 0;
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-  padding: $spacing-sm $spacing-md;
-  text-decoration: none;
-  font-weight: 600;
-  z-index: 10000;
-  border-radius: 0 0 $radius-md 0;
-  transition: top 0.2s ease;
-
-  &:focus {
-    top: 0;
-  }
-}
-
 #main-content {
   position: relative;
   min-height: calc(100vh - 64px); // Account for header height

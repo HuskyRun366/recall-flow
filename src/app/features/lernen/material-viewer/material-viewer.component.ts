@@ -34,6 +34,10 @@ export class MaterialViewerComponent implements OnInit, OnDestroy {
   isFullscreen = signal(false);
   sanitizedContent = signal<SafeHtml | null>(null);
 
+  private isPseudoFullscreen = false;
+  private previousBodyOverflow: string | null = null;
+  private previousHtmlOverflow: string | null = null;
+
   currentUser = this.authService.currentUser;
   currentTheme = this.themeService.theme;
 
@@ -50,6 +54,7 @@ export class MaterialViewerComponent implements OnInit, OnDestroy {
   });
 
   private fullscreenChangeHandler = () => {
+    if (this.isPseudoFullscreen) return;
     this.isFullscreen.set(!!document.fullscreenElement);
   };
 
@@ -80,6 +85,9 @@ export class MaterialViewerComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     document.removeEventListener('fullscreenchange', this.fullscreenChangeHandler);
+    if (this.isPseudoFullscreen) {
+      this.setPseudoFullscreen(false);
+    }
   }
 
   private loadMaterial(materialId: string): void {
@@ -330,17 +338,94 @@ export class MaterialViewerComponent implements OnInit, OnDestroy {
   }
 
   toggleFullscreen(): void {
-    const viewerElement = document.querySelector('.material-viewer-container');
+    const viewerElement = document.querySelector('.material-viewer-container') as HTMLElement | null;
     if (!viewerElement) return;
 
-    if (!document.fullscreenElement) {
-      viewerElement.requestFullscreen().catch(err => {
-        console.error('Error entering fullscreen:', err);
-        this.toastService.error('Vollbildmodus nicht verfügbar');
-      });
-    } else {
-      document.exitFullscreen();
+    if (this.isPseudoFullscreen) {
+      this.setPseudoFullscreen(false);
+      return;
     }
+
+    if (document.fullscreenElement) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+      return;
+    }
+
+    if (!this.canUseNativeFullscreen(viewerElement)) {
+      this.setPseudoFullscreen(true);
+      return;
+    }
+
+    viewerElement.requestFullscreen().catch(err => {
+      console.error('Error entering fullscreen:', err);
+      this.toastService.error('Vollbildmodus nicht verfügbar');
+    });
+  }
+
+  private canUseNativeFullscreen(element: HTMLElement): boolean {
+    if (typeof element.requestFullscreen !== 'function') {
+      return false;
+    }
+
+    if ('fullscreenEnabled' in document) {
+      return document.fullscreenEnabled;
+    }
+
+    return true;
+  }
+
+  private shouldLockScrollInPseudoFullscreen(): boolean {
+    return !this.isIOS();
+  }
+
+  private isIOS(): boolean {
+    if (typeof navigator === 'undefined') {
+      return false;
+    }
+
+    const ua = navigator.userAgent || '';
+    const isIOSDevice = /iPad|iPhone|iPod/.test(ua);
+    const isIPadOS = ua.includes('Macintosh') && (navigator.maxTouchPoints ?? 0) > 1;
+
+    return isIOSDevice || isIPadOS;
+  }
+
+  private setPseudoFullscreen(enabled: boolean): void {
+    this.isPseudoFullscreen = enabled;
+    this.isFullscreen.set(enabled);
+
+    const body = document.body;
+    const html = document.documentElement;
+    const shouldLockScroll = this.shouldLockScrollInPseudoFullscreen();
+
+    if (enabled) {
+      if (shouldLockScroll) {
+        this.previousBodyOverflow = body.style.overflow;
+        this.previousHtmlOverflow = html.style.overflow;
+        body.style.overflow = 'hidden';
+        html.style.overflow = 'hidden';
+      }
+      return;
+    }
+
+    if (shouldLockScroll) {
+      if (this.previousBodyOverflow !== null) {
+        body.style.overflow = this.previousBodyOverflow;
+      } else {
+        body.style.removeProperty('overflow');
+      }
+
+      if (this.previousHtmlOverflow !== null) {
+        html.style.overflow = this.previousHtmlOverflow;
+      } else {
+        html.style.removeProperty('overflow');
+      }
+    }
+
+    this.previousBodyOverflow = null;
+    this.previousHtmlOverflow = null;
   }
 
   editMaterial(): void {
@@ -351,7 +436,12 @@ export class MaterialViewerComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void {
-    this.router.navigate(['/lernen/materials']);
+    const m = this.material();
+    if (m) {
+      this.router.navigate(['/lernen/material', m.id]);
+    } else {
+      this.router.navigate(['/lernen/materials']);
+    }
   }
 
   async copyJoinCode(): Promise<void> {

@@ -12,4 +12,8 @@ export interface UserMaterialReference {
   role: 'owner' | 'co-author' | 'student';
   addedAt: Date;
   lastAccessedAt: Date;
+  // Organization fields
+  folderId?: string;
+  tags: string[];
+  isFavorite: boolean;
 }

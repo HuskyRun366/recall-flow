@@ -1,0 +1,68 @@
+@use '../../../../styles/variables' as *;
+
+.consent-banner {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  padding: $spacing-md $spacing-lg;
+  padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom, 0px));
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  box-shadow: $shadow-lg;
+}
+
+.consent-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-lg;
+}
+
+.consent-text {
+  flex: 1 1 auto;
+  min-width: 0;
+
+  h2 {
+    margin: 0 0 $spacing-xs 0;
+    font-size: 1rem;
+    color: var(--color-text-primary);
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+  }
+
+  a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    font-weight: 600;
+  }
+}
+
+.consent-actions {
+  display: flex;
+  gap: $spacing-sm;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .consent-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .consent-actions {
+    width: 100%;
+  }
+
+  .consent-actions .btn {
+    flex: 1 1 0;
+    justify-content: center;
+  }
+}

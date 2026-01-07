@@ -15,3 +15,4 @@ export * from './marketplace.model';
 export * from './marketplace-theme.model';
 export * from './quiz-analytics.model';
 export * from './follow.model';
+export * from './folder.model';

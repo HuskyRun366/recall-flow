@@ -1,10 +1,91 @@
 @use '../../../styles/variables' as *;
 
+// Layout with sidebar
+.home-layout {
+  display: flex;
+  min-height: calc(100vh - 64px);
+
+  .home-sidebar {
+    flex-shrink: 0;
+    width: 260px;
+    transition: width $transition-normal, transform $transition-normal;
+    overflow: hidden;
+  }
+
+  &.sidebar-collapsed {
+    .home-sidebar {
+      width: 0;
+    }
+
+    .sidebar-toggle {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .home-sidebar {
+      width: 0;
+      min-width: 0;
+      flex: 0 0 0;
+      overflow: visible;
+    }
+
+    &.sidebar-collapsed .home-sidebar {
+      width: 0;
+    }
+  }
+}
+
+// Sidebar Toggle Button (visible when sidebar is collapsed)
+.sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  left: $spacing-md;
+  top: calc(64px + $spacing-md);
+  width: 40px;
+  height: 40px;
+  background: var(--gradient-primary);
+  border: none;
+  border-radius: $radius-md;
+  color: var(--color-on-gradient);
+  cursor: pointer;
+  z-index: 50;
+  box-shadow: $shadow-md;
+  transition: all $transition-normal;
+  opacity: 0;
+  transform: translateX(-10px);
+  pointer-events: none;
+
+  &:hover {
+    transform: translateX(0) scale(1.05);
+    box-shadow: $shadow-lg;
+  }
+
+  &:active {
+    transform: translateX(0) scale(0.95);
+  }
+}
+
+// Keep sidebar toggle near the top on mobile as well
+@media (max-width: 768px) {
+  .sidebar-toggle {
+    top: calc(64px + #{$spacing-md});
+    bottom: auto;
+    left: $spacing-md;
+  }
+}
+
 .home-container {
+  flex: 1;
   min-height: calc(100vh - 64px);
   padding: $spacing-xxl $spacing-lg;
   max-width: 1400px;
   margin: 0 auto;
+  width: 100%;
 }
 
 .home-header {
@@ -121,6 +202,70 @@
 
     @media (max-width: 480px) {
       font-size: 0.8rem;
+    }
+  }
+}
+
+// Active Filters
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+
+    &.favorites {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+
+      svg {
+        color: #ef4444;
+      }
+    }
+
+    &.folder {
+      background: color-mix(in srgb, var(--folder-color, #6366f1) 15%, transparent);
+      border-color: color-mix(in srgb, var(--folder-color, #6366f1) 40%, transparent);
+      color: var(--folder-color, #6366f1);
+
+      .folder-icon {
+        font-size: 0.875rem;
+      }
+    }
+
+    .remove-filter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      margin-left: $spacing-xs;
+      border: none;
+      background: transparent;
+      color: inherit;
+      opacity: 0.6;
+      cursor: pointer;
+      border-radius: 50%;
+      font-size: 1rem;
+      line-height: 1;
+      transition: opacity 0.2s ease, background 0.2s ease;
+
+      &:hover {
+        opacity: 1;
+        background: rgba(0, 0, 0, 0.1);
+      }
     }
   }
 }
@@ -361,6 +506,33 @@
       overflow-wrap: anywhere;
     }
 
+    .header-actions {
+      display: flex;
+      align-items: flex-start;
+      gap: $spacing-sm;
+      flex-shrink: 0;
+    }
+
+    .folder-menu-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 50%;
+      background: var(--color-surface-elevated);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: background $transition-fast, color $transition-fast, transform $transition-fast;
+
+      &:hover {
+        background: var(--color-background);
+        color: var(--color-text-primary);
+        transform: translateY(-1px);
+      }
+    }
+
     .badge-group {
       display: flex;
       gap: $spacing-xs;
@@ -404,6 +576,31 @@
           height: 12px;
         }
       }
+    }
+  }
+
+  // Folder Badge
+  .folder-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $radius-md;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: $spacing-md;
+    background: color-mix(in srgb, var(--folder-color, #6366f1) 15%, transparent);
+    color: var(--folder-color, #6366f1);
+
+    .folder-icon {
+      font-size: 0.875rem;
+    }
+
+    .folder-name {
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 
@@ -540,11 +737,106 @@
   }
 }
 
+// Context menu for folder assignment
+.context-menu {
+  position: fixed;
+  min-width: 220px;
+  max-width: 280px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: $radius-md;
+  box-shadow: $shadow-lg;
+  padding: $spacing-xs;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.context-menu-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-secondary);
+  padding: $spacing-xs $spacing-sm;
+}
+
+.context-menu-divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: $spacing-xs 0;
+}
+
+.context-menu-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-xs $spacing-sm;
+  border: none;
+  background: transparent;
+  color: var(--color-text-primary);
+  border-radius: $radius-sm;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+
+  &:hover {
+    background: var(--color-surface-elevated);
+  }
+
+  &.active {
+    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    color: var(--color-primary);
+  }
+}
+
+.context-menu-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.context-menu-icon {
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.context-menu-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 1050;
+}
+
+.mobile-sheet-backdrop.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (min-width: 769px) {
+  .mobile-sheet-backdrop {
+    display: none;
+  }
+}
+
 // Floating Action Button
 .fab-container {
   position: fixed;
   bottom: $spacing-xxl;
   right: $spacing-xxl;
+  left: auto;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -554,11 +846,13 @@
   @media (max-width: 768px) {
     bottom: calc($spacing-lg + env(safe-area-inset-bottom));
     right: calc($spacing-lg + env(safe-area-inset-right));
+    left: auto;
   }
 
   @media (max-width: 480px) {
     bottom: calc($spacing-md + env(safe-area-inset-bottom));
     right: calc($spacing-md + env(safe-area-inset-right));
+    left: auto;
   }
 
   .fab {
@@ -621,6 +915,7 @@
     pointer-events: none;
     transform: translateY(10px);
     transition: all $transition-normal;
+    align-items: flex-end;
 
     .fab-item {
       display: inline-flex;
@@ -633,6 +928,7 @@
       box-shadow: $shadow-md;
       text-decoration: none;
       white-space: nowrap;
+      align-self: flex-end;
 
       .icon-circle {
         width: 32px;

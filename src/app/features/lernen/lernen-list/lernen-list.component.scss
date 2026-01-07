@@ -1,6 +1,64 @@
 @use '../../../../styles/variables' as *;
 
+.deck-list-layout {
+  display: flex;
+  min-height: calc(100vh - 64px);
+
+  &.sidebar-collapsed {
+    .deck-sidebar {
+      width: 0;
+    }
+
+    .sidebar-toggle {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+  }
+}
+
+.deck-sidebar {
+  flex-shrink: 0;
+  width: 260px;
+  transition: width $transition-normal, transform $transition-normal;
+  overflow: hidden;
+}
+
+// Sidebar Toggle Button (visible when sidebar is collapsed)
+.sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  left: $spacing-md;
+  top: calc(64px + $spacing-md);
+  width: 40px;
+  height: 40px;
+  background: var(--gradient-primary);
+  border: none;
+  border-radius: $radius-md;
+  color: var(--color-on-gradient);
+  cursor: pointer;
+  z-index: 50;
+  box-shadow: $shadow-md;
+  transition: all $transition-normal;
+  opacity: 0;
+  transform: translateX(-10px);
+  pointer-events: none;
+
+  &:hover {
+    transform: translateX(0) scale(1.05);
+    box-shadow: $shadow-lg;
+  }
+
+  &:active {
+    transform: translateX(0) scale(0.95);
+  }
+}
+
 .deck-list-page {
+  flex: 1;
+  width: 100%;
   min-height: calc(100vh - 64px);
   max-width: 1400px;
   margin: 0 auto;
@@ -172,6 +230,61 @@
   box-shadow: $shadow-sm;
 }
 
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-xs $spacing-md;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+
+    &.favorites {
+      background: rgba(239, 83, 80, 0.15);
+      color: #EF5350;
+
+      svg {
+        fill: currentColor;
+      }
+    }
+
+    &.folder {
+      background: color-mix(in srgb, var(--folder-color) 15%, transparent);
+      color: var(--folder-color);
+
+      .folder-icon {
+        font-size: 1rem;
+      }
+    }
+
+    .remove-filter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border: none;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      color: inherit;
+      font-size: 0.875rem;
+      line-height: 1;
+      cursor: pointer;
+      transition: background $transition-fast;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+}
+
 .stats-summary {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -304,11 +417,18 @@
       flex-wrap: wrap;
 
       h3 {
+        flex: 1;
         font-size: 1.4rem;
         color: var(--color-text-primary);
         margin: 0;
         word-break: break-word;
         overflow-wrap: anywhere;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: $spacing-xs;
       }
     }
 
@@ -342,6 +462,29 @@
       line-height: 1.5;
       word-break: break-word;
       overflow-wrap: anywhere;
+    }
+  }
+
+  .folder-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $radius-md;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: color-mix(in srgb, var(--folder-color) 15%, transparent);
+    color: var(--folder-color);
+
+    .folder-icon {
+      font-size: 0.9rem;
+    }
+
+    .folder-name {
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 

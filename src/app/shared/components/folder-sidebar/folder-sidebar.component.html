@@ -1,0 +1,112 @@
+<aside class="folder-sidebar" [class.collapsed]="collapsed()">
+  <div class="sidebar-header">
+    <h3 class="sidebar-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+      </svg>
+      <span class="title-text">{{ 'folders.title' | translate }}</span>
+    </h3>
+    <div class="sidebar-actions">
+      <button type="button" class="create-folder-btn" (click)="onCreateFolder()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        <span>{{ 'folders.newFolder' | translate }}</span>
+      </button>
+      <button
+        type="button"
+        class="collapse-btn"
+        (click)="toggleCollapse()"
+        [attr.aria-label]="collapsed() ? 'Expand sidebar' : 'Collapse sidebar'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          @if (collapsed()) {
+            <polyline points="9 18 15 12 9 6"/>
+          } @else {
+            <polyline points="15 18 9 12 15 6"/>
+          }
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <nav class="folder-nav">
+    <ul class="folder-list">
+      <!-- All Items -->
+      <li>
+        <button
+          type="button"
+          class="folder-item"
+          [class.active]="selectedFolderId() === null && !showFavorites()"
+          (click)="selectAll()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+          </svg>
+          <span class="folder-name">{{ 'folders.all' | translate }}</span>
+        </button>
+      </li>
+
+      <!-- Favorites -->
+      <li>
+        <button
+          type="button"
+          class="folder-item"
+          [class.active]="showFavorites()"
+          (click)="selectFavorites()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <span class="folder-name">{{ 'folders.favorites' | translate }}</span>
+        </button>
+      </li>
+
+      <!-- Divider -->
+      <li class="divider"></li>
+
+      <!-- User Folders -->
+      @for (folder of folders(); track folder.id) {
+        <li>
+          <button
+            type="button"
+            class="folder-item"
+            [class.active]="selectedFolderId() === folder.id"
+            [style.--folder-color]="folder.color"
+            (click)="selectFolder(folder.id)">
+            <span class="folder-color" [style.background]="folder.color">
+              @if (folder.icon) {
+                {{ folder.icon }}
+              }
+            </span>
+            <span class="folder-name">{{ folder.name }}</span>
+            <div class="folder-actions">
+              <button
+                type="button"
+                class="action-btn"
+                (click)="onEditFolder($event, folder)"
+                [attr.aria-label]="'Edit ' + folder.name">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="action-btn delete"
+                (click)="onDeleteFolder($event, folder)"
+                [attr.aria-label]="'Delete ' + folder.name">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+              </button>
+            </div>
+          </button>
+        </li>
+      }
+    </ul>
+  </nav>
+
+</aside>

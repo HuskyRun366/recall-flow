@@ -4,7 +4,7 @@ import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { EditorView } from '@codemirror/view';
 import { EditorState, StateEffect } from '@codemirror/state';
 import { LearningMaterialService } from '../../../core/services/learning-material.service';
@@ -41,6 +41,7 @@ export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit
   private userLookupService = inject(UserLookupService);
   private toastService = inject(ToastService);
   private followService = inject(FollowService);
+  private translateService = inject(TranslateService);
   private destroyRef = inject(DestroyRef);
   private themeService = inject(ThemeService);
   private codeMirrorConfig = inject(CodeMirrorHtmlConfigService);
@@ -530,6 +531,7 @@ export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit
           this.successMessage.set('Lernunterlage erstellt!');
           this.isSaving.set(false);
           this.unsavedChanges.set(false);
+          this.toastService.success(this.translateService.instant('toast.material.created'));
 
           this.router.navigate(['/lernen/material-editor', materialId], {
             state: {
@@ -542,12 +544,14 @@ export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit
         error: (err) => {
           console.error('Error creating material:', err);
           this.error.set('Fehler beim Erstellen der Unterlage');
+          this.toastService.error(this.translateService.instant('toast.error.save'));
           this.isSaving.set(false);
         }
       });
     } catch (err: any) {
       console.error('Error creating material:', err);
       this.error.set(err.message || 'Fehler beim Erstellen');
+      this.toastService.error(this.translateService.instant('toast.error.save'));
       this.isSaving.set(false);
     }
   }
@@ -610,10 +614,12 @@ export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit
       const hasCoAuthorErrors = this.coAuthorErrors().length > 0;
       this.unsavedChanges.set(hasCoAuthorErrors);
       this.successMessage.set(hasCoAuthorErrors ? 'Gespeichert (Mit-Autoren teilweise fehlgeschlagen)' : 'Alle Änderungen gespeichert');
+      this.toastService.success(this.translateService.instant('toast.material.saved'));
       setTimeout(() => this.successMessage.set(null), 2000);
     } catch (err) {
       console.error('Error saving material:', err);
       this.error.set('Fehler beim Speichern');
+      this.toastService.error(this.translateService.instant('toast.error.save'));
     } finally {
       this.isSaving.set(false);
     }
@@ -745,10 +751,12 @@ export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit
         this.participantService
       );
 
+      this.toastService.success(this.translateService.instant('toast.material.deleted'));
       this.router.navigate(['/lernen/materials']);
     } catch (err) {
       console.error('Error deleting material:', err);
       this.error.set('Fehler beim Löschen der Unterlage');
+      this.toastService.error(this.translateService.instant('toast.error.delete'));
       this.isSaving.set(false);
     }
   }

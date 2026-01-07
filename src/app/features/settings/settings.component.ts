@@ -13,6 +13,8 @@ import { LanguageSwitcherComponent } from '../../shared/components/language-swit
 import { ToastService } from '../../core/services/toast.service';
 import { AccessibilityService } from '../../core/services/accessibility.service';
 import { AccountDataService } from '../../core/services/account-data.service';
+import { ConsentService } from '../../core/services/consent.service';
+import { environment } from '../../../environments/environment';
 
 const STORAGE_THEME_SETTINGS_EXPANDED = 'quiz-app-theme-settings-expanded';
 
@@ -35,6 +37,7 @@ export class SettingsComponent {
   private translate = inject(TranslateService);
   private accessibility = inject(AccessibilityService);
   private accountData = inject(AccountDataService);
+  private consentService = inject(ConsentService);
 
   // PWA Detection
   isPWA = this.pwaDetection.isPWA;
@@ -98,6 +101,10 @@ export class SettingsComponent {
   isHighContrastEnabled = this.accessibility.highContrastEnabled;
 
   isExportingData = signal(false);
+  isExportingDeviceData = signal(false);
+  isClearingDeviceData = signal(false);
+  isPreparingProviderExport = signal(false);
+  isPreparingProviderDelete = signal(false);
   isDeletingAccount = signal(false);
 
   constructor() {
@@ -247,6 +254,119 @@ export class SettingsComponent {
     }
   }
 
+  async exportDeviceData(): Promise<void> {
+    if (this.isExportingDeviceData()) {
+      return;
+    }
+
+    this.isExportingDeviceData.set(true);
+    try {
+      const payload = await this.collectDeviceData();
+      const json = JSON.stringify(payload, null, 2);
+      const date = new Date().toISOString().slice(0, 10);
+      this.downloadContent(json, `device-data-export-${date}.json`, 'application/json;charset=utf-8');
+      this.toastService.success(this.translate.instant('settings.page.account.deviceExport.success'), 2500);
+    } catch (error) {
+      console.error('Failed to export device data:', error);
+      this.toastService.error(this.translate.instant('settings.page.account.deviceExport.failed'));
+    } finally {
+      this.isExportingDeviceData.set(false);
+    }
+  }
+
+  async clearDeviceData(): Promise<void> {
+    if (this.isClearingDeviceData()) {
+      return;
+    }
+
+    const confirmed = confirm(
+      this.translate.instant('settings.page.account.deviceDelete.confirm')
+    );
+    if (!confirmed) return;
+
+    this.isClearingDeviceData.set(true);
+    try {
+      this.clearStorage(typeof localStorage === 'undefined' ? undefined : localStorage);
+      this.clearStorage(typeof sessionStorage === 'undefined' ? undefined : sessionStorage);
+      await Promise.all([
+        this.clearIndexedDb(),
+        this.clearCaches(),
+        this.unregisterServiceWorkers()
+      ]);
+      this.toastService.success(this.translate.instant('settings.page.account.deviceDelete.success'), 2500);
+
+      const reload = confirm(
+        this.translate.instant('settings.page.account.deviceDelete.reloadConfirm')
+      );
+      if (reload && typeof window !== 'undefined') {
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Failed to clear device data:', error);
+      this.toastService.error(this.translate.instant('settings.page.account.deviceDelete.failed'));
+    } finally {
+      this.isClearingDeviceData.set(false);
+    }
+  }
+
+  async requestProviderExport(): Promise<void> {
+    if (this.isPreparingProviderExport()) {
+      return;
+    }
+
+    this.isPreparingProviderExport.set(true);
+    try {
+      const payload = this.buildProviderRequestPayload('export');
+      const json = JSON.stringify(payload, null, 2);
+      const date = new Date().toISOString().slice(0, 10);
+      this.downloadContent(json, `provider-logs-export-${date}.json`, 'application/json;charset=utf-8');
+      this.toastService.success(this.translate.instant('settings.page.account.providerExport.success'), 2500);
+    } catch (error) {
+      console.error('Failed to prepare provider export request:', error);
+      this.toastService.error(this.translate.instant('settings.page.account.providerExport.failed'));
+    } finally {
+      this.isPreparingProviderExport.set(false);
+    }
+  }
+
+  async requestProviderDelete(): Promise<void> {
+    if (this.isPreparingProviderDelete()) {
+      return;
+    }
+
+    const confirmed = confirm(
+      this.translate.instant('settings.page.account.providerDelete.confirm')
+    );
+    if (!confirmed) return;
+
+    this.isPreparingProviderDelete.set(true);
+    try {
+      const payload = this.buildProviderRequestPayload('delete');
+      const json = JSON.stringify(payload, null, 2);
+      const date = new Date().toISOString().slice(0, 10);
+      this.downloadContent(json, `provider-logs-delete-${date}.json`, 'application/json;charset=utf-8');
+      this.toastService.success(this.translate.instant('settings.page.account.providerDelete.success'), 2500);
+    } catch (error) {
+      console.error('Failed to prepare provider delete request:', error);
+      this.toastService.error(this.translate.instant('settings.page.account.providerDelete.failed'));
+    } finally {
+      this.isPreparingProviderDelete.set(false);
+    }
+  }
+
+  resetConsent(): void {
+    const confirmed = confirm(
+      this.translate.instant('settings.page.account.consent.confirm')
+    );
+    if (!confirmed) return;
+
+    this.consentService.resetConsent();
+    this.toastService.success(
+      this.translate.instant('settings.page.account.consent.success'),
+      2000
+    );
+  }
+
   async deleteAccount(): Promise<void> {
     const user = this.authService.currentUser();
     if (!user || this.isDeletingAccount()) {
@@ -264,31 +384,40 @@ export class SettingsComponent {
     }
 
     this.isDeletingAccount.set(true);
+    let dataDeleted = false;
+    let authDeleted = false;
     try {
       await this.accountData.deleteUserData(user.uid, user.email);
+      dataDeleted = true;
       try {
         await this.authService.deleteCurrentUser();
+        authDeleted = true;
       } catch (error: any) {
         if (error?.code === 'auth/requires-recent-login') {
           try {
             await this.authService.reauthenticateWithGoogle();
             await this.authService.deleteCurrentUser();
+            authDeleted = true;
           } catch (reauthError) {
             console.error('Reauthentication failed:', reauthError);
             this.toastService.error(this.translate.instant('settings.page.account.delete.reauthFailed'));
-            return;
           }
         } else {
-          throw error;
+          console.error('Auth account deletion failed:', error);
+          this.toastService.error(this.translate.instant('settings.page.account.delete.failed'));
         }
       }
 
-      this.toastService.success(this.translate.instant('settings.page.account.delete.success'), 3000);
-      await this.authService.signOut();
+      if (authDeleted) {
+        this.toastService.success(this.translate.instant('settings.page.account.delete.success'), 3000);
+      }
     } catch (error) {
       console.error('Failed to delete account:', error);
       this.toastService.error(this.translate.instant('settings.page.account.delete.failed'));
     } finally {
+      if (dataDeleted) {
+        await this.authService.signOut();
+      }
       this.isDeletingAccount.set(false);
     }
   }
@@ -307,5 +436,204 @@ export class SettingsComponent {
       if (status.isPreloaded) count++;
     });
     return count;
+  }
+
+  private downloadContent(content: string, filename: string, type: string): void {
+    if (typeof window === 'undefined') return;
+    const blob = new Blob([content], { type });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }
+
+  private async collectDeviceData(): Promise<Record<string, any>> {
+    const user = this.authService.currentUser();
+    const [indexedDb, cachesInfo, serviceWorkers, storageEstimate] = await Promise.all([
+      this.listIndexedDbDatabases(),
+      this.listCaches(),
+      this.listServiceWorkers(),
+      this.getStorageEstimate()
+    ]);
+
+    return {
+      exportedAt: new Date().toISOString(),
+      user: {
+        uid: user?.uid || null,
+        email: user?.email || null
+      },
+      localStorage: this.readStorage(typeof localStorage === 'undefined' ? undefined : localStorage),
+      sessionStorage: this.readStorage(typeof sessionStorage === 'undefined' ? undefined : sessionStorage),
+      indexedDb,
+      caches: cachesInfo,
+      serviceWorkers,
+      storageEstimate
+    };
+  }
+
+  private readStorage(storage: Storage | undefined): Record<string, string> {
+    const data: Record<string, string> = {};
+    if (!storage) return data;
+    try {
+      for (let i = 0; i < storage.length; i += 1) {
+        const key = storage.key(i);
+        if (!key) continue;
+        const value = storage.getItem(key);
+        data[key] = value ?? '';
+      }
+    } catch (error) {
+      console.warn('Failed to read storage:', error);
+    }
+    return data;
+  }
+
+  private async listIndexedDbDatabases(): Promise<{ supported: boolean; databases: Array<{ name: string; version: number }> }> {
+    if (typeof indexedDB === 'undefined') {
+      return { supported: false, databases: [] };
+    }
+
+    const anyIndexedDb = indexedDB as any;
+    if (typeof anyIndexedDb.databases !== 'function') {
+      return { supported: false, databases: [] };
+    }
+
+    try {
+      const databases = await anyIndexedDb.databases();
+      const result = (databases || [])
+        .filter((db: any) => typeof db?.name === 'string')
+        .map((db: any) => ({ name: db.name as string, version: Number(db.version || 0) }));
+      return { supported: true, databases: result };
+    } catch (error) {
+      console.warn('Failed to list IndexedDB databases:', error);
+      return { supported: false, databases: [] };
+    }
+  }
+
+  private async listCaches(): Promise<{ supported: boolean; keys: string[] }> {
+    if (typeof caches === 'undefined') {
+      return { supported: false, keys: [] };
+    }
+    try {
+      const keys = await caches.keys();
+      return { supported: true, keys };
+    } catch (error) {
+      console.warn('Failed to list caches:', error);
+      return { supported: false, keys: [] };
+    }
+  }
+
+  private async listServiceWorkers(): Promise<{ supported: boolean; registrations: Array<{ scope: string; active: string | null; waiting: string | null; installing: string | null }> }> {
+    if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) {
+      return { supported: false, registrations: [] };
+    }
+    try {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      const registrations = regs.map(reg => ({
+        scope: reg.scope,
+        active: reg.active?.scriptURL || null,
+        waiting: reg.waiting?.scriptURL || null,
+        installing: reg.installing?.scriptURL || null
+      }));
+      return { supported: true, registrations };
+    } catch (error) {
+      console.warn('Failed to list service workers:', error);
+      return { supported: false, registrations: [] };
+    }
+  }
+
+  private async getStorageEstimate(): Promise<{ quota?: number; usage?: number } | null> {
+    if (typeof navigator === 'undefined' || !navigator.storage?.estimate) {
+      return null;
+    }
+    try {
+      const estimate = await navigator.storage.estimate();
+      return { quota: estimate.quota, usage: estimate.usage };
+    } catch (error) {
+      console.warn('Failed to get storage estimate:', error);
+      return null;
+    }
+  }
+
+  private clearStorage(storage: Storage | undefined): void {
+    if (!storage) return;
+    try {
+      storage.clear();
+    } catch (error) {
+      console.warn('Failed to clear storage:', error);
+    }
+  }
+
+  private async clearIndexedDb(): Promise<void> {
+    if (typeof indexedDB === 'undefined') return;
+    const anyIndexedDb = indexedDB as any;
+    if (typeof anyIndexedDb.databases !== 'function') return;
+
+    try {
+      const databases = await anyIndexedDb.databases();
+      const deletions = (databases || [])
+        .filter((db: any) => typeof db?.name === 'string')
+        .map((db: any) => this.deleteIndexedDb(db.name as string));
+      await Promise.all(deletions);
+    } catch (error) {
+      console.warn('Failed to clear IndexedDB:', error);
+    }
+  }
+
+  private deleteIndexedDb(name: string): Promise<void> {
+    return new Promise(resolve => {
+      const request = indexedDB.deleteDatabase(name);
+      request.onsuccess = () => resolve();
+      request.onerror = () => resolve();
+      request.onblocked = () => resolve();
+    });
+  }
+
+  private async clearCaches(): Promise<void> {
+    if (typeof caches === 'undefined') return;
+    try {
+      const keys = await caches.keys();
+      await Promise.all(keys.map(key => caches.delete(key)));
+    } catch (error) {
+      console.warn('Failed to clear caches:', error);
+    }
+  }
+
+  private async unregisterServiceWorkers(): Promise<void> {
+    if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return;
+    try {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(reg => reg.unregister()));
+    } catch (error) {
+      console.warn('Failed to unregister service workers:', error);
+    }
+  }
+
+  private buildProviderRequestPayload(type: 'export' | 'delete'): Record<string, any> {
+    const user = this.authService.currentUser();
+    return {
+      type,
+      requestedAt: new Date().toISOString(),
+      user: {
+        uid: user?.uid || null,
+        email: user?.email || null
+      },
+      contact: {
+        email: environment.dataProtection.contactEmail || null,
+        name: environment.dataProtection.contactName || null,
+        city: environment.dataProtection.city || null,
+        zipCode: environment.dataProtection.zipCode || null,
+        country: environment.dataProtection.country || null
+      },
+      providers: {
+        render: {
+          logs: true
+        }
+      },
+      note: 'Provider-managed logs are not directly accessible in-app and require manual processing.'
+    };
   }
 }

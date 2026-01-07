@@ -1,6 +1,3 @@
-<!-- Skip Link for Accessibility -->
-<a href="#main-content" class="skip-link">{{ 'common.skipToContent' | translate }}</a>
-
 <app-header />
 <main id="main-content"
       [@routeAnimation]="prepareRoute(outlet)"
@@ -13,6 +10,7 @@
 
 <!-- Global Components -->
 <app-toast />
+<app-consent-banner />
 
 <!-- PWA Components -->
 <app-pwa-install-prompt />

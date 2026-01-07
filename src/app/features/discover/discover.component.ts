@@ -237,7 +237,7 @@ export class DiscoverComponent implements OnInit {
   async onAdd(item: MarketplaceItem): Promise<void> {
     const user = this.authService.currentUser();
     if (!user) {
-      this.toastService.error('Please log in to add content');
+      this.toastService.error(this.translateService.instant('toast.error.unauthorized'));
       return;
     }
 
@@ -403,7 +403,7 @@ export class DiscoverComponent implements OnInit {
   async onRateItem(item: MarketplaceItem): Promise<void> {
     const userId = this.authService.currentUser()?.uid;
     if (!userId) {
-      this.toastService.error('Bitte melde dich an');
+      this.toastService.error(this.translateService.instant('toast.error.unauthorized'));
       return;
     }
 
@@ -431,6 +431,6 @@ export class DiscoverComponent implements OnInit {
     this.loadTopChart(this.activeChart());
     this.performSearch();
     this.closeReviewDialog();
-    this.toastService.success('Bewertung gespeichert');
+    this.toastService.success(this.translateService.instant('toast.success.saved'));
   }
 }

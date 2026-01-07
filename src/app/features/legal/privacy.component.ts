@@ -12,7 +12,7 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./privacy.component.scss']
 })
 export class PrivacyComponent {
-  lastUpdated = '04. Dezember 2024';
+  lastUpdated = '06. Januar 2026';
   contactEmail = environment.dataProtection.contactEmail;
   contactName = environment.dataProtection.contactName;
   contactCity = environment.dataProtection.city;

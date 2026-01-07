@@ -15,4 +15,8 @@ export interface UserQuizReference {
   role: ParticipantRole;
   addedAt: Date;
   lastAccessedAt: Date;
+  // Organization fields
+  folderId?: string;
+  tags: string[];
+  isFavorite: boolean;
 }

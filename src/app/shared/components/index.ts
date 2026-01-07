@@ -23,3 +23,15 @@ export * from './skeleton-loader/skeleton-loader.component';
 
 // ModeSwitch
 export * from './mode-switch/mode-switch.component';
+
+// FavoriteButton
+export * from './favorite-button/favorite-button.component';
+
+// TagInput
+export * from './tag-input/tag-input.component';
+
+// FolderSidebar
+export * from './folder-sidebar/folder-sidebar.component';
+
+// FolderDialog
+export * from './folder-dialog/folder-dialog.component';

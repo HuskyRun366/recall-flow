@@ -13,6 +13,39 @@ export interface ChangelogItem {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '2.11',
+    date: new Date('2026-01-07'),
+    title: 'Material-Detailseiten & Folgen',
+    changes: [
+      { type: 'feature', text: 'Neue Material-Detailseite mit Statistiken, Join-Code und Bewertungen (Viewer bleibt separat)' },
+      { type: 'feature', text: 'Follow-Button für Autoren jetzt auch auf Deck- und Material-Detailseiten' },
+      { type: 'improvement', text: 'Viewer-Navigation zurück zur Detailseite für Lernunterlagen' }
+    ]
+  },
+  {
+    version: '2.10',
+    date: new Date('2026-01-06'),
+    title: 'Discover & Rating UI',
+    changes: [
+      { type: 'improvement', text: 'Bewerten-CTA als Star-Chip mit goldenem Glow statt Standard-Button' },
+      { type: 'improvement', text: 'Discover: „Hinzufügen/Installieren“ zeigt jetzt „Hinzugefügt/Installiert“ und ist deaktiviert, wenn bereits in der Sammlung' },
+      { type: 'bugfix', text: 'Rating-Sterne zeigen jetzt alle in Gold (kein weißer Endstern mehr)' }
+    ]
+  },
+  {
+    version: '2.9',
+    date: new Date('2026-01-05'),
+    title: 'GDPR & Mobile UX Updates',
+    changes: [
+      { type: 'feature', text: 'Consent-Banner für externe Fonts + „Einwilligung ändern“-Option in den Einstellungen' },
+      { type: 'feature', text: 'Altersbestätigung beim Login' },
+      { type: 'improvement', text: 'Aktualisierte Datenschutzhinweise inkl. Render/Firebase + vollständige FR/ES Übersetzungen' },
+      { type: 'improvement', text: 'Mobile Ordner-Navigation als Bottom-Sheet, neue Ordner-Actions & Kontextmenü zum Verschieben' },
+      { type: 'improvement', text: 'PWA Install-Screenshots auf PNG umgestellt (korrekte Anzeige im Install-Prompt)' },
+      { type: 'improvement', text: 'Optimistic UI für Favoriten (schnelleres Feedback)' }
+    ]
+  },
+  {
     version: '2.8',
     date: new Date('2025-12-30'),
     title: 'Benachrichtigungs-System Verbesserungen',

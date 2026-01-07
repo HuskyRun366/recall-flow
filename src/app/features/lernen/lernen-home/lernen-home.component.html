@@ -6,9 +6,17 @@
   </div>
 
   @if (isLoading()) {
+    <!-- Stats Summary Skeleton -->
+    <div class="stats-summary">
+      @for (item of [1,2,3]; track item) {
+        <app-skeleton-loader type="stat-card" />
+      }
+    </div>
+
+    <!-- Cards Skeleton -->
     <div class="skeleton-grid">
       @for (item of [1,2,3,4,5,6]; track item) {
-        <app-skeleton-loader type="card" />
+        <app-skeleton-loader type="quiz-card" />
       }
     </div>
   } @else if (error()) {
@@ -143,10 +151,7 @@
         <h2>{{ 'lernen.noDecksFound' | translate }}</h2>
         <p>{{ 'lernen.createFirstDeck' | translate }}</p>
         <a routerLink="/lernen/deck-editor/new" class="btn btn-primary">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="5" x2="12" y2="19"/>
-            <line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
+          <span class="icon-plus" aria-hidden="true"></span>
           {{ 'lernen.newDeck' | translate }}
         </a>
       </div>

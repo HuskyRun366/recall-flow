@@ -1,0 +1,44 @@
+.favorite-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+
+  &:hover:not(.disabled) {
+    background: var(--surface-hover);
+    color: var(--error-color, #ef4444);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  &.active {
+    color: var(--error-color, #ef4444);
+
+    &:hover:not(.disabled) {
+      transform: scale(1.1);
+    }
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  svg {
+    display: block;
+    transition: transform 0.2s ease;
+  }
+
+  &:active:not(.disabled) svg {
+    transform: scale(0.9);
+  }
+}

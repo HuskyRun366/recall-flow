@@ -128,8 +128,14 @@
     <div class="card reviews-card" *ngIf="quiz()!.visibility === 'public'">
       <div class="card-header">
         <h2>{{ 'discover.rating.title' | translate }}</h2>
-        <button class="btn btn-secondary" *ngIf="isEnrolled() || canEdit()" (click)="openReviewDialog()">
-          {{ userReview() ? ('discover.rating.editReview' | translate) : ('discover.rating.writeReview' | translate) }}
+        <button
+          type="button"
+          class="rating-chip"
+          *ngIf="isEnrolled() || canEdit()"
+          (click)="openReviewDialog()"
+          [attr.aria-label]="'discover.rating.rate' | translate">
+          <span class="icon" aria-hidden="true">⭐</span>
+          <span class="label">{{ 'discover.rating.rate' | translate }}</span>
         </button>
       </div>
 

@@ -153,6 +153,9 @@ export class MarketplaceCardComponent {
   onAdd(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
+    if (this.isEnrolled()) {
+      return;
+    }
     this.add.emit(this.item());
   }
 

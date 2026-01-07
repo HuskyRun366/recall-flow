@@ -267,6 +267,10 @@ export class MaterialListComponent implements OnInit {
   }
 
   viewMaterial(materialId: string): void {
+    this.router.navigate(['/lernen/material', materialId, 'view']);
+  }
+
+  viewDetails(materialId: string): void {
     this.router.navigate(['/lernen/material', materialId]);
   }
 
@@ -309,7 +313,9 @@ export class MaterialListComponent implements OnInit {
       materialId: material.id,
       role: 'student',
       addedAt: new Date(),
-      lastAccessedAt: new Date()
+      lastAccessedAt: new Date(),
+      tags: [],
+      isFavorite: false
     };
 
     const previousPublicMaterials = this.publicMaterials();
@@ -464,7 +470,9 @@ export class MaterialListComponent implements OnInit {
         materialId: material.id,
         role: 'student',
         addedAt: new Date(),
-        lastAccessedAt: new Date()
+        lastAccessedAt: new Date(),
+        tags: [],
+        isFavorite: false
       };
 
       this.userMaterialRefs.update(refs => [...refs, newRef]);

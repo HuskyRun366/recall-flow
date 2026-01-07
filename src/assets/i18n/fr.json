@@ -46,6 +46,7 @@
     "cards": "cartes",
     "card": "carte",
     "overview": "Vue d'ensemble",
+    "preview": "Aperçu",
     "reset": "Réinitialiser",
     "result": "Résultat",
     "results": "Résultats",
@@ -86,6 +87,8 @@
     "signOut": "Déconnexion",
     "signInWithGoogle": "Se connecter avec Google",
     "signingIn": "Connexion en cours...",
+    "ageConfirm": "Je confirme avoir au moins 16 ans ou disposer du consentement de mes parents ou tuteurs.",
+    "ageConfirmError": "Veuillez confirmer que vous avez au moins 16 ans ou le consentement de vos parents ou tuteurs.",
     "subtitle": "Maîtrisez vos connaissances avec la répétition espacée",
     "termsIntro": "En vous connectant, vous acceptez nos",
     "termsOfService": "Conditions d'utilisation",
@@ -633,6 +636,48 @@
           "success": "Export prêt.",
           "failed": "Échec de l'export."
         },
+        "deviceExport": {
+          "title": "Exporter les données de l'appareil",
+          "description": "Exporte les données locales de l'app comme localStorage, IndexedDB, cache et Service Worker.",
+          "action": "Exporter les données de l'appareil",
+          "loading": "Exportation...",
+          "success": "Données de l'appareil exportées.",
+          "failed": "L'export des données de l'appareil a échoué."
+        },
+        "providerExport": {
+          "title": "Exporter les logs Render",
+          "description": "Crée un fichier de demande pour les logs Render.",
+          "action": "Créer une demande d'export",
+          "loading": "Création...",
+          "success": "Demande d'export créée.",
+          "failed": "La demande d'export a échoué."
+        },
+        "consent": {
+          "title": "Consentements",
+          "description": "Réinitialisez votre choix concernant le contenu externe (ex. Google Fonts).",
+          "action": "Modifier le consentement",
+          "confirm": "Réinitialiser votre consentement ? La bannière s'affichera à nouveau.",
+          "success": "Consentement réinitialisé."
+        },
+        "deviceDelete": {
+          "title": "Supprimer les données de l'appareil",
+          "description": "Supprime les données locales de l'app sur cet appareil (localStorage, IndexedDB, cache, Service Worker).",
+          "action": "Supprimer les données de l'appareil",
+          "loading": "Suppression...",
+          "confirm": "Supprimer les données locales de l'appareil ?",
+          "reloadConfirm": "Recharger l'app maintenant ?",
+          "success": "Données de l'appareil supprimées.",
+          "failed": "Impossible de supprimer les données de l'appareil."
+        },
+        "providerDelete": {
+          "title": "Supprimer les logs Render",
+          "description": "Crée une demande de suppression pour les logs Render.",
+          "action": "Créer une demande de suppression",
+          "loading": "Création...",
+          "confirm": "Créer une demande de suppression pour les logs Render ?",
+          "success": "Demande de suppression créée.",
+          "failed": "La demande de suppression a échoué."
+        },
         "delete": {
           "title": "Supprimer le compte",
           "description": "Supprime définitivement votre compte et vos données personnelles.",
@@ -1010,297 +1055,308 @@
     }
   },
   "legal": {
-    "backToApp": "Zurück zur App",
-    "lastUpdated": "Stand",
+    "backToApp": "Retour à l'app",
+    "lastUpdated": "Dernière mise à jour",
     "labels": {
-      "email": "E-Mail",
-      "name": "Name"
+      "email": "E-mail",
+      "name": "Nom"
     },
     "privacy": {
-      "title": "Datenschutzerklärung",
+      "title": "Politique de confidentialité",
       "s1": {
-        "title": "1. Verantwortlicher",
-        "p1": "Verantwortlich für die Datenverarbeitung auf dieser Website ist:"
+        "title": "1. Responsable du traitement",
+        "p1": "Le responsable du traitement des données sur ce site web est :"
       },
       "s2": {
-        "title": "2. Allgemeines zur Datenverarbeitung",
+        "title": "2. Informations générales sur le traitement des données",
         "s21": {
-          "title": "2.1 Umfang der Verarbeitung personenbezogener Daten",
-          "p1": "Wir verarbeiten personenbezogene Daten unserer Nutzer grundsätzlich nur, soweit dies zur Bereitstellung einer funktionsfähigen Website sowie unserer Inhalte und Leistungen erforderlich ist. Die Verarbeitung personenbezogener Daten unserer Nutzer erfolgt regelmäßig nur nach Einwilligung des Nutzers."
+          "title": "2.1 Étendue du traitement des données personnelles",
+          "p1": "Nous traitons généralement les données personnelles uniquement dans la mesure nécessaire pour fournir un site web fonctionnel ainsi que nos contenus et services. Le traitement des données personnelles n'a généralement lieu qu'avec le consentement de l'utilisateur."
         },
         "s22": {
-          "title": "2.2 Rechtsgrundlage für die Verarbeitung personenbezogener Daten",
-          "p1": "Soweit wir für Verarbeitungsvorgänge personenbezogener Daten eine Einwilligung der betroffenen Person einholen, dient Art. 6 Abs. 1 lit. a EU-Datenschutzgrundverordnung (DSGVO) als Rechtsgrundlage.",
-          "p2": "Bei der Verarbeitung von personenbezogenen Daten, die zur Erfüllung eines Vertrages erforderlich ist, dient Art. 6 Abs. 1 lit. b DSGVO als Rechtsgrundlage.",
-          "p3": "Soweit eine Verarbeitung personenbezogener Daten zur Erfüllung einer rechtlichen Verpflichtung erforderlich ist, dient Art. 6 Abs. 1 lit. c DSGVO als Rechtsgrundlage.",
-          "p4": "Für den Fall, dass lebenswichtige Interessen der betroffenen Person oder einer anderen natürlichen Person eine Verarbeitung personenbezogener Daten erforderlich machen, dient Art. 6 Abs. 1 lit. d DSGVO als Rechtsgrundlage.",
-          "p5": "Ist die Verarbeitung zur Wahrung eines berechtigten Interesses unseres Unternehmens oder eines Dritten erforderlich und überwiegen die Interessen, Grundrechte und Grundfreiheiten des Betroffenen das erstgenannte Interesse nicht, so dient Art. 6 Abs. 1 lit. f DSGVO als Rechtsgrundlage für die Verarbeitung."
+          "title": "2.2 Base juridique du traitement des données personnelles",
+          "p1": "Lorsque nous obtenons le consentement pour le traitement de données personnelles, l'art. 6(1)(a) du RGPD constitue la base juridique.",
+          "p2": "Lorsque le traitement est nécessaire à l'exécution d'un contrat, l'art. 6(1)(b) du RGPD constitue la base juridique.",
+          "p3": "Lorsque le traitement est nécessaire au respect d'une obligation légale, l'art. 6(1)(c) du RGPD constitue la base juridique.",
+          "p4": "Lorsque le traitement est nécessaire pour protéger des intérêts vitaux de la personne concernée ou d'une autre personne, l'art. 6(1)(d) du RGPD constitue la base juridique.",
+          "p5": "Lorsque le traitement est nécessaire aux intérêts légitimes de notre entreprise ou d'un tiers et que les intérêts, droits et libertés fondamentaux de la personne concernée ne prévalent pas, l'art. 6(1)(f) du RGPD constitue la base juridique."
         }
       },
       "s3": {
-        "title": "3. Datenerfassung auf dieser Website",
+        "title": "3. Collecte de données sur ce site",
         "s31": {
-          "title": "3.1 Google Authentication",
-          "p1": "Diese Website verwendet Google Authentication für die Benutzeranmeldung. Dabei werden folgende Daten erfasst:",
+          "title": "3.1 Authentification Google",
+          "p1": "Ce site utilise Google Authentication pour la connexion. Les données suivantes sont collectées :",
           "list": {
-            "email": "E-Mail-Adresse",
-            "displayName": "Anzeigename (Display Name)",
-            "profileImageOptional": "Profilbild (optional)",
-            "googleUserId": "Google User ID"
+            "email": "Adresse e-mail",
+            "displayName": "Nom d'affichage",
+            "profileImageOptional": "Photo de profil (facultative)",
+            "googleUserId": "ID utilisateur Google"
           },
-          "p2": "Die Verarbeitung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO zur Erfüllung des Nutzungsvertrags."
+          "p2": "Le traitement est fondé sur l'art. 6(1)(b) du RGPD pour l'exécution du contrat utilisateur."
         },
         "s32": {
-          "title": "3.2 Firebase Services",
-          "p1": "Wir nutzen Firebase (ein Dienst von Google LLC) für folgende Zwecke:",
+          "title": "3.2 Services Firebase",
+          "p1": "Nous utilisons Firebase (un service de Google LLC) aux fins suivantes :",
           "list": {
-            "auth": "Verwaltung der Benutzeranmeldung",
-            "firestore": "Speicherung von Quiz-Daten, Benutzerinformationen und Lernfortschritten",
-            "hosting": "Bereitstellung der Webanwendung"
+            "auth": "Gestion de l'authentification",
+            "firestore": "Stockage des données de quiz, des informations utilisateur et de la progression d'apprentissage",
+            "hosting": "Mise à disposition de l'application web",
+            "fcm": "Envoi de notifications push (Firebase Cloud Messaging)"
           },
-          "p2": "Firebase verarbeitet Daten in Rechenzentren weltweit. Google LLC ist unter dem EU-US Data Privacy Framework zertifiziert.",
-          "p3": "Weitere Informationen finden Sie in der Datenschutzerklärung von Google:"
+          "p2": "Nous utilisons Firebase dans la région Francfort (eu-central). Firebase peut traiter des données dans des centres de données du monde entier. Google LLC est certifiée dans le cadre de l'EU-US Data Privacy Framework.",
+          "p3": "Plus d'informations dans la politique de confidentialité de Google :",
+          "p4": "Pour les notifications push, nous stockons des jetons FCM et des informations techniques de l'appareil. L'envoi a lieu uniquement sur la base de votre consentement (art. 6(1)(a) RGPD) ; vous pouvez retirer votre consentement à tout moment."
         },
         "s33": {
           "title": "3.3 Google Gemini AI",
-          "p1": "Für die automatische Quiz-Generierung verwenden wir Google Gemini AI. Dabei werden hochgeladene Dokumente (PDFs, Bilder) temporär an Google übermittelt, um Quiz-Fragen zu generieren. Die Dokumente werden nach der Verarbeitung nicht dauerhaft gespeichert.",
-          "p2": "Die Nutzung erfolgt auf Grundlage Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO) durch die aktive Verwendung der Quiz-Generierungs-Funktion."
+          "p1": "Pour la génération automatique de quiz, nous utilisons Google Gemini AI. Les documents téléchargés (PDF, images) sont transmis temporairement à Google afin de générer des questions. Les documents ne sont pas conservés après traitement.",
+          "p2": "L'utilisation repose sur votre consentement (art. 6(1)(a) RGPD) via l'utilisation active de la fonctionnalité de génération."
+        },
+        "s34": {
+          "title": "3.4 Serveur de notifications (Render)",
+          "p1": "Pour la livraison des notifications push et les tâches en arrière-plan, nous exploitons un serveur chez Render.com (région Francfort).",
+          "p2": "Des données techniques d'accès (p. ex. adresse IP, horodatages, journaux de requêtes) ainsi que des jetons FCM sont traités. La base juridique est l'art. 6(1)(b) RGPD (exécution du contrat) ou l'art. 6(1)(a) RGPD (consentement pour les notifications push)."
         }
       },
       "s4": {
-        "title": "4. Welche Daten wir speichern",
+        "title": "4. Données que nous stockons",
         "s41": {
-          "title": "4.1 Benutzerdaten",
+          "title": "4.1 Données utilisateur",
           "list": {
-            "userId": "Google User ID (eindeutige Kennung)",
-            "email": "E-Mail-Adresse",
-            "displayName": "Anzeigename",
-            "profileImageUrl": "Profilbild-URL (falls vorhanden)",
-            "registrationDate": "Registrierungsdatum"
+            "userId": "ID utilisateur Google (identifiant unique)",
+            "email": "Adresse e-mail",
+            "displayName": "Nom d'affichage",
+            "profileImageUrl": "URL de la photo de profil (le cas échéant)",
+            "registrationDate": "Date d'inscription",
+            "fcmTokens": "Jetons FCM (pour les notifications push, facultatif)",
+            "notificationSettings": "Paramètres de notifications"
           }
         },
         "s42": {
-          "title": "4.2 Quiz-Daten",
+          "title": "4.2 Données de quiz",
           "list": {
-            "createdQuizzes": "Von Ihnen erstellte Quizze (Titel, Beschreibung, Fragen)",
-            "permissions": "Quiz-Berechtigungen (Eigentümer, Co-Autoren, Teilnehmer)",
-            "settings": "Quiz-Einstellungen (Sichtbarkeit, Join-Code)"
+            "createdQuizzes": "Quiz que vous avez créés (titre, description, questions)",
+            "permissions": "Autorisations du quiz (propriétaire, co-auteurs, participants)",
+            "settings": "Paramètres du quiz (visibilité, code d'accès)"
           }
         },
         "s43": {
-          "title": "4.3 Lernfortschritt",
+          "title": "4.3 Progression d'apprentissage",
           "list": {
-            "answers": "Ihre Antworten auf Quiz-Fragen",
-            "progress": "Lernfortschritt (Progress Level 0-3)",
-            "timestamps": "Zeitstempel der letzten Aktivitäten"
+            "answers": "Vos réponses aux questions du quiz",
+            "progress": "Progression d'apprentissage (niveau 0-3)",
+            "timestamps": "Horodatages des dernières activités"
           }
         }
       },
       "s5": {
-        "title": "5. Datenspeicherung und -löschung",
-        "p1": "Ihre Daten werden solange gespeichert, wie Sie Ihr Benutzerkonto aktiv nutzen. Sie können Ihr Konto jederzeit löschen, wodurch alle Ihre personenbezogenen Daten entfernt werden.",
-        "p2": "Von Ihnen erstellte Quizze werden nach Kontolöschung anonymisiert aufbewahrt, sofern andere Nutzer darauf zugreifen (z.B. Co-Autoren oder Teilnehmer)."
+        "title": "5. Conservation et suppression des données",
+        "p1": "Vos données sont conservées tant que vous utilisez activement votre compte utilisateur. Vous pouvez supprimer votre compte à tout moment, ce qui efface toutes vos données personnelles.",
+        "p2": "Les quiz que vous avez créés sont conservés de manière anonymisée après la suppression du compte si d'autres utilisateurs y accèdent (p. ex. co-auteurs ou participants).",
+        "p3": "Les données de journalisation et d'erreurs sont conservées uniquement aussi longtemps que nécessaire pour assurer le fonctionnement et analyser les erreurs."
       },
       "s6": {
-        "title": "6. Ihre Rechte",
-        "p1": "Sie haben folgende Rechte bezüglich Ihrer personenbezogenen Daten:",
+        "title": "6. Vos droits",
+        "p1": "Vous disposez des droits suivants concernant vos données personnelles :",
         "list": {
           "access": {
-            "title": "Auskunftsrecht (Art. 15 DSGVO)",
-            "desc": "Sie haben das Recht, Auskunft über Ihre gespeicherten Daten zu erhalten."
+            "title": "Droit d'accès (art. 15 RGPD)",
+            "desc": "Vous avez le droit d'obtenir des informations sur vos données stockées."
           },
           "rectification": {
-            "title": "Berichtigungsrecht (Art. 16 DSGVO)",
-            "desc": "Sie können die Berichtigung unrichtiger Daten verlangen."
+            "title": "Droit de rectification (art. 16 RGPD)",
+            "desc": "Vous pouvez demander la correction de données inexactes."
           },
           "erasure": {
-            "title": "Löschungsrecht (Art. 17 DSGVO)",
-            "desc": "Sie können die Löschung Ihrer Daten verlangen."
+            "title": "Droit à l'effacement (art. 17 RGPD)",
+            "desc": "Vous pouvez demander la suppression de vos données."
           },
           "restriction": {
-            "title": "Einschränkung der Verarbeitung (Art. 18 DSGVO)",
-            "desc": "Sie können die Einschränkung der Verarbeitung verlangen."
+            "title": "Droit à la limitation du traitement (art. 18 RGPD)",
+            "desc": "Vous pouvez demander la limitation du traitement."
           },
           "portability": {
-            "title": "Datenübertragbarkeit (Art. 20 DSGVO)",
-            "desc": "Sie können Ihre Daten in einem strukturierten Format erhalten."
+            "title": "Droit à la portabilité des données (art. 20 RGPD)",
+            "desc": "Vous pouvez recevoir vos données dans un format structuré."
           },
           "objection": {
-            "title": "Widerspruchsrecht (Art. 21 DSGVO)",
-            "desc": "Sie können der Verarbeitung Ihrer Daten widersprechen."
+            "title": "Droit d'opposition (art. 21 RGPD)",
+            "desc": "Vous pouvez vous opposer au traitement de vos données."
           },
           "withdrawal": {
-            "title": "Widerrufsrecht",
-            "desc": "Sie können erteilte Einwilligungen jederzeit widerrufen."
+            "title": "Droit de retrait du consentement",
+            "desc": "Vous pouvez retirer à tout moment les consentements accordés."
           }
         },
-        "p2": "Zur Ausübung Ihrer Rechte kontaktieren Sie uns bitte unter:"
+        "p2": "Pour exercer vos droits, veuillez nous contacter à :"
       },
       "s7": {
-        "title": "7. Beschwerderecht bei Aufsichtsbehörde",
-        "p1": "Sie haben das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren.",
-        "p2": "Die für uns zuständige Aufsichtsbehörde ist:",
+        "title": "7. Droit d'introduire une réclamation auprès d'une autorité de contrôle",
+        "p1": "Vous avez le droit d'introduire une réclamation auprès d'une autorité de protection des données.",
+        "p2": "L'autorité de contrôle compétente est :",
         "authority": {
-          "name": "Österreichische Datenschutzbehörde",
-          "address": "Barichgasse 40-42, 1030 Wien"
+          "name": "Autorité autrichienne de protection des données",
+          "address": "Barichgasse 40-42, 1030 Vienne"
         }
       },
       "s8": {
-        "title": "8. Cookies und lokale Speicherung",
-        "p1": "Diese Website verwendet keine Tracking-Cookies. Firebase Authentication und Ihre Theme-Präferenz werden im lokalen Browser-Speicher (localStorage) gespeichert, um die Funktionalität der App zu gewährleisten."
+        "title": "8. Cookies et stockage local",
+        "p1": "Ce site n'utilise pas de cookies de suivi. Firebase Authentication et votre préférence de thème sont stockées dans le stockage local du navigateur (localStorage) afin d'assurer le fonctionnement de l'application.",
+        "p2": "Si vous y consentez, nous chargeons Google Fonts (Material Icons) depuis Google. Votre adresse IP peut être transmise à Google. Votre consentement est stocké localement et peut être retiré à tout moment."
       },
       "s9": {
-        "title": "9. SSL/TLS-Verschlüsselung",
-        "p1": "Diese Website nutzt aus Sicherheitsgründen und zum Schutz der Übertragung vertraulicher Inhalte eine SSL/TLS-Verschlüsselung. Eine verschlüsselte Verbindung erkennen Sie daran, dass die Adresszeile des Browsers von \"http://\" auf \"https://\" wechselt."
+        "title": "9. Chiffrement SSL/TLS",
+        "p1": "Pour des raisons de sécurité et afin de protéger la transmission de contenus confidentiels, ce site utilise un chiffrement SSL/TLS. Vous pouvez reconnaître une connexion chiffrée lorsque la barre d'adresse du navigateur passe de \"http://\" à \"https://\"."
       },
       "s10": {
-        "title": "10. Änderungen dieser Datenschutzerklärung",
-        "p1": "Wir behalten uns vor, diese Datenschutzerklärung anzupassen, damit sie stets den aktuellen rechtlichen Anforderungen entspricht oder um Änderungen unserer Leistungen in der Datenschutzerklärung umzusetzen. Für Ihren erneuten Besuch gilt dann die neue Datenschutzerklärung."
+        "title": "10. Modifications de cette politique de confidentialité",
+        "p1": "Nous nous réservons le droit de mettre à jour cette politique de confidentialité afin qu'elle soit toujours conforme aux exigences légales en vigueur ou pour refléter des changements de nos services. La nouvelle politique de confidentialité s'applique lors de votre prochaine visite."
       },
       "s11": {
-        "title": "11. Kontakt",
-        "p1": "Bei Fragen zum Datenschutz oder zur Ausübung Ihrer Rechte kontaktieren Sie uns bitte unter:"
+        "title": "11. Contact",
+        "p1": "Si vous avez des questions sur la protection des données ou souhaitez exercer vos droits, veuillez nous contacter à :"
       }
     },
     "terms": {
-      "title": "Allgemeine Geschäftsbedingungen (AGB)",
+      "title": "Conditions d'utilisation",
       "s1": {
-        "title": "1. Geltungsbereich",
-        "p1": "Diese Allgemeinen Geschäftsbedingungen (nachfolgend \"AGB\") gelten für die Nutzung der Webanwendung \"RecallFlow\" (nachfolgend \"Dienst\" oder \"App\") durch Sie als Nutzer. Anbieter des Dienstes ist:"
+        "title": "1. Champ d'application",
+        "p1": "Les présentes conditions d'utilisation (\"Conditions\") s'appliquent à l'utilisation de l'application web \"RecallFlow\" (\"Service\" ou \"App\") par vous en tant qu'utilisateur. Le fournisseur du service est :"
       },
       "s2": {
-        "title": "2. Vertragsschluss und Nutzungsberechtigung",
+        "title": "2. Conclusion du contrat et droit d'utilisation",
         "s21": {
-          "title": "2.1 Registrierung",
-          "p1": "Durch die Anmeldung über Google Authentication erklären Sie sich mit diesen AGB und der Datenschutzerklärung einverstanden. Mit der Registrierung kommt ein Nutzungsvertrag zwischen Ihnen und dem Anbieter zustande."
+          "title": "2.1 Inscription",
+          "p1": "En vous connectant via Google Authentication, vous acceptez ces conditions et la politique de confidentialité. L'inscription établit un contrat d'utilisation entre vous et le fournisseur."
         },
         "s22": {
-          "title": "2.2 Mindestalter",
-          "p1": "Die Nutzung des Dienstes ist erst ab Vollendung des 16. Lebensjahres gestattet. Jüngere Nutzer benötigen die Zustimmung ihrer Erziehungsberechtigten."
+          "title": "2.2 Âge minimum",
+          "p1": "L'utilisation du service est autorisée uniquement à partir de 16 ans. Les utilisateurs plus jeunes doivent disposer du consentement de leurs représentants légaux."
         },
         "s23": {
-          "title": "2.3 Nutzungskonto",
-          "p1": "Sie sind verpflichtet, Ihre Zugangsdaten vertraulich zu behandeln und nicht an Dritte weiterzugeben. Sie haften für alle Aktivitäten, die unter Ihrem Konto durchgeführt werden."
+          "title": "2.3 Compte utilisateur",
+          "p1": "Vous devez garder vos identifiants d'accès confidentiels et ne pas les partager avec des tiers. Vous êtes responsable de toutes les activités effectuées sous votre compte."
         }
       },
       "s3": {
-        "title": "3. Leistungsumfang",
-        "p1": "RecallFlow bietet folgende Hauptfunktionen:",
+        "title": "3. Étendue des services",
+        "p1": "RecallFlow propose les fonctionnalités principales suivantes :",
         "list": {
-          "createManageQuizzes": "Erstellung und Verwaltung von Quizzen",
-          "aiQuizGeneration": "KI-gestützte Quiz-Generierung aus Dokumenten (PDF, Bilder)",
-          "spacedRepetition": "Spaced Repetition Learning System zur Lernoptimierung",
-          "collaboration": "Zusammenarbeit (Co-Autoren-Funktion)",
-          "joinOthers": "Teilnahme an Quizzen anderer Nutzer",
-          "progressTracking": "Fortschrittsverfolgung"
+          "createManageQuizzes": "Création et gestion de quiz",
+          "aiQuizGeneration": "Génération de quiz par IA à partir de documents (PDF, images)",
+          "spacedRepetition": "Système de répétition espacée pour optimiser l'apprentissage",
+          "collaboration": "Collaboration (fonction de co-auteur)",
+          "joinOthers": "Participation aux quiz d'autres utilisateurs",
+          "progressTracking": "Suivi de la progression"
         },
-        "p2": "Der Anbieter behält sich vor, den Funktionsumfang jederzeit zu erweitern, zu ändern oder einzuschränken. Ein Anspruch auf bestimmte Funktionen besteht nicht."
+        "p2": "Le fournisseur se réserve le droit d'étendre, de modifier ou de restreindre les fonctionnalités à tout moment. Aucun droit à des fonctionnalités spécifiques n'est garanti."
       },
       "s4": {
-        "title": "4. Nutzungsbedingungen",
+        "title": "4. Conditions d'utilisation",
         "s41": {
-          "title": "4.1 Erlaubte Nutzung",
-          "p1": "Sie verpflichten sich:",
+          "title": "4.1 Usage autorisé",
+          "p1": "Vous vous engagez à :",
           "list": {
-            "legalUse": "Den Dienst nur für rechtmäßige Zwecke zu nutzen",
-            "noIllegalContent": "Keine rechtswidrigen, beleidigenden oder verleumderischen Inhalte zu erstellen",
-            "respectRights": "Die Rechte Dritter (insbesondere Urheberrechte) zu respektieren",
-            "noViolations": "Keine Inhalte zu verbreiten, die gegen geltendes Recht verstoßen",
-            "noAbuse": "Den Dienst nicht zu manipulieren oder zu missbrauchen"
+            "legalUse": "Utiliser le service uniquement à des fins légales",
+            "noIllegalContent": "Ne pas créer de contenu illégal, offensant ou diffamatoire",
+            "respectRights": "Respecter les droits des tiers (notamment les droits d'auteur)",
+            "noViolations": "Ne pas diffuser de contenu contraire à la loi applicable",
+            "noAbuse": "Ne pas manipuler ou abuser du service"
           }
         },
         "s42": {
-          "title": "4.2 Verbotene Nutzung",
-          "p1": "Folgende Handlungen sind ausdrücklich untersagt:",
+          "title": "4.2 Usage interdit",
+          "p1": "Les actions suivantes sont expressément interdites :",
           "list": {
-            "malware": "Verbreitung von Malware, Viren oder schädlicher Software",
-            "bots": "Automatisierte Zugriffe (Bots, Scraper) ohne ausdrückliche Erlaubnis",
-            "overload": "Überlastung der Server durch exzessive Anfragen",
-            "reverseEngineering": "Reverse Engineering oder Dekompilierung der Software",
-            "bypassSecurity": "Umgehung von Sicherheitsmechanismen",
-            "harassment": "Erstellung von Inhalten, die Dritte belästigen, bedrohen oder diskriminieren"
+            "malware": "Distribution de logiciels malveillants, virus ou programmes nuisibles",
+            "bots": "Accès automatisé (bots, scrapers) sans autorisation explicite",
+            "overload": "Surcharger les serveurs par des requêtes excessives",
+            "reverseEngineering": "Ingénierie inverse ou décompilation du logiciel",
+            "bypassSecurity": "Contournement des mécanismes de sécurité",
+            "harassment": "Créer du contenu qui harcèle, menace ou discrimine autrui"
           }
         }
       },
       "s5": {
-        "title": "5. Urheberrechte und Inhalte",
+        "title": "5. Droits d'auteur et contenus",
         "s51": {
-          "title": "5.1 Ihre Inhalte",
-          "p1": "Sie behalten alle Rechte an den von Ihnen erstellten Quizzen und hochgeladenen Inhalten. Durch das Hochladen räumen Sie dem Anbieter jedoch das nicht-exklusive, weltweite Recht ein, diese Inhalte zu speichern und im Rahmen der Dienstleistung zu verarbeiten."
+          "title": "5.1 Vos contenus",
+          "p1": "Vous conservez tous les droits sur les quiz et contenus que vous créez. En téléversant du contenu, vous accordez au fournisseur un droit non exclusif et mondial de stocker et traiter ce contenu dans le cadre du service."
         },
         "s52": {
-          "title": "5.2 Verantwortlichkeit für Inhalte",
-          "p1": "Sie sind allein verantwortlich für die von Ihnen erstellten und hochgeladenen Inhalte. Der Anbieter übernimmt keine Haftung für Nutzerinhalte. Sie versichern, dass Sie über alle notwendigen Rechte an den hochgeladenen Inhalten verfügen."
+          "title": "5.2 Responsabilité des contenus",
+          "p1": "Vous êtes seul responsable des contenus que vous créez et téléversez. Le fournisseur n'assume aucune responsabilité pour les contenus des utilisateurs. Vous confirmez disposer de tous les droits nécessaires sur le contenu téléversé."
         },
         "s53": {
-          "title": "5.3 Inhalte des Anbieters",
-          "p1": "Alle Inhalte der App (Software, Design, Texte, Grafiken) sind urheberrechtlich geschützt und Eigentum des Anbieters oder seiner Lizenzgeber. Eine Nutzung außerhalb der Bestimmungen dieser AGB ist untersagt."
+          "title": "5.3 Contenus du fournisseur",
+          "p1": "Tout le contenu de l'app (logiciel, design, textes, graphiques) est protégé par le droit d'auteur et appartient au fournisseur ou à ses concédants. Toute utilisation en dehors de ces conditions est interdite."
         }
       },
       "s6": {
-        "title": "6. KI-Generierung (Google Gemini)",
-        "p1": "Bei Nutzung der KI-gestützten Quiz-Generierung werden Ihre hochgeladenen Dokumente an Google Gemini AI übermittelt. Die Qualität und Richtigkeit der generierten Quizze kann nicht garantiert werden. Sie sind selbst dafür verantwortlich, die generierten Inhalte zu überprüfen und ggf. anzupassen.",
-        "p2": "Der Anbieter haftet nicht für Fehler oder Ungenauigkeiten in KI-generierten Inhalten."
+        "title": "6. Génération IA (Google Gemini)",
+        "p1": "Lors de l'utilisation de la génération de quiz par IA, vos documents téléversés sont transmis à Google Gemini AI. La qualité et l'exactitude des quiz générés ne peuvent être garanties. Vous êtes responsable de vérifier et, si nécessaire, d'ajuster le contenu généré.",
+        "p2": "Le fournisseur n'est pas responsable des erreurs ou inexactitudes des contenus générés par IA."
       },
       "s7": {
-        "title": "7. Verfügbarkeit und Support",
-        "p1": "Der Anbieter bemüht sich um eine hohe Verfügbarkeit des Dienstes. Ein Anspruch auf jederzeitige Verfügbarkeit besteht jedoch nicht. Insbesondere können Wartungsarbeiten, technische Störungen oder höhere Gewalt zu vorübergehenden Unterbrechungen führen.",
-        "p2": "Ein Anspruch auf Support besteht nicht. Der Anbieter kann jedoch nach eigenem Ermessen Hilfestellung bei technischen Problemen anbieten."
+        "title": "7. Disponibilité et support",
+        "p1": "Le fournisseur s'efforce d'assurer une haute disponibilité du service, sans garantir une disponibilité permanente. Les opérations de maintenance, problèmes techniques ou cas de force majeure peuvent entraîner des interruptions temporaires.",
+        "p2": "Il n'existe aucun droit au support. Le fournisseur peut, à sa discrétion, offrir une assistance en cas de problèmes techniques."
       },
       "s8": {
-        "title": "8. Haftung",
+        "title": "8. Responsabilité",
         "s81": {
-          "title": "8.1 Haftungsbeschränkung",
-          "p1": "Der Anbieter haftet unbeschränkt bei Vorsatz und grober Fahrlässigkeit, für die Verletzung von Leben, Körper und Gesundheit sowie nach den Vorschriften des Produkthaftungsgesetzes.",
-          "p2": "Bei leicht fahrlässiger Verletzung wesentlicher Vertragspflichten ist die Haftung auf den vertragstypischen, vorhersehbaren Schaden begrenzt. Im Übrigen ist die Haftung ausgeschlossen."
+          "title": "8.1 Limitation de responsabilité",
+          "p1": "Le fournisseur est responsable sans limitation en cas d'intention et de négligence grave, pour atteinte à la vie, à l'intégrité physique ou à la santé, ainsi que conformément à la loi sur la responsabilité du fait des produits.",
+          "p2": "En cas de manquement légèrement négligent à des obligations contractuelles essentielles, la responsabilité est limitée aux dommages prévisibles et typiques. Par ailleurs, toute responsabilité est exclue."
         },
         "s82": {
-          "title": "8.2 Freistellung",
-          "p1": "Sie verpflichten sich, den Anbieter von allen Ansprüchen Dritter freizustellen, die aufgrund Ihrer Inhalte oder Ihrer Nutzung des Dienstes gegen den Anbieter erhoben werden. Dies umfasst auch die Kosten einer angemessenen Rechtsverteidigung."
+          "title": "8.2 Indemnisation",
+          "p1": "Vous vous engagez à indemniser le fournisseur de toute réclamation de tiers résultant de vos contenus ou de votre utilisation du service, y compris les frais raisonnables de défense juridique."
         }
       },
       "s9": {
-        "title": "9. Sperrung und Kündigung",
+        "title": "9. Suspension et résiliation",
         "s91": {
-          "title": "9.1 Kündigung durch den Nutzer",
-          "p1": "Sie können Ihr Nutzerkonto jederzeit ohne Angabe von Gründen löschen. Bei Löschung werden Ihre personenbezogenen Daten gemäß der Datenschutzerklärung entfernt."
+          "title": "9.1 Résiliation par l'utilisateur",
+          "p1": "Vous pouvez supprimer votre compte utilisateur à tout moment sans indiquer de motif. Lors de la suppression, vos données personnelles seront supprimées conformément à la politique de confidentialité."
         },
         "s92": {
-          "title": "9.2 Sperrung durch den Anbieter",
-          "p1": "Der Anbieter kann Ihr Nutzerkonto bei Verstoß gegen diese AGB sperren oder löschen.",
-          "p2": "Dies gilt insbesondere bei:",
+          "title": "9.2 Suspension par le fournisseur",
+          "p1": "Le fournisseur peut suspendre ou supprimer votre compte en cas de violation de ces conditions.",
+          "p2": "Cela s'applique notamment en cas de :",
           "list": {
-            "illegalContent": "Veröffentlichung rechtswidriger Inhalte",
-            "abuse": "Missbrauch des Dienstes",
-            "violations": "Verstoß gegen die Nutzungsbedingungen",
-            "securityRisk": "Gefährdung der Sicherheit anderer Nutzer"
+            "illegalContent": "Publication de contenus illégaux",
+            "abuse": "Abus du service",
+            "violations": "Violation des conditions d'utilisation",
+            "securityRisk": "Mise en danger de la sécurité d'autres utilisateurs"
           },
-          "p3": "Bei schwerwiegenden Verstößen kann eine sofortige Sperrung ohne Vorankündigung erfolgen."
+          "p3": "En cas de violations graves, une suspension immédiate peut intervenir sans préavis."
         }
       },
       "s10": {
-        "title": "10. Änderungen der AGB",
-        "p1": "Der Anbieter behält sich vor, diese AGB jederzeit zu ändern. Änderungen werden Ihnen per E-Mail oder beim nächsten Login mitgeteilt. Widersprechen Sie den geänderten AGB nicht innerhalb von 4 Wochen nach Mitteilung, gelten die Änderungen als angenommen.",
-        "p2": "Bei Widerspruch endet das Vertragsverhältnis zum Zeitpunkt des Inkrafttretens der neuen AGB."
+        "title": "10. Modifications des conditions",
+        "p1": "Le fournisseur se réserve le droit de modifier ces conditions à tout moment. Les modifications seront communiquées par e-mail ou lors de la prochaine connexion. Si vous ne vous y opposez pas dans un délai de 4 semaines, les modifications sont réputées acceptées.",
+        "p2": "En cas d'opposition, le contrat prend fin à l'entrée en vigueur des nouvelles conditions."
       },
       "s11": {
-        "title": "11. Schlussbestimmungen",
+        "title": "11. Dispositions finales",
         "s111": {
-          "title": "11.1 Anwendbares Recht",
-          "p1": "Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts."
+          "title": "11.1 Droit applicable",
+          "p1": "Le droit de la République fédérale d'Allemagne s'applique, à l'exclusion de la Convention des Nations unies sur les contrats de vente internationale de marchandises."
         },
         "s112": {
-          "title": "11.2 Gerichtsstand",
-          "p1": "Gerichtsstand für alle Streitigkeiten aus und im Zusammenhang mit diesem Vertrag ist Mödling, sofern Sie Kaufmann, juristische Person des öffentlichen Rechts oder öffentlich-rechtliches Sondervermögen sind."
+          "title": "11.2 Tribunal compétent",
+          "p1": "Le tribunal compétent pour tous les litiges résultant de ou en lien avec ce contrat est Mödling, à condition que vous soyez commerçant, personne morale de droit public ou fonds spécial de droit public."
         },
         "s113": {
-          "title": "11.3 Salvatorische Klausel",
-          "p1": "Sollten einzelne Bestimmungen dieser AGB unwirksam sein oder werden, berührt dies die Wirksamkeit der übrigen Bestimmungen nicht. Die unwirksame Bestimmung wird durch eine wirksame Bestimmung ersetzt, die dem wirtschaftlichen Zweck der unwirksamen Bestimmung am nächsten kommt."
+          "title": "11.3 Clause de sauvegarde",
+          "p1": "Si certaines dispositions de ces conditions étaient ou devenaient invalides, cela n'affectera pas la validité des autres dispositions. La disposition invalide sera remplacée par une disposition valable se rapprochant le plus possible de l'objectif économique de la disposition invalide."
         }
       },
       "s12": {
-        "title": "12. Kontakt",
-        "p1": "Bei Fragen zu diesen AGB kontaktieren Sie uns bitte unter:"
+        "title": "12. Contact",
+        "p1": "Si vous avez des questions sur ces conditions, veuillez nous contacter à :"
       }
     }
   },
@@ -1311,8 +1367,60 @@
   "mode": {
     "ariaLabel": "Mode de l'application"
   },
+  "consent": {
+    "title": "Contenu externe",
+    "description": "Nous chargeons Google Fonts (Material Icons) depuis Google. Cela peut transmettre votre adresse IP à Google.",
+    "accept": "Accepter",
+    "decline": "Refuser",
+    "learnMore": "En savoir plus"
+  },
   "toast": {
-    "ariaLabel": "Notifications"
+    "ariaLabel": "Notifications",
+    "success": {
+      "saved": "Enregistré avec succès",
+      "created": "Créé avec succès",
+      "deleted": "Supprimé avec succès",
+      "updated": "Mis à jour avec succès",
+      "copied": "Copié dans le presse-papiers",
+      "imported": "Import réussi",
+      "exported": "Export réussi"
+    },
+    "error": {
+      "generic": "Une erreur s'est produite",
+      "network": "Erreur réseau. Veuillez vérifier votre connexion.",
+      "save": "Erreur lors de l'enregistrement",
+      "load": "Erreur lors du chargement",
+      "delete": "Erreur lors de la suppression",
+      "validation": "Veuillez vérifier vos saisies",
+      "unauthorized": "Vous n'avez pas la permission d'effectuer cette action"
+    },
+    "warning": {
+      "unsavedChanges": "Vous avez des modifications non enregistrées",
+      "confirmLeave": "Les modifications seront perdues si vous continuez"
+    },
+    "info": {
+      "addedToLibrary": "Ajouté à votre collection",
+      "removedFromLibrary": "Retiré de votre collection",
+      "progressSaved": "Progression enregistrée"
+    },
+    "quiz": {
+      "created": "Quiz créé",
+      "saved": "Quiz enregistré",
+      "deleted": "Quiz supprimé"
+    },
+    "deck": {
+      "created": "Deck créé",
+      "saved": "Deck enregistré",
+      "deleted": "Deck supprimé"
+    },
+    "material": {
+      "created": "Document créé",
+      "saved": "Document enregistré",
+      "deleted": "Document supprimé"
+    },
+    "actions": {
+      "undo": "Annuler"
+    }
   },
   "follow": {
     "follow": "Suivre",
@@ -1496,5 +1604,28 @@
     "limit": "Limite",
     "warningNearLimit": "Vous approchez de votre limite de stockage",
     "errorLimitReached": "Limite de stockage atteinte"
+  },
+  "folders": {
+    "title": "Dossiers",
+    "all": "Tous",
+    "favorites": "Favoris",
+    "moveTo": "Déplacer vers le dossier",
+    "noFolder": "Aucun dossier",
+    "newFolder": "Nouveau dossier",
+    "editFolder": "Modifier le dossier",
+    "deleteFolder": "Supprimer le dossier",
+    "folderName": "Nom du dossier",
+    "color": "Couleur",
+    "icon": "Icône",
+    "confirmDelete": "Supprimer le dossier ? Le contenu ne sera pas supprimé.",
+    "expandSidebar": "Ouvrir la barre des dossiers"
+  },
+  "tags": {
+    "addTag": "Ajouter un tag",
+    "noTags": "Aucun tag"
+  },
+  "favorites": {
+    "add": "Ajouter aux favoris",
+    "remove": "Retirer des favoris"
   }
 }

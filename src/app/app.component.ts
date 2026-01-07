@@ -8,6 +8,7 @@ import { ToastComponent } from './shared/components/toast/toast.component';
 import { PwaInstallPromptComponent } from './shared/components/pwa-install-prompt/pwa-install-prompt.component';
 import { PwaUpdatePromptComponent } from './shared/components/pwa-update-prompt/pwa-update-prompt.component';
 import { IosInstallPromptComponent } from './shared/components/ios-install-prompt/ios-install-prompt.component';
+import { ConsentBannerComponent } from './shared/components/consent-banner/consent-banner.component';
 import { PwaService } from './core/services/pwa.service';
 import { OfflinePreloadService } from './core/services/offline-preload.service';
 import { BackgroundSyncService } from './core/services/background-sync.service';
@@ -15,6 +16,7 @@ import { BadgingService } from './core/services/badging.service';
 import { KeyboardShortcutsService } from './core/services/keyboard-shortcuts.service';
 import { ColorThemeService } from './core/services/color-theme.service';
 import { AccessibilityService } from './core/services/accessibility.service';
+import { ConsentService } from './core/services/consent.service';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs/operators';
 
@@ -30,6 +32,7 @@ const ROUTE_SLIDE_DISTANCE_PX = 24;
     TranslateModule,
     HeaderComponent,
     ToastComponent,
+    ConsentBannerComponent,
     PwaInstallPromptComponent,
     PwaUpdatePromptComponent,
     IosInstallPromptComponent
@@ -117,6 +120,7 @@ export class AppComponent implements OnInit {
   private colorThemeService = inject(ColorThemeService);
   private accessibility = inject(AccessibilityService);
   private swUpdate = inject(SwUpdate);
+  private consentService = inject(ConsentService);
 
   /**
    * Get route animation state for route-based transitions
@@ -141,6 +145,9 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     // Ensure accessibility preferences are applied on startup
     this.accessibility.fontScale();
+
+    // Apply stored consent (load external resources if approved)
+    this.consentService.applyStoredConsent();
 
     // Initialize PWA service
     console.log('🚀 PWA Service initialized');

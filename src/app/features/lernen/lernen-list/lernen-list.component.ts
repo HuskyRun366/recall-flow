@@ -9,9 +9,13 @@ import { FlashcardService } from '../../../core/services/flashcard.service';
 import { FlashcardProgressService } from '../../../core/services/flashcard-progress.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { FolderService } from '../../../core/services/folder.service';
+import { TagService } from '../../../core/services/tag.service';
 import { SkeletonLoaderComponent } from '../../../shared/components/skeleton-loader/skeleton-loader.component';
-import { StatCardComponent, StatCardConfig, BadgeComponent, SearchBarComponent } from '../../../shared/components';
-import { FlashcardDeck, UserDeckReference } from '../../../models';
+import { StatCardComponent, StatCardConfig, BadgeComponent, SearchBarComponent, FavoriteButtonComponent } from '../../../shared/components';
+import { FolderSidebarComponent } from '../../../shared/components/folder-sidebar/folder-sidebar.component';
+import { FolderDialogComponent, FolderDialogData, FolderDialogResult } from '../../../shared/components/folder-dialog/folder-dialog.component';
+import { FlashcardDeck, UserDeckReference, Folder } from '../../../models';
 import { combineLatest, forkJoin, of, timeout } from 'rxjs';
 import { switchMap, map, catchError } from 'rxjs/operators';
 import { PullToRefreshDirective } from '../../../shared/directives/pull-to-refresh.directive';
@@ -21,7 +25,19 @@ type TabType = 'owned' | 'co-authored' | 'public';
 @Component({
   selector: 'app-lernen-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule, PullToRefreshDirective, SkeletonLoaderComponent, StatCardComponent, BadgeComponent, SearchBarComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    TranslateModule,
+    PullToRefreshDirective,
+    SkeletonLoaderComponent,
+    StatCardComponent,
+    BadgeComponent,
+    SearchBarComponent,
+    FavoriteButtonComponent,
+    FolderSidebarComponent,
+    FolderDialogComponent
+  ],
   templateUrl: './lernen-list.component.html',
   styleUrls: ['./lernen-list.component.scss']
 })
@@ -32,6 +48,8 @@ export class LernenListComponent implements OnInit {
   private progressService = inject(FlashcardProgressService);
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
+  private folderService = inject(FolderService);
+  private tagService = inject(TagService);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
 
@@ -43,9 +61,36 @@ export class LernenListComponent implements OnInit {
   coAuthorSearchTerm = signal('');
   publicSearchTerm = signal('');
 
-  filteredOwnedDecks = computed(() => this.filterByTerm(this.ownedDecks(), this.ownedSearchTerm()));
-  filteredCoAuthoredDecks = computed(() => this.filterByTerm(this.coAuthoredDecks(), this.coAuthorSearchTerm()));
-  filteredPublicDecks = computed(() => this.filterByTerm(this.publicDecks(), this.publicSearchTerm()));
+  // Folder/Favorites state
+  folders = signal<Folder[]>([]);
+  selectedFolderId = signal<string | null>(null);
+  showFavoritesOnly = signal(false);
+  availableTags = signal<string[]>([]);
+  selectedTags = signal<string[]>([]);
+  sidebarCollapsed = signal(true);
+  folderDialogOpen = signal(false);
+  folderDialogData = signal<FolderDialogData | null>(null);
+
+  selectedFolder = computed(() => {
+    const folderId = this.selectedFolderId();
+    if (!folderId) return null;
+    return this.folders().find(f => f.id === folderId) ?? null;
+  });
+
+  filteredOwnedDecks = computed(() => {
+    let list = this.applyFolderAndFavoritesFilter(this.ownedDecks());
+    return this.filterByTerm(list, this.ownedSearchTerm());
+  });
+
+  filteredCoAuthoredDecks = computed(() => {
+    let list = this.applyFolderAndFavoritesFilter(this.coAuthoredDecks());
+    return this.filterByTerm(list, this.coAuthorSearchTerm());
+  });
+
+  filteredPublicDecks = computed(() => {
+    let list = this.applyFolderAndFavoritesFilter(this.publicDecks());
+    return this.filterByTerm(list, this.publicSearchTerm());
+  });
 
   currentSearchTerm = computed(() => {
     switch (this.activeTab()) {
@@ -114,6 +159,8 @@ export class LernenListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadDecks();
+    this.loadFolders();
+    this.loadTags();
   }
 
   private loadDecks(): void {
@@ -263,6 +310,178 @@ export class LernenListComponent implements OnInit {
     });
   }
 
+  private applyFolderAndFavoritesFilter(decks: FlashcardDeck[]): FlashcardDeck[] {
+    const userRefs = this.userDeckRefs();
+    let list = decks;
+
+    // Folder filter
+    const folderId = this.selectedFolderId();
+    if (folderId) {
+      list = list.filter(deck => {
+        const ref = userRefs.find(r => r.deckId === deck.id);
+        return ref?.folderId === folderId;
+      });
+    }
+
+    // Favorites filter
+    if (this.showFavoritesOnly()) {
+      list = list.filter(deck => {
+        const ref = userRefs.find(r => r.deckId === deck.id);
+        return ref?.isFavorite;
+      });
+    }
+
+    // Tags filter
+    const tags = this.selectedTags();
+    if (tags.length > 0) {
+      list = list.filter(deck => {
+        const ref = userRefs.find(r => r.deckId === deck.id);
+        return tags.every(tag => ref?.tags?.includes(tag));
+      });
+    }
+
+    return list;
+  }
+
+  getDeckUserRef(deckId: string): UserDeckReference | undefined {
+    return this.userDeckRefs().find(r => r.deckId === deckId);
+  }
+
+  getFolderForDeck(deckId: string): Folder | undefined {
+    const ref = this.getDeckUserRef(deckId);
+    if (!ref?.folderId) return undefined;
+    return this.folders().find(f => f.id === ref.folderId);
+  }
+
+  // Folder/Favorites event handlers
+  onFolderSelect(folderId: string | null): void {
+    this.selectedFolderId.set(folderId);
+  }
+
+  onFavoritesToggle(showFavorites: boolean): void {
+    this.showFavoritesOnly.set(showFavorites);
+    if (showFavorites) {
+      this.selectedFolderId.set(null);
+    }
+  }
+
+  async onToggleFavorite(deckId: string, isFavorite: boolean): Promise<void> {
+    const userId = this.currentUser()?.uid;
+    if (!userId) return;
+
+    // Optimistic update
+    this.userDeckRefs.update(refs =>
+      refs.map(ref =>
+        ref.deckId === deckId ? { ...ref, isFavorite } : ref
+      )
+    );
+
+    try {
+      await this.participantService.setFavorite(userId, deckId, isFavorite);
+    } catch (err) {
+      console.error('Error toggling favorite:', err);
+      // Rollback
+      this.userDeckRefs.update(refs =>
+        refs.map(ref =>
+          ref.deckId === deckId ? { ...ref, isFavorite: !isFavorite } : ref
+        )
+      );
+      this.toastService.error('Favorit konnte nicht geändert werden');
+    }
+  }
+
+  openCreateFolderDialog(): void {
+    this.folderDialogData.set({ mode: 'create', contentType: 'deck' });
+    this.folderDialogOpen.set(true);
+  }
+
+  openEditFolderDialog(folder: Folder): void {
+    this.folderDialogData.set({ mode: 'edit', folder, contentType: 'deck' });
+    this.folderDialogOpen.set(true);
+  }
+
+  closeFolderDialog(): void {
+    this.folderDialogOpen.set(false);
+    this.folderDialogData.set(null);
+  }
+
+  async onFolderSave(result: FolderDialogResult): Promise<void> {
+    const userId = this.currentUser()?.uid;
+    if (!userId) return;
+
+    const data = this.folderDialogData();
+    if (!data) return;
+
+    try {
+      if (data.mode === 'create') {
+        const newFolderId = await this.folderService.createFolder(
+          userId,
+          result.name,
+          'deck',
+          result.color,
+          result.icon
+        );
+        await this.loadFolders();
+        this.toastService.success('Ordner erstellt');
+      } else if (data.mode === 'edit' && data.folder) {
+        await this.folderService.updateFolder(userId, data.folder.id, {
+          name: result.name,
+          color: result.color,
+          icon: result.icon
+        });
+        await this.loadFolders();
+        this.toastService.success('Ordner aktualisiert');
+      }
+      this.closeFolderDialog();
+    } catch (err) {
+      console.error('Error saving folder:', err);
+      this.toastService.error('Ordner konnte nicht gespeichert werden');
+    }
+  }
+
+  async onFolderDelete(): Promise<void> {
+    const userId = this.currentUser()?.uid;
+    const data = this.folderDialogData();
+    if (!userId || !data || data.mode !== 'edit' || !data.folder) return;
+
+    try {
+      await this.folderService.deleteFolder(userId, data.folder.id);
+      if (this.selectedFolderId() === data.folder.id) {
+        this.selectedFolderId.set(null);
+      }
+      await this.loadFolders();
+      this.closeFolderDialog();
+      this.toastService.success('Ordner gelöscht');
+    } catch (err) {
+      console.error('Error deleting folder:', err);
+      this.toastService.error('Ordner konnte nicht gelöscht werden');
+    }
+  }
+
+  private async loadFolders(): Promise<void> {
+    const userId = this.currentUser()?.uid;
+    if (!userId) return;
+
+    try {
+      const folders = await this.folderService.getFoldersAsync(userId, 'deck');
+      this.folders.set(folders);
+    } catch (err) {
+      console.error('Error loading folders:', err);
+    }
+  }
+
+  private loadTags(): void {
+    const userId = this.currentUser()?.uid;
+    if (!userId) return;
+
+    this.tagService.getAllUserTags(userId, 'deck').pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (tags) => this.availableTags.set(tags),
+      error: (err) => console.error('Error loading tags:', err)
+    });
+  }
+
   createNewDeck(): void {
     this.router.navigate(['/lernen/deck-editor', 'new']);
   }
@@ -324,7 +543,9 @@ export class LernenListComponent implements OnInit {
       deckId: deck.id,
       role: 'student',
       addedAt: new Date(),
-      lastAccessedAt: new Date()
+      lastAccessedAt: new Date(),
+      tags: [],
+      isFavorite: false
     };
 
     this.userDeckRefs.update(refs => [...refs, optimisticRef]);
@@ -472,7 +693,9 @@ export class LernenListComponent implements OnInit {
         deckId: deck.id,
         role: 'student',
         addedAt: new Date(),
-        lastAccessedAt: new Date()
+        lastAccessedAt: new Date(),
+        tags: [],
+        isFavorite: false
       };
 
       this.userDeckRefs.update(refs => [...refs, newRef]);

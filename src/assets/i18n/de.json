@@ -46,6 +46,7 @@
     "cards": "Karten",
     "card": "Karte",
     "overview": "Übersicht",
+    "preview": "Vorschau",
     "reset": "Zurücksetzen",
     "result": "Ergebnis",
     "results": "Ergebnisse",
@@ -88,6 +89,8 @@
     "signOut": "Abmelden",
     "signInWithGoogle": "Mit Google anmelden",
     "signingIn": "Anmeldung läuft...",
+    "ageConfirm": "Ich bestätige, dass ich mindestens 16 Jahre alt bin oder die Zustimmung meiner Erziehungsberechtigten habe.",
+    "ageConfirmError": "Bitte bestätige, dass du mindestens 16 Jahre alt bist oder die Zustimmung deiner Erziehungsberechtigten hast.",
     "subtitle": "Meistere dein Wissen mit Spaced Repetition",
     "termsIntro": "Mit der Anmeldung akzeptierst du unsere",
     "termsOfService": "Nutzungsbedingungen",
@@ -644,6 +647,48 @@
           "success": "Export erstellt.",
           "failed": "Export fehlgeschlagen."
         },
+        "deviceExport": {
+          "title": "Gerätedaten exportieren",
+          "description": "Exportiert lokale App-Daten wie localStorage, IndexedDB, Cache und Service Worker.",
+          "action": "Gerätedaten exportieren",
+          "loading": "Exportiere...",
+          "success": "Gerätedaten exportiert.",
+          "failed": "Gerätedaten-Export fehlgeschlagen."
+        },
+        "providerExport": {
+          "title": "Render-Logs exportieren",
+          "description": "Erstellt eine Anfrage-Datei für Render-Logs.",
+          "action": "Export-Anfrage erstellen",
+          "loading": "Erstelle...",
+          "success": "Export-Anfrage erstellt.",
+          "failed": "Export-Anfrage fehlgeschlagen."
+        },
+        "consent": {
+          "title": "Einwilligungen",
+          "description": "Setze deine Entscheidung zu externen Inhalten (z. B. Google Fonts) zurück.",
+          "action": "Einwilligung ändern",
+          "confirm": "Einwilligung wirklich zurücksetzen? Das Banner erscheint erneut.",
+          "success": "Einwilligung zurückgesetzt."
+        },
+        "deviceDelete": {
+          "title": "Gerätedaten löschen",
+          "description": "Löscht lokale App-Daten auf diesem Gerät (localStorage, IndexedDB, Cache, Service Worker).",
+          "action": "Gerätedaten löschen",
+          "loading": "Lösche...",
+          "confirm": "Lokale Gerätedaten wirklich löschen?",
+          "reloadConfirm": "App jetzt neu laden?",
+          "success": "Gerätedaten gelöscht.",
+          "failed": "Gerätedaten konnten nicht gelöscht werden."
+        },
+        "providerDelete": {
+          "title": "Render-Logs löschen",
+          "description": "Erstellt eine Löschanfrage für Render-Logs.",
+          "action": "Löschanfrage erstellen",
+          "loading": "Erstelle...",
+          "confirm": "Löschanfrage für Render-Logs erstellen?",
+          "success": "Löschanfrage erstellt.",
+          "failed": "Löschanfrage fehlgeschlagen."
+        },
         "delete": {
           "title": "Konto löschen",
           "description": "Entfernt dein Konto und alle personenbezogenen Daten dauerhaft.",
@@ -1077,15 +1122,22 @@
           "list": {
             "auth": "Verwaltung der Benutzeranmeldung",
             "firestore": "Speicherung von Quiz-Daten, Benutzerinformationen und Lernfortschritten",
-            "hosting": "Bereitstellung der Webanwendung"
+            "hosting": "Bereitstellung der Webanwendung",
+            "fcm": "Versand von Push-Benachrichtigungen (Firebase Cloud Messaging)"
           },
-          "p2": "Firebase verarbeitet Daten in Rechenzentren weltweit. Google LLC ist unter dem EU-US Data Privacy Framework zertifiziert.",
-          "p3": "Weitere Informationen finden Sie in der Datenschutzerklärung von Google:"
+          "p2": "Wir nutzen Firebase in der Region Frankfurt (eu-central). Firebase kann Daten in Rechenzentren weltweit verarbeiten. Google LLC ist unter dem EU-US Data Privacy Framework zertifiziert.",
+          "p3": "Weitere Informationen finden Sie in der Datenschutzerklärung von Google:",
+          "p4": "Für Push-Benachrichtigungen speichern wir FCM-Token und technische Geräteinformationen. Die Zustellung erfolgt nur nach Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO); die Einwilligung können Sie jederzeit widerrufen."
         },
         "s33": {
           "title": "3.3 Google Gemini AI",
           "p1": "Für die automatische Quiz-Generierung verwenden wir Google Gemini AI. Dabei werden hochgeladene Dokumente (PDFs, Bilder) temporär an Google übermittelt, um Quiz-Fragen zu generieren. Die Dokumente werden nach der Verarbeitung nicht dauerhaft gespeichert.",
           "p2": "Die Nutzung erfolgt auf Grundlage Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO) durch die aktive Verwendung der Quiz-Generierungs-Funktion."
+        },
+        "s34": {
+          "title": "3.4 Notification Server (Render)",
+          "p1": "Für die Zustellung von Push-Benachrichtigungen und Hintergrundaufgaben betreiben wir einen Server bei Render.com (Region Frankfurt).",
+          "p2": "Dabei werden technische Zugriffsdaten (z. B. IP-Adresse, Zeitstempel, Request-Logs) sowie FCM-Token verarbeitet. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung) bzw. Art. 6 Abs. 1 lit. a DSGVO (Einwilligung für Push)."
         }
       },
       "s4": {
@@ -1097,7 +1149,9 @@
             "email": "E-Mail-Adresse",
             "displayName": "Anzeigename",
             "profileImageUrl": "Profilbild-URL (falls vorhanden)",
-            "registrationDate": "Registrierungsdatum"
+            "registrationDate": "Registrierungsdatum",
+            "fcmTokens": "FCM-Token (für Push-Benachrichtigungen, optional)",
+            "notificationSettings": "Benachrichtigungseinstellungen"
           }
         },
         "s42": {
@@ -1120,7 +1174,8 @@
       "s5": {
         "title": "5. Datenspeicherung und -löschung",
         "p1": "Ihre Daten werden solange gespeichert, wie Sie Ihr Benutzerkonto aktiv nutzen. Sie können Ihr Konto jederzeit löschen, wodurch alle Ihre personenbezogenen Daten entfernt werden.",
-        "p2": "Von Ihnen erstellte Quizze werden nach Kontolöschung anonymisiert aufbewahrt, sofern andere Nutzer darauf zugreifen (z.B. Co-Autoren oder Teilnehmer)."
+        "p2": "Von Ihnen erstellte Quizze werden nach Kontolöschung anonymisiert aufbewahrt, sofern andere Nutzer darauf zugreifen (z.B. Co-Autoren oder Teilnehmer).",
+        "p3": "Protokoll- und Fehlerdaten speichern wir nur so lange, wie es zur Sicherstellung des Betriebs und zur Fehleranalyse erforderlich ist."
       },
       "s6": {
         "title": "6. Ihre Rechte",
@@ -1168,7 +1223,8 @@
       },
       "s8": {
         "title": "8. Cookies und lokale Speicherung",
-        "p1": "Diese Website verwendet keine Tracking-Cookies. Firebase Authentication und Ihre Theme-Präferenz werden im lokalen Browser-Speicher (localStorage) gespeichert, um die Funktionalität der App zu gewährleisten."
+        "p1": "Diese Website verwendet keine Tracking-Cookies. Firebase Authentication und Ihre Theme-Präferenz werden im lokalen Browser-Speicher (localStorage) gespeichert, um die Funktionalität der App zu gewährleisten.",
+        "p2": "Wenn Sie zustimmen, laden wir Google Fonts (Material Icons) von Google. Dabei kann Ihre IP-Adresse an Google übermittelt werden. Ihre Einwilligung wird im lokalen Speicher gespeichert und kann jederzeit widerrufen werden."
       },
       "s9": {
         "title": "9. SSL/TLS-Verschlüsselung",
@@ -1334,9 +1390,61 @@
   "mode": {
     "ariaLabel": "App-Modus"
   },
+  "consent": {
+    "title": "Externe Inhalte",
+    "description": "Wir laden Google Fonts (Material Icons) von Google. Dabei kann Ihre IP-Adresse an Google übertragen werden.",
+    "accept": "Zustimmen",
+    "decline": "Ablehnen",
+    "learnMore": "Mehr erfahren"
+  },
 
   "toast": {
-    "ariaLabel": "Benachrichtigungen"
+    "ariaLabel": "Benachrichtigungen",
+    "success": {
+      "saved": "Erfolgreich gespeichert",
+      "created": "Erfolgreich erstellt",
+      "deleted": "Erfolgreich gelöscht",
+      "updated": "Erfolgreich aktualisiert",
+      "copied": "In die Zwischenablage kopiert",
+      "imported": "Import erfolgreich",
+      "exported": "Export erfolgreich"
+    },
+    "error": {
+      "generic": "Ein Fehler ist aufgetreten",
+      "network": "Netzwerkfehler. Bitte überprüfe deine Verbindung.",
+      "save": "Fehler beim Speichern",
+      "load": "Fehler beim Laden",
+      "delete": "Fehler beim Löschen",
+      "validation": "Bitte überprüfe deine Eingaben",
+      "unauthorized": "Du hast keine Berechtigung für diese Aktion"
+    },
+    "warning": {
+      "unsavedChanges": "Du hast ungespeicherte Änderungen",
+      "confirmLeave": "Änderungen gehen verloren, wenn du fortfährst"
+    },
+    "info": {
+      "addedToLibrary": "Zu deiner Sammlung hinzugefügt",
+      "removedFromLibrary": "Aus deiner Sammlung entfernt",
+      "progressSaved": "Fortschritt gespeichert"
+    },
+    "quiz": {
+      "created": "Quiz erstellt",
+      "saved": "Quiz gespeichert",
+      "deleted": "Quiz gelöscht"
+    },
+    "deck": {
+      "created": "Deck erstellt",
+      "saved": "Deck gespeichert",
+      "deleted": "Deck gelöscht"
+    },
+    "material": {
+      "created": "Lernunterlage erstellt",
+      "saved": "Lernunterlage gespeichert",
+      "deleted": "Lernunterlage gelöscht"
+    },
+    "actions": {
+      "undo": "Rückgängig"
+    }
   },
 
   "follow": {
@@ -1525,5 +1633,31 @@
     "limit": "Limit",
     "warningNearLimit": "Du erreichst bald dein Speicherlimit",
     "errorLimitReached": "Speicherlimit erreicht"
+  },
+
+  "folders": {
+    "title": "Ordner",
+    "all": "Alle",
+    "favorites": "Favoriten",
+    "moveTo": "In Ordner verschieben",
+    "noFolder": "Kein Ordner",
+    "newFolder": "Neuer Ordner",
+    "editFolder": "Ordner bearbeiten",
+    "deleteFolder": "Ordner löschen",
+    "folderName": "Ordnername",
+    "color": "Farbe",
+    "icon": "Symbol",
+    "confirmDelete": "Ordner wirklich löschen? Inhalte werden nicht gelöscht.",
+    "expandSidebar": "Ordnerleiste öffnen"
+  },
+
+  "tags": {
+    "addTag": "Tag hinzufügen",
+    "noTags": "Keine Tags"
+  },
+
+  "favorites": {
+    "add": "Zu Favoriten hinzufügen",
+    "remove": "Aus Favoriten entfernen"
   }
 }

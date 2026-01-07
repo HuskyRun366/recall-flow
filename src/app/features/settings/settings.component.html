@@ -540,6 +540,144 @@
         </button>
       </div>
 
+      <div class="setting-item">
+        <div class="setting-info">
+          <div class="setting-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="4" y="6" width="16" height="12" rx="2"/>
+              <line x1="7" y1="10" x2="17" y2="10"/>
+              <circle cx="8" cy="16" r="1"/>
+              <circle cx="16" cy="16" r="1"/>
+            </svg>
+          </div>
+          <div>
+            <strong>{{ 'settings.page.account.deviceExport.title' | translate }}</strong>
+            <p>{{ 'settings.page.account.deviceExport.description' | translate }}</p>
+          </div>
+        </div>
+
+        <button
+          class="btn btn-secondary btn-small"
+          type="button"
+          [disabled]="isExportingDeviceData()"
+          (click)="exportDeviceData()">
+          @if (isExportingDeviceData()) {
+            <span>{{ 'settings.page.account.deviceExport.loading' | translate }}</span>
+          } @else {
+            <span>{{ 'settings.page.account.deviceExport.action' | translate }}</span>
+          }
+        </button>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <div class="setting-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 10a4 4 0 0 0-7.9-1.3A4 4 0 0 0 6 16h12a3 3 0 0 0 0-6z"/>
+              <line x1="12" y1="12" x2="12" y2="18"/>
+              <polyline points="9 15 12 18 15 15"/>
+            </svg>
+          </div>
+          <div>
+            <strong>{{ 'settings.page.account.providerExport.title' | translate }}</strong>
+            <p>{{ 'settings.page.account.providerExport.description' | translate }}</p>
+          </div>
+        </div>
+
+        <button
+          class="btn btn-secondary btn-small"
+          type="button"
+          [disabled]="isPreparingProviderExport()"
+          (click)="requestProviderExport()">
+          @if (isPreparingProviderExport()) {
+            <span>{{ 'settings.page.account.providerExport.loading' | translate }}</span>
+          } @else {
+            <span>{{ 'settings.page.account.providerExport.action' | translate }}</span>
+          }
+        </button>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <div class="setting-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 3a5 5 0 0 1 5 5c0 2.5-2 4.5-4.5 4.5H12"/>
+              <path d="M7 8a4 4 0 1 0 4 4"/>
+              <circle cx="7" cy="8" r="1"/>
+              <circle cx="15" cy="15" r="1"/>
+              <circle cx="9" cy="18" r="1"/>
+            </svg>
+          </div>
+          <div>
+            <strong>{{ 'settings.page.account.consent.title' | translate }}</strong>
+            <p>{{ 'settings.page.account.consent.description' | translate }}</p>
+          </div>
+        </div>
+
+        <button
+          class="btn btn-secondary btn-small"
+          type="button"
+          (click)="resetConsent()">
+          <span>{{ 'settings.page.account.consent.action' | translate }}</span>
+        </button>
+      </div>
+
+      <div class="setting-item danger">
+        <div class="setting-info">
+          <div class="setting-icon danger">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18"/>
+              <path d="M8 6V4h8v2"/>
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            </svg>
+          </div>
+          <div>
+            <strong>{{ 'settings.page.account.deviceDelete.title' | translate }}</strong>
+            <p>{{ 'settings.page.account.deviceDelete.description' | translate }}</p>
+          </div>
+        </div>
+
+        <button
+          class="btn btn-danger btn-small"
+          type="button"
+          [disabled]="isClearingDeviceData()"
+          (click)="clearDeviceData()">
+          @if (isClearingDeviceData()) {
+            <span>{{ 'settings.page.account.deviceDelete.loading' | translate }}</span>
+          } @else {
+            <span>{{ 'settings.page.account.deviceDelete.action' | translate }}</span>
+          }
+        </button>
+      </div>
+
+      <div class="setting-item danger">
+        <div class="setting-info">
+          <div class="setting-icon danger">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18"/>
+              <path d="M8 6V4h8v2"/>
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            </svg>
+          </div>
+          <div>
+            <strong>{{ 'settings.page.account.providerDelete.title' | translate }}</strong>
+            <p>{{ 'settings.page.account.providerDelete.description' | translate }}</p>
+          </div>
+        </div>
+
+        <button
+          class="btn btn-danger btn-small"
+          type="button"
+          [disabled]="isPreparingProviderDelete()"
+          (click)="requestProviderDelete()">
+          @if (isPreparingProviderDelete()) {
+            <span>{{ 'settings.page.account.providerDelete.loading' | translate }}</span>
+          } @else {
+            <span>{{ 'settings.page.account.providerDelete.action' | translate }}</span>
+          }
+        </button>
+      </div>
+
       <div class="setting-item danger">
         <div class="setting-info">
           <div class="setting-icon danger">

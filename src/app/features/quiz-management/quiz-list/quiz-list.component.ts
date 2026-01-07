@@ -323,7 +323,9 @@ export class QuizListComponent implements OnInit {
       quizId: quiz.id,
       role: 'participant',
       addedAt: new Date(),
-      lastAccessedAt: new Date()
+      lastAccessedAt: new Date(),
+      tags: [],
+      isFavorite: false
     };
 
     this.userQuizRefs.update(refs => [...refs, optimisticRef]);
@@ -482,7 +484,9 @@ export class QuizListComponent implements OnInit {
         quizId: quiz.id,
         role: 'participant',
         addedAt: new Date(),
-        lastAccessedAt: new Date()
+        lastAccessedAt: new Date(),
+        tags: [],
+        isFavorite: false
       };
 
       this.userQuizRefs.update(refs => [...refs, newRef]);

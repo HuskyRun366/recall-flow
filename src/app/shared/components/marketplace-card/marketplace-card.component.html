@@ -71,43 +71,44 @@
     />
   </div>
 
-  <!-- Rating Actions Row -->
-  @if (canRate()) {
-    <div class="rating-actions">
-      <button class="btn-rate" (click)="onRate($event)">
-        <span class="icon">⭐</span>
-        <span>{{ 'discover.rating.rate' | translate }}</span>
-      </button>
-    </div>
-  }
-
   <div class="card-stats">
-    <div class="stat">
-      <span class="stat-value">{{ itemCount() }}</span>
-      <span class="stat-label">{{ itemCountLabel() | translate }}</span>
+    <div class="stats-group">
+      <div class="stat">
+        <span class="stat-value">{{ itemCount() }}</span>
+        <span class="stat-label">{{ itemCountLabel() | translate }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">{{ popularityCount() }}</span>
+        <span class="stat-label">{{ popularityLabel() | translate }}</span>
+      </div>
     </div>
-    <div class="stat">
-      <span class="stat-value">{{ popularityCount() }}</span>
-      <span class="stat-label">{{ popularityLabel() | translate }}</span>
-    </div>
+
+    @if (canRate()) {
+      <div class="rating-actions">
+        <button class="rating-chip" (click)="onRate($event)" [attr.aria-label]="'discover.rating.rate' | translate">
+          <span class="icon" aria-hidden="true">⭐</span>
+          <span class="label">{{ 'discover.rating.rate' | translate }}</span>
+        </button>
+      </div>
+    }
   </div>
 
   <div class="card-actions">
     <span class="view-link">{{ 'discover.viewDetails' | translate }}</span>
-    <button class="add-btn" (click)="onAdd($event)">
+    <button class="add-btn" (click)="onAdd($event)" [disabled]="isEnrolled()">
       @if (item().type === 'theme') {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
           <path d="M12 3v12"/>
           <path d="m7 10 5 5 5-5"/>
           <path d="M5 21h14"/>
         </svg>
-        {{ 'settings.page.theme.marketplace.install' | translate }}
+        {{ (isEnrolled() ? 'settings.page.theme.marketplace.installed' : 'settings.page.theme.marketplace.install') | translate }}
       } @else {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
           <line x1="12" y1="5" x2="12" y2="19"/>
           <line x1="5" y1="12" x2="19" y2="12"/>
         </svg>
-        {{ 'common.add' | translate }}
+        {{ (isEnrolled() ? 'common.added' : 'common.add') | translate }}
       }
     </button>
   </div>

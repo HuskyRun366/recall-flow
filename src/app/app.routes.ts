@@ -126,6 +126,11 @@ export const routes: Routes = [
       {
         path: 'material/:id',
         data: { animationIndex: 66 },
+        loadComponent: () => import('./features/lernen/material-detail/material-detail.component').then(m => m.MaterialDetailComponent)
+      },
+      {
+        path: 'material/:id/view',
+        data: { animationIndex: 66 },
         loadComponent: () => import('./features/lernen/material-viewer/material-viewer.component').then(m => m.MaterialViewerComponent)
       },
       {

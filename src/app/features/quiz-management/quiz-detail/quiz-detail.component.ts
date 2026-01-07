@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FirestoreService } from '../../../core/services/firestore.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { ParticipantService } from '../../../core/services/participant.service';
@@ -32,6 +32,7 @@ export class QuizDetailComponent implements OnInit {
   private participantService = inject(ParticipantService);
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
+  private translateService = inject(TranslateService);
   private reviewService = inject(ReviewService);
   private followService = inject(FollowService);
 
@@ -157,10 +158,10 @@ export class QuizDetailComponent implements OnInit {
         'accepted'
       );
       this.isEnrolled.set(true);
-      this.toastService.success('Quiz hinzugefügt');
+      this.toastService.info(this.translateService.instant('toast.info.addedToLibrary'));
     } catch (err) {
       console.error('Enroll failed', err);
-      this.toastService.error('Hinzufügen fehlgeschlagen');
+      this.toastService.error(this.translateService.instant('toast.error.generic'));
     } finally {
       this.enrollState.set('idle');
     }
@@ -175,10 +176,10 @@ export class QuizDetailComponent implements OnInit {
     try {
       await this.participantService.removeParticipant(q.id, user.uid);
       this.isEnrolled.set(false);
-      this.toastService.success('Quiz entfernt');
+      this.toastService.info(this.translateService.instant('toast.info.removedFromLibrary'));
     } catch (err) {
       console.error('Unenroll failed', err);
-      this.toastService.error('Entfernen fehlgeschlagen');
+      this.toastService.error(this.translateService.instant('toast.error.generic'));
     } finally {
       this.enrollState.set('idle');
     }
@@ -201,12 +202,12 @@ export class QuizDetailComponent implements OnInit {
     navigator.clipboard.writeText(code).then(
       () => {
         this.copySuccess.set(true);
-        this.toastService.success('Code kopiert!');
+        this.toastService.success(this.translateService.instant('toast.success.copied'));
         setTimeout(() => this.copySuccess.set(false), 2000);
       },
       (err) => {
         console.error('Failed to copy join code:', err);
-        this.toastService.error('Fehler beim Kopieren des Codes');
+        this.toastService.error(this.translateService.instant('toast.error.generic'));
       }
     );
   }

@@ -14,6 +14,8 @@
     z-index: 9999;
     height: 100dvh;
     min-height: 100vh;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: 0;
   }
 }
 
@@ -171,11 +173,14 @@
     height: 100%;
     border: none;
     background: white;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
   }
 
   .exit-fullscreen-btn {
     position: fixed;
-    top: $spacing-md;
+    top: calc(#{$spacing-md} + env(safe-area-inset-top, 0px));
     right: $spacing-md;
     width: 48px;
     height: 48px;

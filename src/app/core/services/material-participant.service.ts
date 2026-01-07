@@ -6,6 +6,7 @@ import {
   setDoc,
   updateDoc,
   deleteDoc,
+  deleteField,
   getDoc,
   getDocs,
   query,
@@ -65,7 +66,9 @@ export class MaterialParticipantService {
       materialId,
       role,
       addedAt: Timestamp.now() as any,
-      lastAccessedAt: Timestamp.now() as any
+      lastAccessedAt: Timestamp.now() as any,
+      tags: [],
+      isFavorite: false
     };
     batch.set(userMaterialDoc, userMaterialData);
 
@@ -381,7 +384,113 @@ export class MaterialParticipantService {
     return {
       ...data,
       addedAt: data.addedAt?.toDate() || new Date(),
-      lastAccessedAt: data.lastAccessedAt?.toDate() || new Date()
+      lastAccessedAt: data.lastAccessedAt?.toDate() || new Date(),
+      tags: data.tags || [],
+      isFavorite: data.isFavorite || false
     };
+  }
+
+  // ===== Organization Methods =====
+
+  /**
+   * Set favorite status for a material
+   */
+  async setFavorite(userId: string, materialId: string, isFavorite: boolean): Promise<void> {
+    const userMaterialDoc = doc(this.firestore, `users/${userId}/userMaterials/${materialId}`);
+    await updateDoc(userMaterialDoc, { isFavorite });
+  }
+
+  /**
+   * Set folder for a material
+   */
+  async setFolder(userId: string, materialId: string, folderId: string | null): Promise<void> {
+    const userMaterialDoc = doc(this.firestore, `users/${userId}/userMaterials/${materialId}`);
+    if (folderId === null) {
+      await updateDoc(userMaterialDoc, { folderId: deleteField() });
+    } else {
+      await updateDoc(userMaterialDoc, { folderId });
+    }
+  }
+
+  /**
+   * Set tags for a material (replaces all tags)
+   */
+  async setTags(userId: string, materialId: string, tags: string[]): Promise<void> {
+    const userMaterialDoc = doc(this.firestore, `users/${userId}/userMaterials/${materialId}`);
+    await updateDoc(userMaterialDoc, { tags });
+  }
+
+  /**
+   * Add a tag to a material
+   */
+  async addTag(userId: string, materialId: string, tag: string): Promise<void> {
+    const userMaterialDoc = doc(this.firestore, `users/${userId}/userMaterials/${materialId}`);
+    const docSnap = await runInInjectionContext(this.injector, () => getDoc(userMaterialDoc));
+    if (!docSnap.exists()) return;
+
+    const data = docSnap.data() as UserMaterialReference;
+    const currentTags = data.tags || [];
+    if (!currentTags.includes(tag)) {
+      await updateDoc(userMaterialDoc, { tags: [...currentTags, tag] });
+    }
+  }
+
+  /**
+   * Remove a tag from a material
+   */
+  async removeTag(userId: string, materialId: string, tag: string): Promise<void> {
+    const userMaterialDoc = doc(this.firestore, `users/${userId}/userMaterials/${materialId}`);
+    const docSnap = await runInInjectionContext(this.injector, () => getDoc(userMaterialDoc));
+    if (!docSnap.exists()) return;
+
+    const data = docSnap.data() as UserMaterialReference;
+    const currentTags = data.tags || [];
+    await updateDoc(userMaterialDoc, { tags: currentTags.filter(t => t !== tag) });
+  }
+
+  /**
+   * Get all favorite materials for a user
+   */
+  getFavoriteMaterials(userId: string): Observable<UserMaterialReference[]> {
+    const userMaterialsCol = collection(
+      this.firestore,
+      `users/${userId}/userMaterials`
+    ) as CollectionReference<UserMaterialReference>;
+
+    const q = query(userMaterialsCol, where('isFavorite', '==', true));
+
+    return from(
+      runInInjectionContext(this.injector, () => getDocs(q))
+    ).pipe(
+      map(snapshot => {
+        return snapshot.docs.map(doc => {
+          const data = doc.data();
+          return this.convertUserMaterialTimestamps(data);
+        });
+      })
+    );
+  }
+
+  /**
+   * Get materials by folder for a user
+   */
+  getMaterialsByFolder(userId: string, folderId: string): Observable<UserMaterialReference[]> {
+    const userMaterialsCol = collection(
+      this.firestore,
+      `users/${userId}/userMaterials`
+    ) as CollectionReference<UserMaterialReference>;
+
+    const q = query(userMaterialsCol, where('folderId', '==', folderId));
+
+    return from(
+      runInInjectionContext(this.injector, () => getDocs(q))
+    ).pipe(
+      map(snapshot => {
+        return snapshot.docs.map(doc => {
+          const data = doc.data();
+          return this.convertUserMaterialTimestamps(data);
+        });
+      })
+    );
   }
 }

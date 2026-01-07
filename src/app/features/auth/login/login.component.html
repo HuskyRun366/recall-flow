@@ -20,7 +20,7 @@
       <button
         class="google-signin-btn"
         (click)="signInWithGoogle()"
-        [disabled]="isLoading()"
+        [disabled]="isLoading() || !ageConfirmed()"
       >
         @if (isLoading()) {
           <div class="spinner"></div>
@@ -35,6 +35,16 @@
           <span>{{ 'auth.signInWithGoogle' | translate }}</span>
         }
       </button>
+
+      <div class="age-check">
+        <label>
+          <input
+            type="checkbox"
+            [checked]="ageConfirmed()"
+            (change)="setAgeConfirmed($event)" />
+          <span>{{ 'auth.ageConfirm' | translate }}</span>
+        </label>
+      </div>
 
       @if (error()) {
         <div class="error-message">

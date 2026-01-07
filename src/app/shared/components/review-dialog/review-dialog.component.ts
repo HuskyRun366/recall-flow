@@ -72,7 +72,7 @@ export class ReviewDialogComponent implements OnInit {
         this.comment() || undefined
       );
 
-      this.toastService.success('discover.rating.thankYou');
+      this.toastService.success(this.translateService.instant('discover.rating.thankYou'));
       this.submitted.emit();
       this.close.emit();
     } catch (error) {

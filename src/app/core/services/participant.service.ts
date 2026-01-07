@@ -6,6 +6,7 @@ import {
   setDoc,
   updateDoc,
   deleteDoc,
+  deleteField,
   getDoc,
   getDocs,
   query,
@@ -62,7 +63,9 @@ export class ParticipantService {
       quizId,
       role,
       addedAt: Timestamp.now() as any,
-      lastAccessedAt: Timestamp.now() as any
+      lastAccessedAt: Timestamp.now() as any,
+      tags: [],
+      isFavorite: false
     };
     batch.set(userQuizDoc, userQuizData);
 
@@ -378,7 +381,129 @@ export class ParticipantService {
     return {
       ...data,
       addedAt: data.addedAt?.toDate() || new Date(),
-      lastAccessedAt: data.lastAccessedAt?.toDate() || new Date()
+      lastAccessedAt: data.lastAccessedAt?.toDate() || new Date(),
+      tags: data.tags || [],
+      isFavorite: data.isFavorite || false
     };
+  }
+
+  // ===== Organization Methods =====
+
+  /**
+   * Set favorite status for a quiz
+   * Uses setDoc with merge to create the document if it doesn't exist
+   */
+  async setFavorite(userId: string, quizId: string, isFavorite: boolean): Promise<void> {
+    const userQuizDoc = doc(this.firestore, `users/${userId}/userQuizzes/${quizId}`);
+    const docSnap = await runInInjectionContext(this.injector, () => getDoc(userQuizDoc));
+
+    if (docSnap.exists()) {
+      await updateDoc(userQuizDoc, { isFavorite });
+    } else {
+      // Create document with default values if it doesn't exist
+      const userQuizData: UserQuizReference = {
+        quizId,
+        role: 'participant',
+        addedAt: Timestamp.now() as any,
+        lastAccessedAt: Timestamp.now() as any,
+        tags: [],
+        isFavorite
+      };
+      await setDoc(userQuizDoc, userQuizData);
+    }
+  }
+
+  /**
+   * Set folder for a quiz
+   */
+  async setFolder(userId: string, quizId: string, folderId: string | null): Promise<void> {
+    const userQuizDoc = doc(this.firestore, `users/${userId}/userQuizzes/${quizId}`);
+    if (folderId === null) {
+      await updateDoc(userQuizDoc, { folderId: deleteField() });
+    } else {
+      await updateDoc(userQuizDoc, { folderId });
+    }
+  }
+
+  /**
+   * Set tags for a quiz (replaces all tags)
+   */
+  async setTags(userId: string, quizId: string, tags: string[]): Promise<void> {
+    const userQuizDoc = doc(this.firestore, `users/${userId}/userQuizzes/${quizId}`);
+    await updateDoc(userQuizDoc, { tags });
+  }
+
+  /**
+   * Add a tag to a quiz
+   */
+  async addTag(userId: string, quizId: string, tag: string): Promise<void> {
+    const userQuizDoc = doc(this.firestore, `users/${userId}/userQuizzes/${quizId}`);
+    const docSnap = await runInInjectionContext(this.injector, () => getDoc(userQuizDoc));
+    if (!docSnap.exists()) return;
+
+    const data = docSnap.data() as UserQuizReference;
+    const currentTags = data.tags || [];
+    if (!currentTags.includes(tag)) {
+      await updateDoc(userQuizDoc, { tags: [...currentTags, tag] });
+    }
+  }
+
+  /**
+   * Remove a tag from a quiz
+   */
+  async removeTag(userId: string, quizId: string, tag: string): Promise<void> {
+    const userQuizDoc = doc(this.firestore, `users/${userId}/userQuizzes/${quizId}`);
+    const docSnap = await runInInjectionContext(this.injector, () => getDoc(userQuizDoc));
+    if (!docSnap.exists()) return;
+
+    const data = docSnap.data() as UserQuizReference;
+    const currentTags = data.tags || [];
+    await updateDoc(userQuizDoc, { tags: currentTags.filter(t => t !== tag) });
+  }
+
+  /**
+   * Get all favorite quizzes for a user
+   */
+  getFavoriteQuizzes(userId: string): Observable<UserQuizReference[]> {
+    const userQuizzesCol = collection(
+      this.firestore,
+      `users/${userId}/userQuizzes`
+    ) as CollectionReference<UserQuizReference>;
+
+    const q = query(userQuizzesCol, where('isFavorite', '==', true));
+
+    return from(
+      runInInjectionContext(this.injector, () => getDocs(q))
+    ).pipe(
+      map(snapshot => {
+        return snapshot.docs.map(doc => {
+          const data = doc.data();
+          return this.convertUserQuizTimestamps(data);
+        });
+      })
+    );
+  }
+
+  /**
+   * Get quizzes by folder for a user
+   */
+  getQuizzesByFolder(userId: string, folderId: string): Observable<UserQuizReference[]> {
+    const userQuizzesCol = collection(
+      this.firestore,
+      `users/${userId}/userQuizzes`
+    ) as CollectionReference<UserQuizReference>;
+
+    const q = query(userQuizzesCol, where('folderId', '==', folderId));
+
+    return from(
+      runInInjectionContext(this.injector, () => getDocs(q))
+    ).pipe(
+      map(snapshot => {
+        return snapshot.docs.map(doc => {
+          const data = doc.data();
+          return this.convertUserQuizTimestamps(data);
+        });
+      })
+    );
   }
 }

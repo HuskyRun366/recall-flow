@@ -324,10 +324,51 @@
     max-width: 400px;
   }
 
-  .btn {
+  .btn-primary {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: $spacing-sm;
+    background: var(--gradient-primary);
+    color: var(--color-on-gradient);
+    padding: $spacing-md $spacing-xl;
+    min-height: 56px;
+    border-radius: $radius-lg;
+    font-weight: 700;
+    font-size: 1.05rem;
+    box-shadow: $shadow-md;
+    transition: all $transition-normal;
+
+    &:hover {
+      box-shadow: $shadow-lg;
+      transform: translateY(-2px);
+    }
+  }
+
+  .btn-primary .icon-plus {
+    width: 18px;
+    height: 18px;
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .btn-primary .icon-plus::before,
+  .btn-primary .icon-plus::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 14px;
+    height: 2px;
+    background: currentColor;
+    opacity: 0.95;
+    border-radius: 2px;
+    transform: translate(-50%, -50%);
+  }
+
+  .btn-primary .icon-plus::after {
+    transform: translate(-50%, -50%) rotate(90deg);
   }
 }
 

@@ -9,10 +9,18 @@ import { ParticipantService } from '../../core/services/participant.service';
 import { AuthService } from '../../core/services/auth.service';
 import { OfflinePreloadService } from '../../core/services/offline-preload.service';
 import { PwaDetectionService } from '../../core/services/pwa-detection.service';
+import { FolderService } from '../../core/services/folder.service';
+import { TagService } from '../../core/services/tag.service';
 import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader/skeleton-loader.component';
-import { StatCardComponent, StatCardConfig } from '../../shared/components';
-import { Quiz, ProgressSummary, UserQuizReference } from '../../models';
-import { combineLatest, forkJoin, of, Observable, timeout, from } from 'rxjs';
+import {
+  StatCardComponent,
+  FolderSidebarComponent,
+  FolderDialogComponent,
+  FavoriteButtonComponent
+} from '../../shared/components';
+import { Quiz, ProgressSummary, UserQuizReference, Folder } from '../../models';
+import { FolderDialogData, FolderDialogResult } from '../../shared/components/folder-dialog/folder-dialog.component';
+import { combineLatest, forkJoin, of, Observable, timeout, from, fromEvent } from 'rxjs';
 import { switchMap, catchError, map } from 'rxjs/operators';
 
 interface QuizWithProgress {
@@ -21,12 +29,22 @@ interface QuizWithProgress {
   totalQuestions: number;
   userCanEdit?: boolean;
   isOfflineAvailable?: boolean;
+  userRef?: UserQuizReference;
 }
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule, SkeletonLoaderComponent, StatCardComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    TranslateModule,
+    SkeletonLoaderComponent,
+    StatCardComponent,
+    FolderSidebarComponent,
+    FolderDialogComponent,
+    FavoriteButtonComponent
+  ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
@@ -37,6 +55,8 @@ export class HomeComponent implements OnInit {
   private authService = inject(AuthService);
   private offlinePreloadService = inject(OfflinePreloadService);
   private pwaDetection = inject(PwaDetectionService);
+  private folderService = inject(FolderService);
+  private tagService = inject(TagService);
   private destroyRef = inject(DestroyRef);
 
   quizzesWithProgress = signal<QuizWithProgress[]>([]);
@@ -44,16 +64,70 @@ export class HomeComponent implements OnInit {
   userQuizRoleMap = signal<Map<string, UserQuizReference['role']>>(new Map());
   searchTerm = signal('');
   fabOpen = signal(false);
-  filteredQuizzes = computed(() => {
-    const term = this.searchTerm().trim().toLowerCase();
-    const list = this.quizzesWithProgress();
-    if (!term) return list;
 
-    return list.filter(item => {
-      const title = (item.quiz.title || '').toLowerCase();
-      const desc = (item.quiz.description || '').toLowerCase();
-      return title.includes(term) || desc.includes(term);
-    });
+  // Folder/Tag/Favorites state
+  folders = signal<Folder[]>([]);
+  selectedFolderId = signal<string | null>(null);
+  showFavoritesOnly = signal(false);
+  availableTags = signal<string[]>([]);
+  selectedTags = signal<string[]>([]);
+  sidebarCollapsed = signal(true);
+
+  // Context menu state
+  contextMenuOpen = signal(false);
+  contextMenuPosition = signal({ x: 0, y: 0 });
+  contextMenuQuizId = signal<string | null>(null);
+
+  contextMenuFolderId = computed(() => {
+    const quizId = this.contextMenuQuizId();
+    if (!quizId) return null;
+    return this.quizzesWithProgress().find(q => q.quiz.id === quizId)?.userRef?.folderId ?? null;
+  });
+
+  // Folder dialog state
+  folderDialogOpen = signal(false);
+  folderDialogData = signal<FolderDialogData | null>(null);
+
+  // Computed for selected folder (for filter chip display)
+  selectedFolder = computed(() => {
+    const folderId = this.selectedFolderId();
+    if (!folderId) return null;
+    return this.folders().find(f => f.id === folderId) ?? null;
+  });
+
+  filteredQuizzes = computed(() => {
+    let list = this.quizzesWithProgress();
+
+    // Folder filter
+    const folderId = this.selectedFolderId();
+    if (folderId) {
+      list = list.filter(q => q.userRef?.folderId === folderId);
+    }
+
+    // Favorites filter
+    if (this.showFavoritesOnly()) {
+      list = list.filter(q => q.userRef?.isFavorite);
+    }
+
+    // Tags filter
+    const tags = this.selectedTags();
+    if (tags.length > 0) {
+      list = list.filter(q =>
+        tags.every(tag => q.userRef?.tags?.includes(tag))
+      );
+    }
+
+    // Search filter
+    const term = this.searchTerm().trim().toLowerCase();
+    if (term) {
+      list = list.filter(item => {
+        const title = (item.quiz.title || '').toLowerCase();
+        const desc = (item.quiz.description || '').toLowerCase();
+        return title.includes(term) || desc.includes(term);
+      });
+    }
+
+    return list;
   });
   isLoading = signal(true);
   error = signal<string | null>(null);
@@ -86,6 +160,44 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadData();
+    this.loadFolders();
+    this.loadTags();
+
+    fromEvent<MouseEvent>(document, 'click')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.closeContextMenu());
+
+    fromEvent<KeyboardEvent>(document, 'keydown')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        if (event.key === 'Escape') {
+          this.closeContextMenu();
+        }
+      });
+  }
+
+  private loadFolders(): void {
+    const userId = this.currentUser()?.uid;
+    if (!userId) return;
+
+    this.folderService.getFolders(userId, 'quiz').pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (folders) => this.folders.set(folders),
+      error: (err) => console.error('Error loading folders:', err)
+    });
+  }
+
+  private loadTags(): void {
+    const userId = this.currentUser()?.uid;
+    if (!userId) return;
+
+    this.tagService.getAllUserTags(userId, 'quiz').pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (tags) => this.availableTags.set(tags),
+      error: (err) => console.error('Error loading tags:', err)
+    });
   }
 
   private loadData(): void {
@@ -180,6 +292,7 @@ export class HomeComponent implements OnInit {
         })));
       }),
       switchMap(progressSummaries => {
+        const userRefs = this.userQuizRefs();
         const quizzesWithProgress: QuizWithProgress[] = quizzes.map((quiz, index) => {
           const raw = progressSummaries[index] || {
             notTrained: quiz.questionCount,
@@ -191,12 +304,14 @@ export class HomeComponent implements OnInit {
           const capped = this.capSummaryToQuestionCount(raw, quiz.questionCount);
           const normalized = this.normalizeSummary(capped, quiz.questionCount);
           const completed = this.fillMissingWithNotTrained(normalized, quiz.questionCount);
+          const userRef = userRefs.find(ref => ref.quizId === quiz.id);
 
           return {
             quiz,
             progress: completed,
             totalQuestions: quiz.questionCount,
-            userCanEdit: false  // Will be set by checkEditPermissions
+            userCanEdit: false,  // Will be set by checkEditPermissions
+            userRef
           };
         });
 
@@ -353,5 +468,217 @@ export class HomeComponent implements OnInit {
 
   toggleFab(): void {
     this.fabOpen.update(open => !open);
+  }
+
+  // Folder/Favorites methods
+  onFolderSelect(folderId: string | null): void {
+    this.selectedFolderId.set(folderId);
+    this.showFavoritesOnly.set(false);
+  }
+
+  onFavoritesToggle(showFavorites: boolean): void {
+    this.showFavoritesOnly.set(showFavorites);
+    if (showFavorites) {
+      this.selectedFolderId.set(null);
+    }
+  }
+
+  toggleSidebar(): void {
+    this.sidebarCollapsed.update(collapsed => !collapsed);
+  }
+
+  async onToggleFavorite(quizId: string, isFavorite: boolean): Promise<void> {
+    const userId = this.currentUser()?.uid;
+    if (!userId) return;
+
+    const previousFavorite = this.quizzesWithProgress()
+      .find(q => q.quiz.id === quizId)?.userRef?.isFavorite;
+
+    // Optimistic update
+    this.quizzesWithProgress.update(quizzes =>
+      quizzes.map(q => {
+        if (q.quiz.id === quizId && q.userRef) {
+          return { ...q, userRef: { ...q.userRef, isFavorite } };
+        }
+        return q;
+      })
+    );
+
+    try {
+      await this.participantService.setFavorite(userId, quizId, isFavorite);
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      // Rollback
+      if (typeof previousFavorite === 'boolean') {
+        this.quizzesWithProgress.update(quizzes =>
+          quizzes.map(q => {
+            if (q.quiz.id === quizId && q.userRef) {
+              return { ...q, userRef: { ...q.userRef, isFavorite: previousFavorite } };
+            }
+            return q;
+          })
+        );
+      }
+    }
+  }
+
+  async onFolderChange(quizId: string, folderId: string | null): Promise<void> {
+    const userId = this.currentUser()?.uid;
+    if (!userId) return;
+
+    try {
+      await this.participantService.setFolder(userId, quizId, folderId);
+      // Update local state
+      this.quizzesWithProgress.update(quizzes =>
+        quizzes.map(q => {
+          if (q.quiz.id === quizId && q.userRef) {
+            return { ...q, userRef: { ...q.userRef, folderId: folderId ?? undefined } };
+          }
+          return q;
+        })
+      );
+    } catch (error) {
+      console.error('Error changing folder:', error);
+    }
+  }
+
+  openFolderContextMenu(event: MouseEvent, quizId: string): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const position = this.getContextMenuPosition(event.clientX, event.clientY);
+    this.contextMenuPosition.set(position);
+    this.contextMenuQuizId.set(quizId);
+    this.contextMenuOpen.set(true);
+  }
+
+  openFolderContextMenuFromButton(event: MouseEvent, quizId: string): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const target = event.currentTarget as HTMLElement | null;
+    const rect = target?.getBoundingClientRect();
+    const x = rect ? rect.left : event.clientX;
+    const y = rect ? rect.bottom + 8 : event.clientY;
+
+    const position = this.getContextMenuPosition(x, y);
+    this.contextMenuPosition.set(position);
+    this.contextMenuQuizId.set(quizId);
+    this.contextMenuOpen.set(true);
+  }
+
+  closeContextMenu(): void {
+    this.contextMenuOpen.set(false);
+  }
+
+  async assignFolderFromContext(folderId: string | null): Promise<void> {
+    const quizId = this.contextMenuQuizId();
+    if (!quizId) return;
+
+    this.closeContextMenu();
+    await this.onFolderChange(quizId, folderId);
+  }
+
+  // Folder dialog methods
+  openCreateFolderDialog(): void {
+    this.folderDialogData.set({
+      mode: 'create',
+      contentType: 'quiz'
+    });
+    this.folderDialogOpen.set(true);
+  }
+
+  openEditFolderDialog(folder: Folder): void {
+    this.folderDialogData.set({
+      mode: 'edit',
+      contentType: 'quiz',
+      folder
+    });
+    this.folderDialogOpen.set(true);
+  }
+
+  closeFolderDialog(): void {
+    this.folderDialogOpen.set(false);
+    this.folderDialogData.set(null);
+  }
+
+  async onFolderSave(result: FolderDialogResult): Promise<void> {
+    const userId = this.currentUser()?.uid;
+    if (!userId) return;
+
+    const data = this.folderDialogData();
+    if (!data) return;
+
+    try {
+      if (data.mode === 'create') {
+        await this.folderService.createFolder(
+          userId,
+          result.name,
+          'quiz',
+          result.color,
+          result.icon
+        );
+      } else if (data.mode === 'edit' && data.folder) {
+        await this.folderService.updateFolder(userId, data.folder.id, {
+          name: result.name,
+          color: result.color,
+          icon: result.icon
+        });
+      }
+      this.closeFolderDialog();
+      this.loadFolders(); // Refresh folders after save
+    } catch (error) {
+      console.error('Error saving folder:', error);
+    }
+  }
+
+  async onFolderDelete(): Promise<void> {
+    const userId = this.currentUser()?.uid;
+    if (!userId) return;
+
+    const data = this.folderDialogData();
+    if (!data?.folder) return;
+
+    try {
+      await this.folderService.deleteFolder(userId, data.folder.id);
+      // Clear selection if the deleted folder was selected
+      if (this.selectedFolderId() === data.folder.id) {
+        this.selectedFolderId.set(null);
+      }
+      this.closeFolderDialog();
+      this.loadFolders(); // Refresh folders after delete
+    } catch (error) {
+      console.error('Error deleting folder:', error);
+    }
+  }
+
+  getFolderForQuiz(quizId: string): Folder | undefined {
+    const quiz = this.quizzesWithProgress().find(q => q.quiz.id === quizId);
+    if (!quiz?.userRef?.folderId) return undefined;
+    return this.folders().find(f => f.id === quiz.userRef?.folderId);
+  }
+
+  private getContextMenuPosition(x: number, y: number): { x: number; y: number } {
+    if (typeof window === 'undefined') {
+      return { x, y };
+    }
+
+    const menuWidth = 240;
+    const menuHeight = this.estimateContextMenuHeight();
+    const margin = 8;
+    const maxX = window.innerWidth - menuWidth - margin;
+    const maxY = window.innerHeight - menuHeight - margin;
+
+    return {
+      x: Math.min(Math.max(margin, x), Math.max(margin, maxX)),
+      y: Math.min(Math.max(margin, y), Math.max(margin, maxY))
+    };
+  }
+
+  private estimateContextMenuHeight(): number {
+    const itemHeight = 36;
+    const baseItems = 2; // title + "no folder"
+    const totalItems = baseItems + this.folders().length;
+    return Math.min(360, totalItems * itemHeight + 24);
   }
 }

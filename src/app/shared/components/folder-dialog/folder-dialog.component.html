@@ -1,0 +1,98 @@
+@if (isOpen()) {
+  <div class="dialog-backdrop" (click)="onBackdropClick($event)">
+    <div class="dialog" role="dialog" aria-modal="true">
+      <div class="dialog-header">
+        <h2>{{ title() | translate }}</h2>
+        <button type="button" class="close-btn" (click)="onClose()" aria-label="Close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="dialog-content">
+        <div class="form-group">
+          <label for="folderName">{{ 'folders.folderName' | translate }}</label>
+          <input
+            type="text"
+            id="folderName"
+            [ngModel]="folderName()"
+            (ngModelChange)="folderName.set($event)"
+            [placeholder]="'folders.folderName' | translate"
+            maxlength="50"
+            autocomplete="off" />
+        </div>
+
+        <div class="form-group">
+          <label>{{ 'folders.color' | translate }}</label>
+          <div class="color-picker">
+            @for (color of colors; track color) {
+              <button
+                type="button"
+                class="color-swatch"
+                [class.selected]="selectedColor() === color"
+                [style.background]="color"
+                (click)="selectColor(color)"
+                [attr.aria-label]="'Select color ' + color">
+                @if (selectedColor() === color) {
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                }
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>{{ 'folders.icon' | translate }} <span class="optional">({{ 'common.optional' | translate }})</span></label>
+          <div class="icon-picker">
+            @for (icon of icons; track icon) {
+              <button
+                type="button"
+                class="icon-btn"
+                [class.selected]="selectedIcon() === icon"
+                (click)="selectIcon(icon)"
+                [attr.aria-label]="'Select icon ' + icon">
+                {{ icon }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Preview -->
+        <div class="preview-section">
+          <label>{{ 'common.preview' | translate }}</label>
+          <div class="folder-preview">
+            <span class="preview-color" [style.background]="selectedColor()">
+              @if (selectedIcon()) {
+                {{ selectedIcon() }}
+              }
+            </span>
+            <span class="preview-name">{{ folderName() || ('folders.folderName' | translate) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        @if (isEditMode()) {
+          <button type="button" class="btn btn-danger" (click)="onDelete()">
+            {{ 'folders.deleteFolder' | translate }}
+          </button>
+        }
+        <div class="spacer"></div>
+        <button type="button" class="btn btn-secondary" (click)="onClose()">
+          {{ 'common.cancel' | translate }}
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          [disabled]="!isValid()"
+          (click)="onSave()">
+          {{ 'common.save' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

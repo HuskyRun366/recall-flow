@@ -13,6 +13,19 @@
               label: deck()!.visibility === 'public' ? ('quiz.visibility.public' | translate) : deck()!.visibility === 'unlisted' ? ('quiz.visibility.unlisted' | translate) : ('quiz.visibility.private' | translate)
             }" />
           </div>
+          <div class="author-section" *ngIf="deckAuthor()">
+            <a [routerLink]="['/profile', deck()!.ownerId]" class="author-link">
+              <img
+                [src]="deckAuthor()!.photoURL || 'assets/default-avatar.svg'"
+                [alt]="deckAuthor()!.displayName"
+                class="author-avatar" />
+              <span class="author-name">{{ deckAuthor()!.displayName }}</span>
+            </a>
+            <app-follow-button
+              *ngIf="deck()!.ownerId !== currentUser()?.uid"
+              [userId]="deck()!.ownerId"
+              [compact]="true" />
+          </div>
         </div>
       </div>
       <div class="hero-actions">
@@ -160,8 +173,14 @@
     <div class="card reviews-card" *ngIf="deck()!.visibility === 'public'">
       <div class="card-header">
         <h2>{{ 'discover.rating.title' | translate }}</h2>
-        <button class="btn btn-secondary" *ngIf="isEnrolled() || canEdit()" (click)="openReviewDialog()">
-          {{ userReview() ? ('discover.rating.editReview' | translate) : ('discover.rating.writeReview' | translate) }}
+        <button
+          type="button"
+          class="rating-chip"
+          *ngIf="isEnrolled() || canEdit()"
+          (click)="openReviewDialog()"
+          [attr.aria-label]="'discover.rating.rate' | translate">
+          <span class="icon" aria-hidden="true">⭐</span>
+          <span class="label">{{ 'discover.rating.rate' | translate }}</span>
         </button>
       </div>
 

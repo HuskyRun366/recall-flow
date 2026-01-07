@@ -110,6 +110,29 @@
     }
   }
 
+  .age-check {
+    margin-top: $spacing-md;
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-sm;
+
+    label {
+      display: flex;
+      gap: $spacing-sm;
+      align-items: flex-start;
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+    }
+
+    input[type='checkbox'] {
+      margin-top: 2px;
+      width: 16px;
+      height: 16px;
+      accent-color: var(--color-primary);
+      cursor: pointer;
+    }
+  }
+
   .error-message {
     margin-top: $spacing-md;
     padding: $spacing-md;

@@ -8,6 +8,8 @@ import {
   query,
   where,
   deleteDoc,
+  updateDoc,
+  increment,
   writeBatch,
   DocumentReference,
   Timestamp
@@ -39,14 +41,24 @@ export class AccountDataService {
       userDecks,
       userMaterials,
       fcmTokens,
-      notifications
+      notifications,
+      folders,
+      followers,
+      following,
+      followNotifications,
+      followNotificationsSent
     ] = await Promise.all([
       this.safeGetDocData(`users/${userId}`),
       this.safeGetCollectionData(`users/${userId}/userQuizzes`),
       this.safeGetCollectionData(`users/${userId}/userDecks`),
       this.safeGetCollectionData(`users/${userId}/userMaterials`),
       this.safeGetCollectionData(`users/${userId}/fcmTokens`),
-      this.safeGetCollectionDataByField('notifications', 'userId', userId)
+      this.safeGetCollectionDataByField('notifications', 'userId', userId),
+      this.safeGetCollectionData(`users/${userId}/folders`),
+      this.safeGetCollectionData(`users/${userId}/followers`),
+      this.safeGetCollectionData(`users/${userId}/following`),
+      this.safeGetCollectionDataByField('followNotifications', 'userId', userId),
+      this.safeGetCollectionDataByField('followNotifications', 'authorId', userId)
     ]);
 
     const ownedQuizzes = await this.getOwnedCollection('quizzes', userId);
@@ -103,6 +115,11 @@ export class AccountDataService {
       userMaterials,
       fcmTokens,
       notifications,
+      folders,
+      followers,
+      following,
+      followNotifications,
+      followNotificationsSent,
       ownedQuizzes,
       ownedDecks,
       ownedMaterials,
@@ -119,77 +136,166 @@ export class AccountDataService {
   }
 
   async deleteUserData(userId: string, email?: string): Promise<void> {
-    const userQuizzes = await this.getCollectionData(`users/${userId}/userQuizzes`);
-    const userDecks = await this.getCollectionData(`users/${userId}/userDecks`);
-    const userMaterials = await this.getCollectionData(`users/${userId}/userMaterials`);
+    const userQuizzes = await this.runDeleteStep('Load userQuizzes', () =>
+      this.getCollectionData(`users/${userId}/userQuizzes`)
+    );
+    const userDecks = await this.runDeleteStep('Load userDecks', () =>
+      this.getCollectionData(`users/${userId}/userDecks`)
+    );
+    const userMaterials = await this.runDeleteStep('Load userMaterials', () =>
+      this.getCollectionData(`users/${userId}/userMaterials`)
+    );
+    const userFollowing = await this.runDeleteStep('Load following', () =>
+      this.getCollectionData(`users/${userId}/following`)
+    );
+    const userFollowers = await this.runDeleteStep('Load followers', () =>
+      this.getCollectionData(`users/${userId}/followers`)
+    );
 
     // Remove quiz participation + progress
     for (const ref of userQuizzes) {
       const quizId = ref.quizId as string;
-      await this.deleteCollectionDocs(`quizProgress/${quizId}/userProgress/${userId}/questionProgress`);
-      await this.safeDeleteDoc(`quizProgress/${quizId}/userProgress/${userId}`);
-      await this.safeDeleteDoc(`quizParticipants/${quizId}/participants/${userId}`);
-      await this.safeDeleteDoc(`users/${userId}/userQuizzes/${quizId}`);
+      await this.runDeleteStep(`Delete quiz progress questions (${quizId})`, () =>
+        this.deleteCollectionDocs(`quizProgress/${quizId}/userProgress/${userId}/questionProgress`)
+      );
+      await this.runDeleteStep(`Delete quiz progress summary (${quizId})`, () =>
+        this.safeDeleteDoc(`quizProgress/${quizId}/userProgress/${userId}`)
+      );
+      await this.runDeleteStep(`Delete quiz participant (${quizId})`, () =>
+        this.safeDeleteDoc(`quizParticipants/${quizId}/participants/${userId}`)
+      );
+      await this.runDeleteStep(`Delete user quiz ref (${quizId})`, () =>
+        this.safeDeleteDoc(`users/${userId}/userQuizzes/${quizId}`)
+      );
     }
 
     // Remove deck participation + progress
     for (const ref of userDecks) {
       const deckId = ref.deckId as string;
-      await this.deleteCollectionDocs(`flashcardProgress/${deckId}/userProgress/${userId}/cardProgress`);
-      await this.safeDeleteDoc(`flashcardProgress/${deckId}/userProgress/${userId}`);
-      await this.safeDeleteDoc(`deckParticipants/${deckId}/participants/${userId}`);
-      await this.safeDeleteDoc(`users/${userId}/userDecks/${deckId}`);
+      await this.runDeleteStep(`Delete deck progress cards (${deckId})`, () =>
+        this.deleteCollectionDocs(`flashcardProgress/${deckId}/userProgress/${userId}/cardProgress`)
+      );
+      await this.runDeleteStep(`Delete deck progress summary (${deckId})`, () =>
+        this.safeDeleteDoc(`flashcardProgress/${deckId}/userProgress/${userId}`)
+      );
+      await this.runDeleteStep(`Delete deck participant (${deckId})`, () =>
+        this.safeDeleteDoc(`deckParticipants/${deckId}/participants/${userId}`)
+      );
+      await this.runDeleteStep(`Delete user deck ref (${deckId})`, () =>
+        this.safeDeleteDoc(`users/${userId}/userDecks/${deckId}`)
+      );
     }
 
     // Remove material participation
     for (const ref of userMaterials) {
       const materialId = ref.materialId as string;
-      await this.safeDeleteDoc(`materialParticipants/${materialId}/participants/${userId}`);
-      await this.safeDeleteDoc(`users/${userId}/userMaterials/${materialId}`);
+      await this.runDeleteStep(`Delete material participant (${materialId})`, () =>
+        this.safeDeleteDoc(`materialParticipants/${materialId}/participants/${userId}`)
+      );
+      await this.runDeleteStep(`Delete user material ref (${materialId})`, () =>
+        this.safeDeleteDoc(`users/${userId}/userMaterials/${materialId}`)
+      );
     }
 
     // Delete owned content
-    const ownedQuizzes = await this.getOwnedCollection('quizzes', userId);
+    const ownedQuizzes = await this.runDeleteStep('Load owned quizzes', () =>
+      this.getOwnedCollection('quizzes', userId)
+    );
     for (const quiz of ownedQuizzes) {
       const quizId = quiz.id as string;
-      await this.deleteCollectionDocs(`quizAnalytics/${quizId}/questionStats`);
-      await this.deleteCollectionDocsByField('questions', 'quizId', quizId);
-      await this.deleteQuizParticipantsWithRefs(quizId);
-      await this.safeDeleteDoc(`quizzes/${quizId}`);
+      await this.runDeleteStep(`Delete quiz analytics (${quizId})`, () =>
+        this.deleteCollectionDocs(`quizAnalytics/${quizId}/questionStats`)
+      );
+      await this.runDeleteStep(`Delete quiz questions (${quizId})`, () =>
+        this.deleteCollectionDocsByField('questions', 'quizId', quizId)
+      );
+      await this.runDeleteStep(`Delete quiz participants (${quizId})`, () =>
+        this.deleteQuizParticipantsWithRefs(quizId)
+      );
+      await this.runDeleteStep(`Delete quiz doc (${quizId})`, () =>
+        this.safeDeleteDoc(`quizzes/${quizId}`)
+      );
     }
 
-    const ownedDecks = await this.getOwnedCollection('flashcardDecks', userId);
+    const ownedDecks = await this.runDeleteStep('Load owned decks', () =>
+      this.getOwnedCollection('flashcardDecks', userId)
+    );
     for (const deck of ownedDecks) {
       const deckId = deck.id as string;
-      await this.deleteCollectionDocsByField('flashcards', 'deckId', deckId);
-      await this.deleteDeckParticipantsWithRefs(deckId);
-      await this.safeDeleteDoc(`flashcardDecks/${deckId}`);
+      await this.runDeleteStep(`Delete deck cards (${deckId})`, () =>
+        this.deleteCollectionDocsByField('flashcards', 'deckId', deckId)
+      );
+      await this.runDeleteStep(`Delete deck participants (${deckId})`, () =>
+        this.deleteDeckParticipantsWithRefs(deckId)
+      );
+      await this.runDeleteStep(`Delete deck doc (${deckId})`, () =>
+        this.safeDeleteDoc(`flashcardDecks/${deckId}`)
+      );
     }
 
-    const ownedMaterials = await this.getOwnedCollection('learningMaterials', userId);
+    const ownedMaterials = await this.runDeleteStep('Load owned materials', () =>
+      this.getOwnedCollection('learningMaterials', userId)
+    );
     for (const material of ownedMaterials) {
       const materialId = material.id as string;
-      await this.deleteMaterialParticipantsWithRefs(materialId);
-      await this.safeDeleteDoc(`learningMaterials/${materialId}`);
+      await this.runDeleteStep(`Delete material participants (${materialId})`, () =>
+        this.deleteMaterialParticipantsWithRefs(materialId)
+      );
+      await this.runDeleteStep(`Delete material doc (${materialId})`, () =>
+        this.safeDeleteDoc(`learningMaterials/${materialId}`)
+      );
     }
 
-    const ownedThemes = await this.getOwnedCollection('themes', userId);
+    const ownedThemes = await this.runDeleteStep('Load owned themes', () =>
+      this.getOwnedCollection('themes', userId)
+    );
     for (const theme of ownedThemes) {
       const themeId = theme.id as string;
-      await this.safeDeleteDoc(`themes/${themeId}`);
+      await this.runDeleteStep(`Delete theme (${themeId})`, () =>
+        this.safeDeleteDoc(`themes/${themeId}`)
+      );
     }
 
-    const reviews = await this.getCollectionDataByField('reviews', 'userId', userId);
+    const reviews = await this.runDeleteStep('Load reviews', () =>
+      this.getCollectionDataByField('reviews', 'userId', userId)
+    );
     for (const review of reviews) {
       const reviewId = review.id as string;
-      await this.safeDeleteDoc(`reviews/${reviewId}`);
+      await this.runDeleteStep(`Delete review (${reviewId})`, () =>
+        this.safeDeleteDoc(`reviews/${reviewId}`)
+      );
     }
 
-    await this.deleteCollectionDocsByField('notifications', 'userId', userId);
-    await this.deleteCollectionDocs(`users/${userId}/fcmTokens`);
+    await this.runDeleteStep('Delete notifications', () =>
+      this.deleteCollectionDocsByField('notifications', 'userId', userId)
+    );
+    await this.runDeleteStep('Delete followNotifications (recipient)', () =>
+      this.deleteCollectionDocsByField('followNotifications', 'userId', userId)
+    );
+    await this.runDeleteStep('Delete followNotifications (author)', () =>
+      this.deleteCollectionDocsByField('followNotifications', 'authorId', userId)
+    );
+    await this.runDeleteStep('Delete FCM tokens', () =>
+      this.deleteCollectionDocs(`users/${userId}/fcmTokens`)
+    );
+    await this.runDeleteStep('Delete folders', () =>
+      this.deleteCollectionDocs(`users/${userId}/folders`)
+    );
+
+    await this.runDeleteStep('Remove follow relations', () =>
+      this.removeFollowRelations(userId, userFollowing, userFollowers)
+    );
+    await this.runDeleteStep('Delete following', () =>
+      this.deleteCollectionDocs(`users/${userId}/following`)
+    );
+    await this.runDeleteStep('Delete followers', () =>
+      this.deleteCollectionDocs(`users/${userId}/followers`)
+    );
 
     // Remove user document
-    await this.safeDeleteDoc(`users/${userId}`);
+    await this.runDeleteStep('Delete user document', () =>
+      this.safeDeleteDoc(`users/${userId}`)
+    );
 
     // Attempt to remove email lookup (may require backend permission)
     if (email) {
@@ -332,6 +438,45 @@ export class AccountDataService {
     await deleteDoc(ref);
   }
 
+  private async safeIncrement(path: string, field: string, delta: number): Promise<void> {
+    try {
+      const ref = doc(this.firestore, path);
+      await updateDoc(ref, { [field]: increment(delta) });
+    } catch (error) {
+      console.warn(`Could not update ${field} for ${path}:`, error);
+    }
+  }
+
+  private async removeFollowRelations(
+    userId: string,
+    following: any[],
+    followers: any[]
+  ): Promise<void> {
+    for (const entry of following) {
+      const targetUserId = entry.followedUserId || entry.id;
+      if (!targetUserId) continue;
+      try {
+        await this.safeDeleteDoc(`users/${userId}/following/${targetUserId}`);
+        await this.safeDeleteDoc(`users/${targetUserId}/followers/${userId}`);
+        await this.safeIncrement(`users/${targetUserId}`, 'followerCount', -1);
+      } catch (error) {
+        console.warn('Failed to remove following relation:', error);
+      }
+    }
+
+    for (const entry of followers) {
+      const followerId = entry.followerId || entry.id;
+      if (!followerId) continue;
+      try {
+        await this.safeDeleteDoc(`users/${userId}/followers/${followerId}`);
+        await this.safeDeleteDoc(`users/${followerId}/following/${userId}`);
+        await this.safeIncrement(`users/${followerId}`, 'followingCount', -1);
+      } catch (error) {
+        console.warn('Failed to remove follower relation:', error);
+      }
+    }
+  }
+
   private serialize(value: any): any {
     if (value instanceof Timestamp) {
       return value.toDate().toISOString();
@@ -347,5 +492,9 @@ export class AccountDataService {
       return Object.fromEntries(entries);
     }
     return value;
+  }
+
+  private async runDeleteStep<T>(_label: string, fn: () => Promise<T>): Promise<T> {
+    return await fn();
   }
 }

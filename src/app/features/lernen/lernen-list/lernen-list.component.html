@@ -1,4 +1,30 @@
-<div class="deck-list-page" appPullToRefresh (refresh)="onRefresh()">
+<div class="deck-list-layout" [class.sidebar-collapsed]="sidebarCollapsed()">
+  <!-- Folder Sidebar -->
+  <app-folder-sidebar
+    class="deck-sidebar"
+    [folders]="folders()"
+    [selectedFolderId]="selectedFolderId()"
+    [showFavorites]="showFavoritesOnly()"
+    [collapsed]="sidebarCollapsed()"
+    (folderSelect)="onFolderSelect($event)"
+    (favoritesToggle)="onFavoritesToggle($event)"
+    (createFolder)="openCreateFolderDialog()"
+    (editFolder)="openEditFolderDialog($event)"
+    (collapsedChange)="sidebarCollapsed.set($event)"
+  />
+
+  <!-- Sidebar Toggle Button (visible when collapsed) -->
+  <button
+    type="button"
+    class="sidebar-toggle"
+    (click)="sidebarCollapsed.set(false)"
+    [attr.aria-label]="'folders.expandSidebar' | translate">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="9 6 15 12 9 18"/>
+    </svg>
+  </button>
+
+  <div class="deck-list-page" appPullToRefresh (refresh)="onRefresh()">
   <div class="page-header">
     <div class="title-block">
       <p class="eyebrow">{{ 'common.overview' | translate }}</p>
@@ -76,6 +102,30 @@
       </div>
     </div>
   </div>
+
+  <!-- Active Filters -->
+  @if (selectedFolderId() || showFavoritesOnly()) {
+    <div class="active-filters">
+      @if (showFavoritesOnly()) {
+        <span class="filter-chip favorites">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+          {{ 'folders.favorites' | translate }}
+          <button type="button" class="remove-filter" (click)="onFavoritesToggle(false)">×</button>
+        </span>
+      }
+      @if (selectedFolder(); as folder) {
+        <span class="filter-chip folder" [style.--folder-color]="folder.color">
+          @if (folder.icon) {
+            <span class="folder-icon">{{ folder.icon }}</span>
+          }
+          {{ folder.name }}
+          <button type="button" class="remove-filter" (click)="onFolderSelect(null)">×</button>
+        </span>
+      }
+    </div>
+  }
 
   <div class="stats-summary">
     <app-stat-card [config]="{
@@ -156,10 +206,17 @@
               <div class="header-text">
                 <div class="title-row">
                   <h3>{{ deck.title }}</h3>
-                  <app-badge [config]="{
-                    variant: deck.visibility === 'public' ? 'public' : deck.visibility === 'unlisted' ? 'unlisted' : 'private',
-                    label: deck.visibility === 'public' ? ('quiz.visibility.public' | translate) : deck.visibility === 'unlisted' ? ('quiz.visibility.unlisted' | translate) : ('quiz.visibility.private' | translate)
-                  }" />
+                  <div class="header-actions">
+                    <app-favorite-button
+                      [isFavorite]="getDeckUserRef(deck.id)?.isFavorite ?? false"
+                      size="medium"
+                      (favoriteChange)="onToggleFavorite(deck.id, $event)"
+                    />
+                    <app-badge [config]="{
+                      variant: deck.visibility === 'public' ? 'public' : deck.visibility === 'unlisted' ? 'unlisted' : 'private',
+                      label: deck.visibility === 'public' ? ('quiz.visibility.public' | translate) : deck.visibility === 'unlisted' ? ('quiz.visibility.unlisted' | translate) : ('quiz.visibility.private' | translate)
+                    }" />
+                  </div>
                 </div>
 
                 <p class="deck-description" *ngIf="deck.description">
@@ -167,6 +224,19 @@
                 </p>
               </div>
             </div>
+
+            <!-- Folder Badge -->
+            @if (getDeckUserRef(deck.id)?.folderId) {
+              @let deckFolder = getFolderForDeck(deck.id);
+              @if (deckFolder) {
+                <div class="folder-badge" [style.--folder-color]="deckFolder.color">
+                  @if (deckFolder.icon) {
+                    <span class="folder-icon">{{ deckFolder.icon }}</span>
+                  }
+                  <span class="folder-name">{{ deckFolder.name }}</span>
+                </div>
+              }
+            }
 
             <div class="deck-meta">
               <div class="meta-item">
@@ -295,4 +365,14 @@
       <span class="fab-lines" aria-hidden="true"></span>
     </button>
   </div>
+  </div>
 </div>
+
+<!-- Folder Dialog -->
+<app-folder-dialog
+  [isOpen]="folderDialogOpen()"
+  [data]="folderDialogData()"
+  (close)="closeFolderDialog()"
+  (save)="onFolderSave($event)"
+  (delete)="onFolderDelete()"
+/>

@@ -321,6 +321,43 @@
       margin: 0;
       font-size: 1.25rem;
     }
+
+    .rating-chip {
+      background: rgba(255, 193, 7, 0.08);
+      border: 1px solid rgba(255, 193, 7, 0.35);
+      border-radius: 999px;
+      padding: 6px 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      box-shadow: 0 0 0 1px rgba(255, 193, 7, 0.2), 0 0 10px rgba(255, 193, 7, 0.18);
+      transition: transform $transition-fast, box-shadow $transition-fast, border-color $transition-fast;
+
+      .icon {
+        color: var(--color-warning);
+        font-size: 1rem;
+        line-height: 1;
+      }
+
+      &:hover {
+        transform: translateY(-1px);
+        border-color: rgba(255, 193, 7, 0.6);
+        box-shadow: 0 0 0 1px rgba(255, 193, 7, 0.35), 0 0 14px rgba(255, 193, 7, 0.28);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      &:focus-visible {
+        outline: 2px solid rgba(var(--color-primary-rgb), 0.4);
+        outline-offset: 4px;
+      }
+    }
   }
 
   .rating-summary {

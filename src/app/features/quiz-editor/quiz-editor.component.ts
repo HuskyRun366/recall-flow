@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, inject, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FirestoreService } from '../../core/services/firestore.service';
 import { QuestionService } from '../../core/services/question.service';
 import { ParticipantService } from '../../core/services/participant.service';
@@ -29,6 +29,7 @@ export class QuizEditorComponent implements OnInit {
   private userLookupService = inject(UserLookupService);
   private followService = inject(FollowService);
   private toastService = inject(ToastService);
+  private translateService = inject(TranslateService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
@@ -247,6 +248,7 @@ export class QuizEditorComponent implements OnInit {
         this.router.navigate(['/quiz', 'editor', newId], { replaceUrl: true });
         this.unsavedChanges.set(false);
         this.isSaving.set(false);
+        this.toastService.success(this.translateService.instant('toast.quiz.created'));
       } else if (this.quizId) {
         // Update existing quiz
         await firstValueFrom(
@@ -277,10 +279,12 @@ export class QuizEditorComponent implements OnInit {
 
         this.unsavedChanges.set(false);
         this.isSaving.set(false);
+        this.toastService.success(this.translateService.instant('toast.quiz.saved'));
       }
     } catch (err: any) {
       console.error('Error saving quiz:', err);
       this.error.set('Failed to save quiz: ' + err.message);
+      this.toastService.error(this.translateService.instant('toast.error.save'));
       this.isSaving.set(false);
     }
   }

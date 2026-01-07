@@ -12,6 +12,19 @@
 :root {
   --app-font-scale: 1;
   --app-font-family-default: #{$font-family-sans};
+  // Alias tokens used by legacy components
+  --bg: var(--color-background);
+  --background: var(--color-background);
+  --surface: var(--color-surface);
+  --surface-hover: var(--color-surface-elevated);
+  --border: var(--color-border);
+  --border-color: var(--color-border);
+  --text: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-disabled: var(--color-text-disabled);
+  --primary: var(--color-primary);
+  --primary-dark: var(--color-primary-dark);
+  --primary-alpha: rgba(var(--color-primary-rgb), 0.12);
 }
 
 html {

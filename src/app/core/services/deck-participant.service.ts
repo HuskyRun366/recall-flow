@@ -6,6 +6,7 @@ import {
   setDoc,
   updateDoc,
   deleteDoc,
+  deleteField,
   getDoc,
   getDocs,
   query,
@@ -65,7 +66,9 @@ export class DeckParticipantService {
       deckId,
       role,
       addedAt: Timestamp.now() as any,
-      lastAccessedAt: Timestamp.now() as any
+      lastAccessedAt: Timestamp.now() as any,
+      tags: [],
+      isFavorite: false
     };
     batch.set(userDeckDoc, userDeckData);
 
@@ -381,7 +384,129 @@ export class DeckParticipantService {
     return {
       ...data,
       addedAt: data.addedAt?.toDate() || new Date(),
-      lastAccessedAt: data.lastAccessedAt?.toDate() || new Date()
+      lastAccessedAt: data.lastAccessedAt?.toDate() || new Date(),
+      tags: data.tags || [],
+      isFavorite: data.isFavorite || false
     };
+  }
+
+  // ===== Organization Methods =====
+
+  /**
+   * Set favorite status for a deck
+   * Uses setDoc with merge to create the document if it doesn't exist
+   */
+  async setFavorite(userId: string, deckId: string, isFavorite: boolean): Promise<void> {
+    const userDeckDoc = doc(this.firestore, `users/${userId}/userDecks/${deckId}`);
+    const docSnap = await runInInjectionContext(this.injector, () => getDoc(userDeckDoc));
+
+    if (docSnap.exists()) {
+      await updateDoc(userDeckDoc, { isFavorite });
+    } else {
+      // Create document with default values if it doesn't exist
+      const userDeckData: UserDeckReference = {
+        deckId,
+        role: 'student',
+        addedAt: Timestamp.now() as any,
+        lastAccessedAt: Timestamp.now() as any,
+        tags: [],
+        isFavorite
+      };
+      await setDoc(userDeckDoc, userDeckData);
+    }
+  }
+
+  /**
+   * Set folder for a deck
+   */
+  async setFolder(userId: string, deckId: string, folderId: string | null): Promise<void> {
+    const userDeckDoc = doc(this.firestore, `users/${userId}/userDecks/${deckId}`);
+    if (folderId === null) {
+      await updateDoc(userDeckDoc, { folderId: deleteField() });
+    } else {
+      await updateDoc(userDeckDoc, { folderId });
+    }
+  }
+
+  /**
+   * Set tags for a deck (replaces all tags)
+   */
+  async setTags(userId: string, deckId: string, tags: string[]): Promise<void> {
+    const userDeckDoc = doc(this.firestore, `users/${userId}/userDecks/${deckId}`);
+    await updateDoc(userDeckDoc, { tags });
+  }
+
+  /**
+   * Add a tag to a deck
+   */
+  async addTag(userId: string, deckId: string, tag: string): Promise<void> {
+    const userDeckDoc = doc(this.firestore, `users/${userId}/userDecks/${deckId}`);
+    const docSnap = await runInInjectionContext(this.injector, () => getDoc(userDeckDoc));
+    if (!docSnap.exists()) return;
+
+    const data = docSnap.data() as UserDeckReference;
+    const currentTags = data.tags || [];
+    if (!currentTags.includes(tag)) {
+      await updateDoc(userDeckDoc, { tags: [...currentTags, tag] });
+    }
+  }
+
+  /**
+   * Remove a tag from a deck
+   */
+  async removeTag(userId: string, deckId: string, tag: string): Promise<void> {
+    const userDeckDoc = doc(this.firestore, `users/${userId}/userDecks/${deckId}`);
+    const docSnap = await runInInjectionContext(this.injector, () => getDoc(userDeckDoc));
+    if (!docSnap.exists()) return;
+
+    const data = docSnap.data() as UserDeckReference;
+    const currentTags = data.tags || [];
+    await updateDoc(userDeckDoc, { tags: currentTags.filter(t => t !== tag) });
+  }
+
+  /**
+   * Get all favorite decks for a user
+   */
+  getFavoriteDecks(userId: string): Observable<UserDeckReference[]> {
+    const userDecksCol = collection(
+      this.firestore,
+      `users/${userId}/userDecks`
+    ) as CollectionReference<UserDeckReference>;
+
+    const q = query(userDecksCol, where('isFavorite', '==', true));
+
+    return from(
+      runInInjectionContext(this.injector, () => getDocs(q))
+    ).pipe(
+      map(snapshot => {
+        return snapshot.docs.map(doc => {
+          const data = doc.data();
+          return this.convertUserDeckTimestamps(data);
+        });
+      })
+    );
+  }
+
+  /**
+   * Get decks by folder for a user
+   */
+  getDecksByFolder(userId: string, folderId: string): Observable<UserDeckReference[]> {
+    const userDecksCol = collection(
+      this.firestore,
+      `users/${userId}/userDecks`
+    ) as CollectionReference<UserDeckReference>;
+
+    const q = query(userDecksCol, where('folderId', '==', folderId));
+
+    return from(
+      runInInjectionContext(this.injector, () => getDocs(q))
+    ).pipe(
+      map(snapshot => {
+        return snapshot.docs.map(doc => {
+          const data = doc.data();
+          return this.convertUserDeckTimestamps(data);
+        });
+      })
+    );
   }
 }
