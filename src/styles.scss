@@ -220,6 +220,75 @@ input, textarea, select {
   }
 }
 
+// Global safe tap targets for touch devices (iOS/Android)
+@media (pointer: coarse) {
+  button,
+  [role="button"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .btn,
+  button.btn,
+  a.btn {
+    min-height: 44px;
+    padding: 10px 16px;
+  }
+
+  .btn.btn-small {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
+  .btn-icon,
+  button.btn-icon,
+  a.btn-icon {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .tab-btn {
+    min-height: 44px;
+  }
+
+  button.chip,
+  .rating-chip,
+  .filter-toggle,
+  .clear-btn {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
+  .remove-filter,
+  .folder-menu-btn,
+  .copy-code-btn,
+  .fab,
+  .fab-item,
+  .updates-badge,
+  .mobile-menu-btn,
+  .theme-toggle,
+  .user-button,
+  .dropdown-item {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .mat-mdc-button,
+  .mat-mdc-unelevated-button,
+  .mat-mdc-raised-button,
+  .mat-mdc-outlined-button {
+    min-height: 44px;
+  }
+
+  .mat-mdc-icon-button {
+    width: 44px;
+    height: 44px;
+  }
+}
+
 // Loading spinner
 @keyframes spin {
   to { transform: rotate(360deg); }

@@ -984,6 +984,23 @@
     grid-template-columns: 120px 1fr;
     font-size: 0.8rem;
   }
+
+  .quiz-card {
+    .quiz-card-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .quiz-card-header h3 {
+      width: 100%;
+    }
+
+    .quiz-card-header .header-actions {
+      width: 100%;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+  }
 }
 
 // Mobile tweaks ~6" devices
