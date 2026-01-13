@@ -453,12 +453,8 @@ export class FollowService {
     }
 
     try {
-      const response = await fetch(`${serverConfig.url}/api/wake`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      const baseUrl = String(serverConfig.url).replace(/\/+$/, '');
+      const response = await fetch(`${baseUrl}/api/wake`, { method: 'GET' });
 
       if (response.ok) {
         console.log('✅ Notification server woken up successfully');

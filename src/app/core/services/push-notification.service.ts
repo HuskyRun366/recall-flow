@@ -16,6 +16,7 @@ export class PushNotificationService {
   private deviceInfo = this.getDeviceInfo();
   private deviceId = this.getOrCreateDeviceId();
   private deviceFingerprint = this.deviceInfo.fingerprint;
+  private messagingSwRegistrationPromise: Promise<ServiceWorkerRegistration | null> | null = null;
 
   // Signals
   notificationPermission = signal<NotificationPermission>('default');
@@ -71,6 +72,54 @@ export class PushNotificationService {
   private loadUserPreference(): void {
     const disabled = localStorage.getItem('notifications-disabled');
     this.isUserDisabled.set(disabled === 'true');
+  }
+
+  private ensureMessagingServiceWorkerRegistration(): Promise<ServiceWorkerRegistration | null> {
+    if (this.messagingSwRegistrationPromise) {
+      return this.messagingSwRegistrationPromise;
+    }
+
+    if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) {
+      return Promise.resolve(null);
+    }
+
+    if (!this.pwaDetection.isPWA()) {
+      return Promise.resolve(null);
+    }
+
+    this.messagingSwRegistrationPromise = (async () => {
+      try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        const legacyRegistration = registrations.find(reg => {
+          const scriptUrl = reg.active?.scriptURL || reg.waiting?.scriptURL || reg.installing?.scriptURL || '';
+          return scriptUrl.endsWith('/firebase-messaging-sw.js');
+        });
+
+        if (legacyRegistration) {
+          await legacyRegistration.unregister();
+        }
+
+        const existing = registrations.find(reg => {
+          const scriptUrl = reg.active?.scriptURL || reg.waiting?.scriptURL || reg.installing?.scriptURL || '';
+          return reg.scope.endsWith('/firebase-messaging-sw/')
+            || scriptUrl.endsWith('/firebase-messaging-sw/firebase-messaging-sw.js');
+        });
+
+        if (existing) {
+          return existing;
+        }
+
+        return await navigator.serviceWorker.register(
+          '/firebase-messaging-sw/firebase-messaging-sw.js',
+          { scope: '/firebase-messaging-sw/' }
+        );
+      } catch (error) {
+        console.warn('Failed to register Firebase Messaging service worker:', error);
+        return null;
+      }
+    })();
+
+    return this.messagingSwRegistrationPromise;
   }
 
   /**
@@ -133,8 +182,15 @@ export class PushNotificationService {
         return null;
       }
 
+      const registration = await this.ensureMessagingServiceWorkerRegistration();
+      if (!registration) {
+        console.warn('⚠️ Messaging service worker not available; skipping FCM token request');
+        return null;
+      }
+
       const token = await getToken(this.messaging, {
-        vapidKey: vapidKey
+        vapidKey: vapidKey,
+        serviceWorkerRegistration: registration
       });
 
       if (token) {

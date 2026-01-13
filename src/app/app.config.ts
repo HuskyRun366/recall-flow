@@ -14,6 +14,11 @@ import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { routes } from './app.routes';
 import { environment } from '../environments/environment';
 
+const isStandaloneMode = (): boolean =>
+  typeof window !== 'undefined' &&
+  (window.matchMedia?.('(display-mode: standalone)').matches ||
+    (navigator as any).standalone === true);
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
@@ -40,9 +45,7 @@ export const appConfig: ApplicationConfig = {
     provideFirestore(() => {
       const app = getApp();
       const isIOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent || '');
-      const isStandalone =
-        typeof window !== 'undefined' &&
-        (window.matchMedia?.('(display-mode: standalone)').matches || (navigator as any).standalone === true);
+      const isStandalone = isStandaloneMode();
       const transportSettings = !isDevMode()
         ? { experimentalAutoDetectLongPolling: true, useFetchStreams: false }
         : {};
@@ -93,7 +96,7 @@ export const appConfig: ApplicationConfig = {
     provideStorage(() => getStorage()),
     provideMessaging(() => getMessaging()),
     provideServiceWorker('ngsw-worker.js', {
-      enabled: !isDevMode(),
+      enabled: !isDevMode() && isStandaloneMode(),
       registrationStrategy: 'registerWhenStable:30000'
     })
   ]
