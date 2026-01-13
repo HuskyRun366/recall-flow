@@ -90,6 +90,25 @@ export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit
       const isDark = this.themeService.theme() === 'dark';
       this.updateEditorTheme(isDark);
     });
+
+    // Initialize editor when loading completes and container becomes available
+    // This handles the case where the container is inside an @if block
+    effect(() => {
+      const loading = this.isLoading();
+      const hasError = this.error();
+      const mat = this.material();
+      const ready = this.editorReady();
+
+      // Only proceed when conditions are met and editor not yet initialized
+      if (!loading && !hasError && mat && !ready) {
+        // Use setTimeout to ensure DOM has rendered after @if condition changes
+        setTimeout(() => {
+          if (this.editorContainer?.nativeElement && !this.editorView) {
+            this.initializeCodeMirror();
+          }
+        }, 0);
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -98,23 +117,11 @@ export class MaterialEditorComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   ngAfterViewInit(): void {
-    // Initialize CodeMirror editor after view is ready
-    // Use longer timeout to ensure DOM is fully rendered
-    setTimeout(() => {
-      if (this.editorContainer?.nativeElement) {
-        console.log('Initializing CodeMirror editor...');
-        this.initializeCodeMirror();
-      } else {
-        console.warn('Editor container not found, retrying...');
-        setTimeout(() => {
-          if (this.editorContainer?.nativeElement) {
-            this.initializeCodeMirror();
-          } else {
-            console.error('Editor container still not found after retry');
-          }
-        }, 300);
-      }
-    }, 200);
+    // Try immediate initialization for "new" materials where container is already rendered
+    // For existing materials, the effect() in the constructor handles initialization after loading
+    if (this.editorContainer?.nativeElement && !this.editorView) {
+      this.initializeCodeMirror();
+    }
   }
 
   ngOnDestroy(): void {
