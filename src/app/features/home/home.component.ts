@@ -491,33 +491,73 @@ export class HomeComponent implements OnInit {
     const userId = this.currentUser()?.uid;
     if (!userId) return;
 
-    const previousFavorite = this.quizzesWithProgress()
-      .find(q => q.quiz.id === quizId)?.userRef?.isFavorite;
+    const target = this.quizzesWithProgress().find(q => q.quiz.id === quizId);
+    if (!target) return;
 
-    // Optimistic update
+    const previousFavorite = target.userRef?.isFavorite;
+    const hadUserRef = !!target.userRef;
+    const now = new Date();
+    const role = target.userRef?.role ?? (target.quiz.ownerId === userId ? 'owner' : 'participant');
+    const nextUserRef: UserQuizReference = {
+      quizId,
+      role,
+      addedAt: target.userRef?.addedAt ?? now,
+      lastAccessedAt: target.userRef?.lastAccessedAt ?? now,
+      folderId: target.userRef?.folderId,
+      tags: target.userRef?.tags ?? [],
+      isFavorite
+    };
+
+    // Optimistic update (ensure userRef exists for owned quizzes too)
     this.quizzesWithProgress.update(quizzes =>
-      quizzes.map(q => {
-        if (q.quiz.id === quizId && q.userRef) {
-          return { ...q, userRef: { ...q.userRef, isFavorite } };
-        }
-        return q;
-      })
+      quizzes.map(q => q.quiz.id === quizId ? { ...q, userRef: nextUserRef } : q)
     );
+
+    this.userQuizRefs.update(refs => {
+      const index = refs.findIndex(ref => ref.quizId === quizId);
+      if (index >= 0) {
+        const updated = [...refs];
+        updated[index] = { ...refs[index], isFavorite };
+        return updated;
+      }
+      return [...refs, nextUserRef];
+    });
+
+    const addedRole = !hadUserRef;
+    if (addedRole) {
+      this.userQuizRoleMap.update(roleMap => {
+        const next = new Map(roleMap);
+        next.set(quizId, role);
+        return next;
+      });
+    }
 
     try {
       await this.participantService.setFavorite(userId, quizId, isFavorite);
     } catch (error) {
       console.error('Error toggling favorite:', error);
       // Rollback
-      if (typeof previousFavorite === 'boolean') {
+      if (hadUserRef && typeof previousFavorite === 'boolean') {
         this.quizzesWithProgress.update(quizzes =>
-          quizzes.map(q => {
-            if (q.quiz.id === quizId && q.userRef) {
-              return { ...q, userRef: { ...q.userRef, isFavorite: previousFavorite } };
-            }
-            return q;
-          })
+          quizzes.map(q =>
+            q.quiz.id === quizId ? { ...q, userRef: { ...nextUserRef, isFavorite: previousFavorite } } : q
+          )
         );
+        this.userQuizRefs.update(refs =>
+          refs.map(ref => ref.quizId === quizId ? { ...ref, isFavorite: previousFavorite } : ref)
+        );
+      } else {
+        this.quizzesWithProgress.update(quizzes =>
+          quizzes.map(q => q.quiz.id === quizId ? { ...q, userRef: undefined } : q)
+        );
+        this.userQuizRefs.update(refs => refs.filter(ref => ref.quizId !== quizId));
+        if (addedRole) {
+          this.userQuizRoleMap.update(roleMap => {
+            const next = new Map(roleMap);
+            next.delete(quizId);
+            return next;
+          });
+        }
       }
     }
   }
