@@ -268,6 +268,66 @@
   }
 }
 
+.prompt-section {
+  background: var(--color-surface);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-xl;
+
+  .prompt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: $spacing-md;
+    flex-wrap: wrap;
+  }
+
+  .prompt-title {
+    h3 {
+      margin: 0 0 $spacing-xs;
+      font-size: 1.1rem;
+    }
+
+    .prompt-subtitle {
+      margin: 0;
+      color: var(--color-text-secondary);
+      font-size: 0.9rem;
+      max-width: 520px;
+    }
+  }
+
+  .prompt-actions {
+    display: flex;
+    gap: $spacing-sm;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .prompt-box {
+    margin-top: $spacing-md;
+    background: var(--color-surface-elevated);
+    border-radius: $radius-md;
+    border: 1px solid var(--color-border);
+    padding: $spacing-md;
+  }
+
+  .prompt-textarea {
+    width: 100%;
+    min-height: 240px;
+    resize: vertical;
+    border: none;
+    background: transparent;
+    color: var(--color-text-primary);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    font-family: 'SF Mono', 'Menlo', 'Consolas', 'Monaco', 'Courier New', monospace;
+
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
 .selected-files {
   background: var(--color-surface);
   border-radius: $radius-lg;

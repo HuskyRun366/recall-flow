@@ -114,6 +114,27 @@
         </div>
       </div>
 
+      <!-- Prompt Generator -->
+      <div class="prompt-section" *ngIf="selectedFiles().length > 0">
+        <div class="prompt-header">
+          <div class="prompt-title">
+            <h3>{{ 'aiMaterialGenerator.prompt.title' | translate }}</h3>
+            <p class="prompt-subtitle">{{ 'aiMaterialGenerator.prompt.subtitle' | translate }}</p>
+          </div>
+          <div class="prompt-actions">
+            <button class="btn btn-secondary" type="button" (click)="togglePrompt()" [attr.aria-expanded]="promptVisible()">
+              {{ (promptVisible() ? 'aiMaterialGenerator.prompt.hide' : 'aiMaterialGenerator.prompt.show') | translate }}
+            </button>
+            <button class="btn btn-primary" type="button" (click)="copyPrompt()">
+              {{ (promptCopied() ? 'aiMaterialGenerator.prompt.copied' : 'aiMaterialGenerator.prompt.copy') | translate }}
+            </button>
+          </div>
+        </div>
+        <div class="prompt-box" *ngIf="promptVisible()">
+          <textarea class="prompt-textarea" readonly spellcheck="false">{{ promptText() }}</textarea>
+        </div>
+      </div>
+
       <!-- Selected Files -->
       <div class="selected-files" *ngIf="selectedFiles().length > 0">
         <h3>{{ 'aiMaterialGenerator.selectedFiles.title' | translate:{ count: selectedFiles().length, maxFiles: maxFiles } }}</h3>

@@ -49,6 +49,24 @@ export class GeminiService {
     );
   }
 
+  getQuizPrompt(
+    questionCount: number = 7,
+    multipleChoicePercent: number = 70,
+    orderingPercent: number = 30,
+    matchingPercent: number = 0,
+    teacherStyle: 'relaxed' | 'balanced' | 'demanding' | 'strict' = 'balanced'
+  ): string {
+    return this.buildQuizPrompt(questionCount, multipleChoicePercent, orderingPercent, matchingPercent, teacherStyle);
+  }
+
+  getMaterialPrompt(
+    sectionCount: number | null = null,
+    interactivityLevel: 'low' | 'medium' | 'high' = 'medium',
+    style: 'concise' | 'balanced' | 'detailed' = 'balanced'
+  ): string {
+    return this.buildMaterialPrompt(sectionCount, interactivityLevel, style);
+  }
+
   private async generateQuizInternal(
     files: Array<{ data: string; mimeType: string }>,
     questionCount: number,

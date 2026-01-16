@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -42,6 +42,17 @@ export class AiQuizGeneratorComponent implements OnInit {
   orderingPercent = signal(25);
   matchingPercent = signal(15);
   teacherStyle = signal<'relaxed' | 'balanced' | 'demanding' | 'strict'>('balanced');
+  promptVisible = signal(false);
+  promptCopied = signal(false);
+  promptText = computed(() =>
+    this.geminiService.getQuizPrompt(
+      this.questionCount(),
+      this.multipleChoicePercent(),
+      this.orderingPercent(),
+      this.matchingPercent(),
+      this.teacherStyle()
+    )
+  );
 
   // Teacher style options
   teacherStyles = [
@@ -367,5 +378,21 @@ export class AiQuizGeneratorComponent implements OnInit {
     const files = this.selectedFiles();
     const totalBytes = this.fileProcessingService.getTotalSize(files);
     return this.fileProcessingService.formatFileSize(totalBytes);
+  }
+
+  togglePrompt(): void {
+    this.promptVisible.update(value => !value);
+  }
+
+  async copyPrompt(): Promise<void> {
+    const text = this.promptText();
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      this.promptCopied.set(true);
+      setTimeout(() => this.promptCopied.set(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy prompt:', err);
+    }
   }
 }

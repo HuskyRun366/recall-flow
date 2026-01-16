@@ -949,6 +949,14 @@
         "description": "Précis, approfondi"
       }
     },
+    "prompt": {
+      "title": "Prompt pour votre propre IA",
+      "subtitle": "Utilisez ce prompt dans ChatGPT, Claude ou une autre IA. Il reflète vos réglages actuels.",
+      "show": "Afficher le prompt",
+      "hide": "Masquer le prompt",
+      "copy": "Copier le prompt",
+      "copied": "Copié !"
+    },
     "selectedFiles": {
       "title": "Fichiers sélectionnés ({{count}}/{{maxFiles}})",
       "totalSize": "Total : {{size}}"
@@ -1025,6 +1033,14 @@
         "name": "Élevée",
         "description": "Beaucoup de quiz et de tâches"
       }
+    },
+    "prompt": {
+      "title": "Prompt pour votre propre IA",
+      "subtitle": "Utilisez ce prompt dans ChatGPT, Claude ou une autre IA. Il reflète vos réglages actuels.",
+      "show": "Afficher le prompt",
+      "hide": "Masquer le prompt",
+      "copy": "Copier le prompt",
+      "copied": "Copié !"
     },
     "selectedFiles": {
       "title": "Fichiers sélectionnés ({{count}}/{{maxFiles}})",

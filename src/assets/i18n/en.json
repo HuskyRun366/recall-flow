@@ -969,6 +969,14 @@
         "description": "Precise, in-depth"
       }
     },
+    "prompt": {
+      "title": "Prompt for your own AI",
+      "subtitle": "Use this prompt in ChatGPT, Claude, or another AI tool. It reflects your current settings.",
+      "show": "Show prompt",
+      "hide": "Hide prompt",
+      "copy": "Copy prompt",
+      "copied": "Copied!"
+    },
     "selectedFiles": {
       "title": "Selected files ({{count}}/{{maxFiles}})",
       "totalSize": "Total: {{size}}"
@@ -1045,6 +1053,14 @@
         "name": "High",
         "description": "Lots of quizzes and tasks"
       }
+    },
+    "prompt": {
+      "title": "Prompt for your own AI",
+      "subtitle": "Use this prompt in ChatGPT, Claude, or another AI tool. It reflects your current settings.",
+      "show": "Show prompt",
+      "hide": "Hide prompt",
+      "copy": "Copy prompt",
+      "copied": "Copied!"
     },
     "selectedFiles": {
       "title": "Selected files ({{count}}/{{maxFiles}})",

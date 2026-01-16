@@ -94,6 +94,16 @@
     }
   }
 
+  .discover-link {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-xs;
+
+    svg {
+      display: block;
+    }
+  }
+
   @media (max-width: 768px) {
     position: absolute;
     top: 64px;

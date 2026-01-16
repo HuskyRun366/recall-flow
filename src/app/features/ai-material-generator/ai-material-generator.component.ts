@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -39,11 +39,20 @@ export class AiMaterialGeneratorComponent implements OnInit {
   retryCount = signal(0);
   maxRetries = 3;
   isDraggingOver = signal(false);
+  promptVisible = signal(false);
+  promptCopied = signal(false);
 
   sectionCount = signal(6);
   autoSections = signal(true);
   interactivityLevel = signal<'low' | 'medium' | 'high'>('medium');
   materialStyle = signal<'concise' | 'balanced' | 'detailed'>('balanced');
+  promptText = computed(() =>
+    this.geminiService.getMaterialPrompt(
+      this.autoSections() ? null : this.sectionCount(),
+      this.interactivityLevel(),
+      this.materialStyle()
+    )
+  );
 
   materialStyles = [
     {
@@ -303,5 +312,21 @@ export class AiMaterialGeneratorComponent implements OnInit {
     }
 
     return `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1" />\n  <title>Learning Material</title>\n</head>\n<body>\n${trimmed}\n</body>\n</html>`;
+  }
+
+  togglePrompt(): void {
+    this.promptVisible.update(value => !value);
+  }
+
+  async copyPrompt(): Promise<void> {
+    const text = this.promptText();
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      this.promptCopied.set(true);
+      setTimeout(() => this.promptCopied.set(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy prompt:', err);
+    }
   }
 }

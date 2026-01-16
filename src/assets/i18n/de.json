@@ -969,6 +969,14 @@
         "description": "Präzise, tiefgehend"
       }
     },
+    "prompt": {
+      "title": "Prompt für eigene KI",
+      "subtitle": "Nutze diesen Prompt in ChatGPT, Claude o.ä. – er entspricht deinen aktuellen Einstellungen.",
+      "show": "Prompt anzeigen",
+      "hide": "Prompt ausblenden",
+      "copy": "Prompt kopieren",
+      "copied": "Kopiert!"
+    },
     "selectedFiles": {
       "title": "Ausgewählte Dateien ({{count}}/{{maxFiles}})",
       "totalSize": "Gesamt: {{size}}"
@@ -1045,6 +1053,14 @@
         "name": "Hoch",
         "description": "Viele Quizze und Aufgaben"
       }
+    },
+    "prompt": {
+      "title": "Prompt für eigene KI",
+      "subtitle": "Nutze diesen Prompt in ChatGPT, Claude o.ä. – er entspricht deinen aktuellen Einstellungen.",
+      "show": "Prompt anzeigen",
+      "hide": "Prompt ausblenden",
+      "copy": "Prompt kopieren",
+      "copied": "Kopiert!"
     },
     "selectedFiles": {
       "title": "Ausgewählte Dateien ({{count}}/{{maxFiles}})",
