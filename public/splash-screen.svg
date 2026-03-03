@@ -1,36 +1,58 @@
-<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background -->
-  <rect width="512" height="512" fill="#1976D2"/>
+<!--
+  Splash screen for Apple PWA (apple-touch-startup-image)
+  Portrait viewBox (390 × 844 = iPhone 14 logical points) — portrait-optimised.
+  Background colour matches theme-color (#1976D2) so status-bar area blends seamlessly
+  when using apple-mobile-web-app-status-bar-style: black-translucent.
+-->
+<svg viewBox="0 0 390 844" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="390" y2="844" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#1E88E5"/>
+      <stop offset="55%"  stop-color="#1976D2"/>
+      <stop offset="100%" stop-color="#1565C0"/>
+    </linearGradient>
+    <!-- Soft halo centred on the icon area -->
+    <radialGradient id="halo" cx="50%" cy="40%" r="35%" gradientUnits="objectBoundingBox">
+      <stop offset="0%"   stop-color="white" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
 
-  <!-- Logo -->
-  <g transform="translate(156, 156)">
-    <!-- Flowing circles representing spaced repetition -->
-    <circle cx="60" cy="100" r="32" fill="white" opacity="0.3"/>
-    <circle cx="100" cy="100" r="32" fill="white" opacity="0.6"/>
-    <circle cx="140" cy="100" r="32" fill="white" opacity="0.9"/>
+  <!-- Full-screen background -->
+  <rect width="390" height="844" fill="url(#bg)"/>
+  <rect width="390" height="844" fill="url(#halo)"/>
 
-    <!-- Arrow showing flow direction -->
-    <path d="M168 100L180 100L176 92M176 108L180 100"
-          stroke="white"
-          stroke-width="6"
-          stroke-linecap="round"
-          stroke-linejoin="round"/>
-  </g>
+  <!--
+    App Icon — centred at x=195, y=338 (~40% screen height)
+    Three overlapping circles: dim → medium → bright
+    Centers: x=154, 195, 236  (spacing=41, r=38 → ~35 px overlap)
+    Group spans x 116 → 274, centre = 195 ✓
+  -->
+  <!-- Pill glow behind icon -->
+  <ellipse cx="195" cy="338" rx="90" ry="52" fill="rgba(255,255,255,0.1)"/>
 
-  <!-- App Name -->
-  <text x="256" y="340"
-        font-family="system-ui, -apple-system, sans-serif"
-        font-size="48"
-        font-weight="700"
-        fill="white"
-        text-anchor="middle">RecallFlow</text>
+  <circle cx="154" cy="338" r="38" fill="white" opacity="0.32"/>
+  <circle cx="195" cy="338" r="38" fill="white" opacity="0.68"/>
+  <circle cx="236" cy="338" r="38" fill="white"/>
+
+  <!-- Chevron arrow (flow) -->
+  <path d="M 261 315 L 287 338 L 261 361"
+        stroke="white" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- App name -->
+  <text x="195" y="434"
+        font-family="-apple-system, 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+        font-size="38" font-weight="700" letter-spacing="-0.5"
+        fill="white" text-anchor="middle">RecallFlow</text>
 
   <!-- Tagline -->
-  <text x="256" y="380"
-        font-family="system-ui, -apple-system, sans-serif"
-        font-size="18"
-        font-weight="400"
-        fill="white"
-        opacity="0.9"
-        text-anchor="middle">Master your knowledge</text>
+  <text x="195" y="466"
+        font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+        font-size="16" font-weight="400"
+        fill="white" fill-opacity="0.78" text-anchor="middle">Master your knowledge</text>
+
+  <!-- Loading indicator dots (above home indicator safe area) -->
+  <circle cx="181" cy="760" r="5" fill="white" opacity="0.45"/>
+  <circle cx="195" cy="760" r="5" fill="white" opacity="0.8"/>
+  <circle cx="209" cy="760" r="5" fill="white" opacity="0.45"/>
 </svg>

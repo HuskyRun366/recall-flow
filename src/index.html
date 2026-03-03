@@ -62,10 +62,12 @@
 
   <!-- Material Icons are loaded after consent -->
 
-  <!-- Favicons -->
+  <!-- Favicons — SVG first (modern browsers), PNG fallbacks, then ICO -->
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <!-- Apple home-screen icon (180×180 solid background — Apple applies rounded corners) -->
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 
   <!-- iOS Splash Screens -->
@@ -107,12 +109,18 @@
 <body>
   <!-- Loading Screen -->
   <div id="app-loading">
-    <svg width="120" height="120" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="64" height="64" rx="12" fill="rgba(255,255,255,0.2)"/>
-      <circle cx="24" cy="32" r="8" fill="white" opacity="0.3"/>
-      <circle cx="32" cy="32" r="8" fill="white" opacity="0.6"/>
-      <circle cx="40" cy="32" r="8" fill="white" opacity="0.9"/>
-      <path d="M46 32L50 32L48 28M48 36L50 32" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!--
+      Inline loading icon — matches the redesigned icon assets.
+      r=8, centers at 20/30/40; right circle edge 48; chevron starts at 50.
+    -->
+    <svg width="120" height="120" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="72" height="72" rx="16" fill="rgba(255,255,255,0.18)"/>
+      <circle cx="20" cy="36" r="8" fill="white" opacity="0.35"/>
+      <circle cx="30" cy="36" r="8" fill="white" opacity="0.68"/>
+      <circle cx="40" cy="36" r="8" fill="white"/>
+      <!-- Chevron starts at x=50 (2px gap after circle edge 48) -->
+      <path d="M50 29 L58 36 L50 43"
+            stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     </svg>
     <div class="app-name">RecallFlow</div>
     <div class="tagline">Master your knowledge</div>
