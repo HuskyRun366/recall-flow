@@ -11,6 +11,8 @@
     <img src="https://img.shields.io/badge/PWA-Ready-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white" alt="PWA Ready">
   </p>
 </div>
+> [!NOTE]
+> This repository is archived and no longer actively maintained. RecallFlow was remade in Next.js, and development has continued in the newer version.
 
 ## Overview
 
